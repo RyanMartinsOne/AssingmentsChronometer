@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <string name="app_name">Controle do Tempo</string>
+
+        <string name="start">Iniciar</string>
+        <string name="pause">Pausar</string>
+        <string name="reset">Reiniciar</string>
+
+        <string name="nav_home">Início</string>
+        <string name="nav_assignments">Designações</string>
+        <string name="nav_record">Registros</string>
+        <string name="nav_settings">Configurações</string>
+
+</resources>

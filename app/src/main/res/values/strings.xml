@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Assignments Chronometer</string>
+
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="reset">Reset</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_assignments">Assignments</string>
+    <string name="nav_record">Record</string>
+    <string name="nav_settings">Settings</string>
+
+</resources>
