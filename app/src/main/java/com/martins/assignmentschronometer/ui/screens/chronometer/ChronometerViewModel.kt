@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class ChronometerViewModel : ViewModel() {
 
@@ -19,6 +20,18 @@ class ChronometerViewModel : ViewModel() {
         private set
 
     private var job: Job? = null
+
+    val formattedTime: String
+        get() {
+            val hours = totalTimeOnSeconds / 3600
+            val minutes = (totalTimeOnSeconds % 3600) / 60
+            val seconds = totalTimeOnSeconds % 60
+
+            return String.format(
+                Locale.getDefault(),
+                "%02d:%02d:%02d",
+                hours, minutes, seconds)
+        }
 
     fun start() {
         if (isRunning) return
