@@ -18,6 +18,8 @@ class ChronometerViewModel : ViewModel() {
         private set
 
     fun start() {
+        if (isRunning) return
+
         isRunning = true
         viewModelScope.launch {
             while (isRunning) {
