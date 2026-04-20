@@ -24,22 +24,13 @@ fun ChronometerScreen(
     viewModel: ChronometerViewModel = viewModel()
 ) {
 
-    val hours = viewModel.totalTimeOnSeconds / 3600
-    val minutes = (viewModel.totalTimeOnSeconds % 3600) / 60
-    val seconds = viewModel.totalTimeOnSeconds % 60
-
-    val formattedTime = String.format(
-        Locale.getDefault(),
-        "%02d:%02d:%02d",
-        hours, minutes, seconds)
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = formattedTime,
+            text = viewModel.formattedTime,
             style = MaterialTheme.typography.displayLarge
         )
 
