@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.martins.assignmentschronometer.ui.screens.chronometer.ChronometerScreen
+import androidx.navigation.compose.rememberNavController
+import com.martins.assignmentschronometer.navigation.MainNavigation
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +22,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ChronometerScreen()
+                    val navController = rememberNavController()
+                    MainNavigation(navController)
                 }
             }
         }
