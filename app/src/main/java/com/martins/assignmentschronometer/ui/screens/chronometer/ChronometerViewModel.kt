@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -17,11 +18,13 @@ class ChronometerViewModel : ViewModel() {
     var isRunning by mutableStateOf(false)
         private set
 
+    private var job: Job? = null
+
     fun start() {
         if (isRunning) return
 
         isRunning = true
-        viewModelScope.launch {
+        job = viewModelScope.launch {
             while (isRunning) {
                 delay(1000L)
                 if (isRunning) totalTimeOnSeconds++
@@ -31,6 +34,7 @@ class ChronometerViewModel : ViewModel() {
 
     fun pause(){
         isRunning = false
+        job?.cancel()
     }
 
     fun reset(){
