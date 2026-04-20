@@ -22,7 +22,7 @@ class ChronometerViewModel : ViewModel() {
         viewModelScope.launch {
             while (isRunning) {
                 delay(1000L)
-                totalTimeOnSeconds++
+                if (isRunning) totalTimeOnSeconds++
             }
         }
     }
