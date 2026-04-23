@@ -5,6 +5,7 @@
 
         <string name="start">Iniciar</string>
         <string name="pause">Pausar</string>
+        <string name="resume">Continuar</string>
         <string name="reset">Reiniciar</string>
 
         <string name="nav_home">Início</string>

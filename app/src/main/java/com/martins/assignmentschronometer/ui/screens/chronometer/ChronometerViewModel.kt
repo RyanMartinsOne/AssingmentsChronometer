@@ -19,6 +19,9 @@ class ChronometerViewModel : ViewModel() {
     var isRunning by mutableStateOf(false)
         private set
 
+    var isPaused by mutableStateOf(false)
+        private set
+
     private var job: Job? = null
 
     val formattedTime: String
@@ -47,11 +50,13 @@ class ChronometerViewModel : ViewModel() {
 
     fun pause(){
         isRunning = false
+        isPaused = true
         job?.cancel()
     }
 
     fun reset(){
         pause()
+        isPaused = false
         totalTimeOnSeconds = 0
     }
 }
