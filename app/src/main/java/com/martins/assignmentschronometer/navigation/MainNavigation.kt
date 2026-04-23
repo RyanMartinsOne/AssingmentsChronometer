@@ -1,6 +1,7 @@
 package com.martins.assignmentschronometer.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,11 +11,15 @@ import com.martins.assignmentschronometer.ui.screens.record.RecordScreen
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsScreen
 
 @Composable
-fun MainNavigation(navController: NavHostController) {
+fun MainNavigation(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+    ) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Home.route,
+        modifier = modifier
     ) {
 
         composable(route = Screen.Home.route) {
