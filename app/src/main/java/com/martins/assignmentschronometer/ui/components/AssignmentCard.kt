@@ -21,18 +21,16 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.Assignment
-import com.martins.assignmentschronometer.navigation.Screen
-import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 
 @Composable
 fun AssignmentCard(
     assignment: Assignment,
-    sharedViewModel: SharedViewModel,
-    navController: NavController
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+
     val googleSansBold = FontFamily(Font(R.font.googlesans_bold))
 
     val minutes = assignment.durationOnSeconds / 60
@@ -83,11 +81,7 @@ fun AssignmentCard(
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    sharedViewModel.selectAssignment(assignment)
-                    sharedViewModel.start()
-                    navController.navigate(Screen.Home.route)
-                }
+                onClick = onClick
             ) {
                 Text(
                     text = stringResource(R.string.start),

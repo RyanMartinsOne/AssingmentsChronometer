@@ -30,8 +30,11 @@ fun MainNavigation(
 
         composable(route = Screen.Assignments.route) {
             AssignmentsScreen(
-                sharedViewModel,
-                navController = navController
+                onAssignmentClick = { assignment ->
+                    sharedViewModel.selectAssignment(assignment)
+                    sharedViewModel.start()
+                    navController.navigate(Screen.Home.route)
+                }
             )
         }
 
