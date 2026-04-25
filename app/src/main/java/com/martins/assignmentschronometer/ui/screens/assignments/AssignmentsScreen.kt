@@ -38,7 +38,7 @@ fun AssignmentsScreen(
         ),
         Assignment (
             titleRes = R.string.assignment_spiritual_gems,
-            durationOnSeconds = 10 * 60,
+            durationOnSeconds = 10,
             iconRes = R.drawable.spiritual_gems
         )
     )

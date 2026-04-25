@@ -1,5 +1,6 @@
 package com.martins.assignmentschronometer.ui.screens.chronometer
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +19,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import com.martins.assignmentschronometer.R
+import com.martins.assignmentschronometer.ui.theme.LocalChronometerColors
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 
 @Composable
@@ -30,8 +35,20 @@ fun ChronometerScreen(
         Font(R.font.googlesans_regular)
     )
 
+    val chronometerColors = LocalChronometerColors.current
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (sharedViewModel.isOverTime)
+            chronometerColors.overtimeBackground
+        else
+            MaterialTheme.colorScheme.background,
+        label = "backgroundColor"
+    )
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -45,9 +62,17 @@ fun ChronometerScreen(
         Spacer(modifier = Modifier.height(80.dp))
 
         Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (sharedViewModel.isRunning) MaterialTheme.colorScheme.error
-                else MaterialTheme.colorScheme.primary
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = when {
+                        sharedViewModel.isOverTime -> chronometerColors.overtimeButton
+                        sharedViewModel.isRunning  -> chronometerColors.overtimeBackground
+                        else                       -> MaterialTheme.colorScheme.primary
+                    },
+                    contentColor = when {
+                        sharedViewModel.isOverTime -> chronometerColors.overtimeOnButton
+                        sharedViewModel.isRunning  -> Color.White
+                        else                       -> MaterialTheme.colorScheme.onPrimary
+                    }
             ),
 
             modifier = Modifier
@@ -55,14 +80,14 @@ fun ChronometerScreen(
                 .fillMaxWidth(0.7f),
 
             onClick = {
-            if (sharedViewModel.isRunning) sharedViewModel.pause()
-            else sharedViewModel.start()
-        }) {
+                if (sharedViewModel.isRunning) sharedViewModel.pause()
+                else sharedViewModel.start()
+            }) {
             Text(
                 text = when {
-                sharedViewModel.isRunning -> stringResource(R.string.pause)
-                sharedViewModel.isPaused -> stringResource(R.string.resume)
-                else -> stringResource(R.string.start)
+                    sharedViewModel.isRunning -> stringResource(R.string.pause)
+                    sharedViewModel.isPaused -> stringResource(R.string.resume)
+                    else -> stringResource(R.string.start)
                 },
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 20.sp,
@@ -82,8 +107,8 @@ fun ChronometerScreen(
                 .height(70.dp)
                 .fillMaxWidth(0.7f),
             onClick = {
-            sharedViewModel.reset()
-        }) {
+                sharedViewModel.reset()
+            }) {
             Text(
                 text = stringResource(R.string.reset),
                 style = MaterialTheme.typography.titleLarge.copy(
