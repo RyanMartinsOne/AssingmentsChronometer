@@ -16,4 +16,6 @@
     <string name="assignment_treasures">Treasures from God\'s Word</string>
     <string name="assignment_spiritual_gems">Spiritual Gems</string>
 
+    <string name="comment_count">Up to %d comments (30s)</string>
+
 </resources>

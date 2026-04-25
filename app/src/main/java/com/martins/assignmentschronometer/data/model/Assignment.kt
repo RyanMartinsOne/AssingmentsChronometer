@@ -6,5 +6,6 @@ import androidx.annotation.StringRes
 data class Assignment (
     @param:StringRes val titleRes: Int,
     val durationOnSeconds: Int,
-    @param:DrawableRes val iconRes: Int
+    @param:DrawableRes val iconRes: Int,
+    val showCommentCount: Boolean = false
 )

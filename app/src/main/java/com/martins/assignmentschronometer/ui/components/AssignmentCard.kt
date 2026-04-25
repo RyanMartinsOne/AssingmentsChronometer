@@ -59,7 +59,7 @@ fun AssignmentCard(
             ) {
                 Icon(
                     painter = painterResource(assignment.iconRes),
-                    contentDescription = null,
+                    contentDescription = stringResource(assignment.titleRes),
                     modifier = Modifier.size(40.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )

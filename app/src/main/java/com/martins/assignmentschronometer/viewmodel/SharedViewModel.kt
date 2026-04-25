@@ -41,9 +41,17 @@ class SharedViewModel : ViewModel() {
     val isOverTime: Boolean
         get() = timeLimitOnSeconds in 1..totalTimeOnSeconds
 
-    var selectAssignment by mutableStateOf<Assignment?>(null)
+    var selectedAssignment by mutableStateOf<Assignment?>(null)
         private set
 
+    // Dentro da classe SharedViewModel
+    val commentCount: Int
+        get() {
+            val duration = selectedAssignment?.durationOnSeconds ?: 0
+            val remaining = duration - totalTimeOnSeconds
+
+            return (remaining / 30).coerceAtLeast(0)
+        }
 
     // Chronometer functionalities
     fun start() {
@@ -69,13 +77,13 @@ class SharedViewModel : ViewModel() {
         isPaused = false
         totalTimeOnSeconds = 0
         timeLimitOnSeconds = 0
-        selectAssignment = null
+        selectedAssignment = null
     }
 
     // Assignments functionality
     fun selectAssignment (assignment: Assignment) {
         reset()
-        selectAssignment = assignment
+        selectedAssignment = assignment
         timeLimitOnSeconds = assignment.durationOnSeconds
     }
 }

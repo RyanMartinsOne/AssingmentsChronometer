@@ -31,7 +31,8 @@ private val defaultAssignment = listOf(
     Assignment (
         titleRes = R.string.assignment_spiritual_gems,
         durationOnSeconds = 10 * 60,
-        iconRes = R.drawable.spiritual_gems
+        iconRes = R.drawable.spiritual_gems,
+        showCommentCount = true
     )
 )
 
