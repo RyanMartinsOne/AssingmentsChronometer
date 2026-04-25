@@ -1,4 +1,4 @@
-package com.martins.assignmentschronometer.ui.screens.chronometer
+package com.martins.assignmentschronometer.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -6,13 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.martins.assignmentschronometer.data.model.Assignment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Locale
 
-class ChronometerViewModel : ViewModel() {
+class SharedViewModel : ViewModel() {
 
+    // Chronometer variables
     var totalTimeOnSeconds by mutableIntStateOf(0)
         private set
 
@@ -30,12 +31,21 @@ class ChronometerViewModel : ViewModel() {
             val minutes = (totalTimeOnSeconds % 3600) / 60
             val seconds = totalTimeOnSeconds % 60
 
-            return String.format(
-                Locale.getDefault(),
-                "%02d:%02d:%02d",
-                hours, minutes, seconds)
+            return "%02d:%02d:%02d".format(hours, minutes, seconds)
         }
 
+    // Assignment variables
+    var timeLimitOnSeconds by mutableIntStateOf(0)
+        private set
+
+    val isOverTime: Boolean
+        get() = timeLimitOnSeconds in 1..totalTimeOnSeconds
+
+    var selectAssignment by mutableStateOf<Assignment?>(null)
+        private set
+
+
+    // Chronometer functionalities
     fun start() {
         if (isRunning) return
 
@@ -58,6 +68,14 @@ class ChronometerViewModel : ViewModel() {
         pause()
         isPaused = false
         totalTimeOnSeconds = 0
+        timeLimitOnSeconds = 0
+        selectAssignment = null
+    }
+
+    // Assignments functionality
+    fun selectAssignment (assignment: Assignment) {
+        reset()
+        selectAssignment = assignment
+        timeLimitOnSeconds = assignment.durationOnSeconds
     }
 }
-

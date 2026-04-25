@@ -13,4 +13,9 @@
         <string name="nav_record">Registros</string>
         <string name="nav_settings">Configurações</string>
 
+        <string name="assignment_public_talk">Discurso Público</string>
+        <string name="assignment_watchtower">A Sentinela</string>
+        <string name="assignment_treasures">Tesouros da Palavra de Deus</string>
+        <string name="assignment_spiritual_gems">Joias Espirituais</string>
+
 </resources>

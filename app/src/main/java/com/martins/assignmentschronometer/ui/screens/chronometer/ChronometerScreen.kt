@@ -16,16 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.martins.assignmentschronometer.R
+import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 
 @Composable
-@Preview
 fun ChronometerScreen(
-    viewModel: ChronometerViewModel = viewModel()
+    sharedViewModel: SharedViewModel
 ) {
 
     val googleSans = FontFamily(
@@ -38,7 +36,7 @@ fun ChronometerScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = viewModel.formattedTime,
+            text = sharedViewModel.formattedTime,
             style = MaterialTheme.typography.displayLarge.copy(
                 fontSize = 72.sp
             )
@@ -48,7 +46,7 @@ fun ChronometerScreen(
 
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (viewModel.isRunning) MaterialTheme.colorScheme.error
+                containerColor = if (sharedViewModel.isRunning) MaterialTheme.colorScheme.error
                 else MaterialTheme.colorScheme.primary
             ),
 
@@ -57,13 +55,13 @@ fun ChronometerScreen(
                 .fillMaxWidth(0.7f),
 
             onClick = {
-            if (viewModel.isRunning) viewModel.pause()
-            else viewModel.start()
+            if (sharedViewModel.isRunning) sharedViewModel.pause()
+            else sharedViewModel.start()
         }) {
             Text(
                 text = when {
-                viewModel.isRunning -> stringResource(R.string.pause)
-                viewModel.isPaused -> stringResource(R.string.resume)
+                sharedViewModel.isRunning -> stringResource(R.string.pause)
+                sharedViewModel.isPaused -> stringResource(R.string.resume)
                 else -> stringResource(R.string.start)
                 },
                 style = MaterialTheme.typography.titleLarge.copy(
@@ -84,7 +82,7 @@ fun ChronometerScreen(
                 .height(70.dp)
                 .fillMaxWidth(0.7f),
             onClick = {
-            viewModel.reset()
+            sharedViewModel.reset()
         }) {
             Text(
                 text = stringResource(R.string.reset),

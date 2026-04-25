@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -14,8 +15,12 @@ import androidx.navigation.compose.rememberNavController
 import com.martins.assignmentschronometer.navigation.MainNavigation
 import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
+import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val sharedViewModel: SharedViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,7 +39,8 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         MainNavigation(
                             navController = navController,
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding),
+                            sharedViewModel = sharedViewModel
                         )
                     }
                 }

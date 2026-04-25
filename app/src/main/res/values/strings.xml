@@ -11,4 +11,9 @@
     <string name="nav_record">Record</string>
     <string name="nav_settings">Settings</string>
 
+    <string name="assignment_public_talk">Public Talk</string>
+    <string name="assignment_watchtower">Watchtower Study</string>
+    <string name="assignment_treasures">Treasures from God\'s Word</string>
+    <string name="assignment_spiritual_gems">Spiritual Gems</string>
+
 </resources>
