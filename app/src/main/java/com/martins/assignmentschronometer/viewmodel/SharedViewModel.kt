@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import android.app.Application
+import android.content.Intent
 import androidx.compose.runtime.derivedStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +20,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
-
 
     private val appContext get() = getApplication<Application>()
     // ─── Cronômetro ───────────────────────────────────────────────
@@ -94,9 +94,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         private set
 
     fun selectPartForTiming(part: WeeklyPart) {
-        selectedAssignment = null
-        activePart = part
         reset()
+        activePart = part
     }
 
     fun finishPartAndSaveTime(partId: String) {
@@ -136,18 +135,35 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             val mimeType = appContext.contentResolver.getType(uri)
             if (mimeType != "application/pdf") return@launch
 
-            // Usa extractLines em vez de extractText
             val lines = PdfOcrRepository.extractLines(appContext, uri)
 
-            // Log linha por linha (mantém o debug que você já tem)
-            android.util.Log.d("OCR_RAW", "=== INÍCIO DO TEXTO ===")
-            lines.forEachIndexed { i, line ->
-                android.util.Log.d("OCR_RAW", "[$i] top=${line.top} left=${line.left} '${line.text}'")
-            }
-            android.util.Log.d("OCR_RAW", "=== FIM DO TEXTO ===")
-
-            // Passa as linhas com coordenadas direto pro parser
             weeklyParts = OcrParser.parseCurrentWeek(lines)
         }
+    }
+
+    fun sharePart(part: WeeklyPart) {
+        val totalSec = part.realizedTimeOnSeconds ?: 0
+        val time = "%02d:%02d".format(totalSec / 60, totalSec % 60)
+
+        val delayInfo = part.delayText?.let { "Atraso: *$it*" } ?: ""
+
+        val message = """
+        *${part.title}*
+        ${part.assignees}
+        ${part.room}
+        *$time*
+        $delayInfo
+    """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, message)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        val chooser = Intent.createChooser(intent, "Compartilhar com...")
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        appContext.startActivity(chooser)
     }
 }
