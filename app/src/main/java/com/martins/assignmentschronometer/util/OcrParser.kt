@@ -17,11 +17,13 @@ object OcrParser {
         "Iniciando", "Cultivando", "Explicando", "Fazendo", "Discurso", "Boletim"
     )
 
-    fun parseCurrentWeek(ocrLines: List<OcrLine>): List<WeeklyPart> {
+    fun parseCurrentWeek(
+        ocrLines: List<OcrLine>,
+        today: LocalDate = LocalDate.now()
+    ): List<WeeklyPart> {
         val allParts = parseWithLines(ocrLines)
         if (allParts.isEmpty()) return emptyList()
 
-        val today = LocalDate.now()
         val dateMap = LinkedHashMap<String, LocalDate>()
         allParts.forEach { part ->
             if (!dateMap.containsKey(part.dateText)) {
@@ -99,7 +101,7 @@ object OcrParser {
                 // 2. Não pode estar na lista negra
                 // 3. Não pode ser o próprio título da parte
 
-                var potentialName = txt
+                val potentialName = txt
                     .replace("Salão Principal", "", ignoreCase = true)
                     .replace("Sala Principal", "", ignoreCase = true)
                     .replace("Sala B", "", ignoreCase = true)
