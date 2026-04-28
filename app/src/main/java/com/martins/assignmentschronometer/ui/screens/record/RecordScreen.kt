@@ -184,7 +184,7 @@ fun RecordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                // Fecha o menu ao clicar fora
+
                 .then(
                     if (isMenuExpanded) {
                         Modifier.clickable(
@@ -194,7 +194,7 @@ fun RecordScreen(
                     } else Modifier
                 )
         ) {
-            // Overlay escuro ao abrir o menu — reforça visualmente que está expandido
+
             if (isMenuExpanded) {
                 Box(
                     modifier = Modifier
@@ -216,7 +216,7 @@ fun RecordScreen(
                         .padding(horizontal = 32.dp)
                 )
             } else {
-                // ViewModel já entrega agrupado — Screen só exibe
+
                 val groupedParts = viewModel.groupedWeeklyParts
 
                 LazyColumn(
@@ -249,10 +249,10 @@ fun RecordScreen(
                                     viewModel.selectPartForTiming(part)
                                     onNavigateToChronometer()
                                 },
-                                modifier = Modifier.padding(
-                                    horizontal = 16.dp,
-                                    vertical = 6.dp
-                                )
+                                onShareClick = {
+                                    viewModel.sharePart(part)
+                                },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                             )
                         }
                     }
