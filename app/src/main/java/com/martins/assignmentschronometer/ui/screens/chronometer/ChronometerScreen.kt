@@ -68,18 +68,12 @@ fun ChronometerScreen(sharedViewModel: SharedViewModel) {
                     text = activePart.title,
                     style = MaterialTheme.typography.headlineSmall
                         .copy(fontWeight = FontWeight.Bold),
-                    color = if (sharedViewModel.isOverTime)
-                        chronometerColors.overtimeOnButton
-                    else
-                        MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = activePart.assignees,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (sharedViewModel.isOverTime)
-                        chronometerColors.overtimeOnButton.copy(alpha = 0.8f)
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         } else if (sharedViewModel.selectedAssignment?.showCommentCount == true) {
@@ -101,7 +95,6 @@ fun ChronometerScreen(sharedViewModel: SharedViewModel) {
             )
 
             Spacer(modifier = Modifier.height(80.dp))
-
 
             Button(
                 colors = ButtonDefaults.buttonColors(
