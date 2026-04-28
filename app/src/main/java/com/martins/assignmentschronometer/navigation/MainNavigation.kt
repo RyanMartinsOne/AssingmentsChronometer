@@ -39,7 +39,14 @@ fun MainNavigation(
         }
 
         composable(route = Screen.Record.route) {
-            RecordScreen()
+            RecordScreen(
+                viewModel = sharedViewModel,
+                onNavigateToChronometer = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(route = Screen.Settings.route) {
