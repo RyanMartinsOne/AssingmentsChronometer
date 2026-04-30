@@ -57,23 +57,26 @@ fun WeeklyPartCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // ID (Esquerda)
+
             Box(modifier = Modifier.width(50.dp), contentAlignment = Alignment.Center) {
                 Text(
                     text = part.id,
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography
+                        .headlineMedium
+                        .copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary
                 )
             }
 
-            // Textos (Centro)
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
                     text = part.title,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography
+                        .titleLarge
+                        .copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = "Designado: ${part.assignees}",
@@ -83,7 +86,9 @@ fun WeeklyPartCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = if (part.room == "Sala B") MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.tertiaryContainer,
+                        color = if (part.room == "Sala B")
+                            MaterialTheme.colorScheme.secondaryContainer
+                        else MaterialTheme.colorScheme.tertiaryContainer,
                         shape = MaterialTheme.shapes.extraSmall
                     ) {
                         Text(
@@ -103,14 +108,19 @@ fun WeeklyPartCard(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Realizado: $realizedTimeText",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = if (part.isDelayed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                            style = MaterialTheme.typography
+                                .bodySmall
+                                .copy(fontWeight = FontWeight.Bold),
+                            color = if (part.isDelayed) MaterialTheme.colorScheme.error
+                            else MaterialTheme.colorScheme.primary
                         )
 
                         part.delayText?.let { text ->
                             Text(
                                 text = " ($text)",
-                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                style = MaterialTheme.typography
+                                    .bodySmall
+                                    .copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.error
                             )
                         }

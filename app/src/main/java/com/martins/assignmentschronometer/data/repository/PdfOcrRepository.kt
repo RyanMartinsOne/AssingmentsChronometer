@@ -61,9 +61,4 @@ object PdfOcrRepository {
 
         return allLines.sortedBy { it.top }
     }
-
-    // Mantém compatibilidade com quem ainda usa extractText
-    suspend fun extractText(context: Context, uri: Uri): String {
-        return extractLines(context, uri).joinToString("\n") { it.text }
-    }
 }

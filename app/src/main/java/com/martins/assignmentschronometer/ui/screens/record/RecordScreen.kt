@@ -73,7 +73,6 @@ fun RecordScreen(
         )
     }
 
-    // Processamento de imagem — responsabilidade da UI por depender de lifecycle
     fun processImage(inputImage: InputImage) {
         textRecognizer.process(inputImage)
             .addOnSuccessListener { result ->
@@ -115,11 +114,11 @@ fun RecordScreen(
     }
 
     val cornerPercent by animateIntAsState(
-        targetValue = if (isMenuExpanded) 50 else 28, // 50% = círculo, 28dp = quadrado arredondado
+        targetValue = if (isMenuExpanded) 50 else 28,
         label = "shapeAnimation"
     )
     val rotation by animateFloatAsState(
-        targetValue = if (isMenuExpanded) 45f else 0f, // Gira o + para virar x
+        targetValue = if (isMenuExpanded) 45f else 0f,
         label = "rotationAnimation"
     )
 
@@ -136,14 +135,14 @@ fun RecordScreen(
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(16.dp) // Aumentado para o estilo Drive
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
                 if (revealProgress > 0f) {
                     Column(
                         horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(bottom = 14.dp)
                     ) {
                         MenuOption(
                             "Fotografar programa",
@@ -164,17 +163,16 @@ fun RecordScreen(
                     }
                 }
 
-                // FAB Principal Estilo Drive
                 LargeFloatingActionButton(
                     onClick = { isMenuExpanded = !isMenuExpanded },
-                      shape = RoundedCornerShape(cornerPercent), // Aplica a animação de redondo/quadrado
+                      shape = RoundedCornerShape(cornerPercent),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.add), // Use apenas o 'add'
+                        painter = painterResource(R.drawable.add),
                         contentDescription = "Menu",
                         modifier = Modifier
                             .size(36.dp)
-                            .rotate(rotation) // A rotação faz o + virar o fechar (x)
+                            .rotate(rotation)
                     )
                 }
             }

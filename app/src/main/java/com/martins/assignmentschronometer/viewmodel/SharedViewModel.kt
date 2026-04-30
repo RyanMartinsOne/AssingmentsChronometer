@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext get() = getApplication<Application>()
-    // ─── Cronômetro ───────────────────────────────────────────────
     var totalTimeOnSeconds by mutableIntStateOf(0)
         private set
     var isRunning by mutableStateOf(false)
@@ -89,7 +88,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         selectedAssignment = null
     }
 
-    // ─── Designação ativa no cronômetro ───────────────────────────
     var activePart by mutableStateOf<WeeklyPart?>(null)
         private set
 
@@ -108,11 +106,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         reset()
     }
 
-    // ─── Partes semanais (PDF/OCR) ────────────────────────────────
     var weeklyParts by mutableStateOf<List<WeeklyPart>>(emptyList())
         private set
 
-    // ViewModel agrupa por data — a Screen só consome
     val groupedWeeklyParts: Map<String, List<WeeklyPart>>
         get() = weeklyParts.groupBy { it.dateText }
 
@@ -120,7 +116,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         weeklyParts = OcrParser.parseCurrentWeek(ocrLines)
     }
 
-    // ─── Designação manual (AssignmentScreen) ────────────────────
     var selectedAssignment by mutableStateOf<Assignment?>(null)
         private set
 

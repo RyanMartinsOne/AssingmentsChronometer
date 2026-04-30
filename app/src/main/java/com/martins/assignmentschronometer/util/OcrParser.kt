@@ -10,7 +10,6 @@ object OcrParser {
     private val partDetailRegex = Regex("""^(\d+)\.\s*(.+?)\s*\((\d+)\s*min\)""")
     private val dateRegex = Regex("""(\d{1,2}\s+de\s+\w+\s+de\s+\d{4})""", RegexOption.IGNORE_CASE)
 
-    // Palavras que indicam que o bloco NÃO é o nome de uma pessoa
     private val blackList = listOf(
         "Cântico", "Oração", "Comentários", "TESOUROS", "FAÇA", "NOSSA", "REUNIÃO",
         "Presidente", "Dirigente", "ISAÍAS", "Minutos", "Estudo", "Joias", "Leitura",
@@ -62,7 +61,6 @@ object OcrParser {
         val dateByTop = buildDateByTop(sortedByTop)
         val results = mutableListOf<WeeklyPart>()
 
-        // 2. Variáveis de Estado
         var lastPartId = ""
         var lastPartTitle = ""
         var lastPartTime = 0
@@ -72,7 +70,6 @@ object OcrParser {
             val date = dateByTop(row.first().top)
             val rowFullText = row.joinToString(" ") { it.text }
 
-            // Detecta Nova Parte (ex: 1. Escute...)
             val partMatch = partDetailRegex.find(rowFullText)
             if (partMatch != null) {
                 lastPartId = partMatch.groupValues[1]
@@ -81,18 +78,15 @@ object OcrParser {
                 currentRoom = "Principal"
             }
 
-            // Se encontrar Cântico ou Oração, "fecha" a parte anterior para evitar capturar nomes errados
             if (blackList.any { rowFullText.contains(it, ignoreCase = true) && (it == "Cântico" || it == "Oração") }) {
                 lastPartId = ""
             }
 
             if (lastPartId.isEmpty()) continue
 
-            // Processa cada bloco da linha
             for (item in row) {
                 val txt = item.text.trim()
 
-                // Atualiza a sala se encontrar o marcador
                 if (txt.contains("Sala B", true)) currentRoom = "Sala B"
                 else if (txt.contains("Salão Principal", true) || txt.contains("Sala Principal", true)) currentRoom = "Principal"
 

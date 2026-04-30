@@ -50,9 +50,7 @@ fun AssignmentCard(
                 .padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            /* * A fixed-width container ensures that text content starts at the same
-                  * horizontal position across all list items, creating a consistent visual rhythm.
-                  */
+
             Box(
                 modifier = Modifier.width(80.dp),
                 contentAlignment = Alignment.Center

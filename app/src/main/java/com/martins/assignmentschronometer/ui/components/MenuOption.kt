@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 fun MenuOption(
     text: String,
     iconRes: Int,
-    progress: Float, // O parâmetro deve estar aqui
+    progress: Float,
     onClick: () -> Unit
 ) {
     Surface(
@@ -44,7 +44,6 @@ fun MenuOption(
                         )
                     )
                 }
-                // Movimento sutil de baixo/direita para cima/esquerda
                 translationX = 40f * (1f - progress)
                 translationY = 40f * (1f - progress)
             },
@@ -56,7 +55,7 @@ fun MenuOption(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Icon(painterResource(iconRes), null, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(8.dp))
             Text(text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         }
     }

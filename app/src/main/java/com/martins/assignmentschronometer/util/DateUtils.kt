@@ -10,8 +10,6 @@
         fun parseOcrDate(dateText: String): LocalDate? {
             try {
 
-                // Regex para capturar o último dia do intervalo e o mês
-                // Pega o número antes do "de" e a palavra depois do "de"
                 val regex = Regex("""(\d+)\s+de\s+([a-zA-Z]+)""")
                 val match = regex.find(dateText.lowercase())
 
@@ -21,7 +19,6 @@
 
                     val day = dayStr.toInt()
 
-                    // Mapeia os meses abreviados ou completos para número
                     val month = when {
                         monthStr.startsWith("jan") -> 1
                         monthStr.startsWith("fev") -> 2
@@ -38,7 +35,6 @@
                         else -> return null
                     }
 
-                    // Pega o ano atual (se estivermos em dezembro e a data for janeiro, considera ano que vem)
                     val currentYear = LocalDate.now().year
                     val currentMonth = LocalDate.now().monthValue
 
@@ -49,7 +45,6 @@
                     return LocalDate.of(year, month, day)
                 }
 
-                // Se o OCR vier diferente (ex: "19/01"), tenta fallback simples
                 if (dateText.contains("/")) {
                     val parts = dateText.split("/")
                     if (parts.size >= 2) {
