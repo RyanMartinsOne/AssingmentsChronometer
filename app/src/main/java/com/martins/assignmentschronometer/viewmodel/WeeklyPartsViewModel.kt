@@ -77,4 +77,17 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
             if (it.id == updated.id) updated else it
         }
     }
+
+    fun addManualPart(part: WeeklyPart) {
+        weeklyParts = weeklyParts + part
+    }
+
+    fun saveManualPart(part: WeeklyPart) {
+        val exists = weeklyParts.any { it.id == part.id }
+        if (exists) updatePart(part) else addManualPart(part)
+    }
+
+    fun removePart(id: String) {
+        weeklyParts = weeklyParts.filter { it.id != id }
+    }
 }

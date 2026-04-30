@@ -14,11 +14,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -26,14 +31,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.WeeklyPart
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun WeeklyPartCard(
     part: WeeklyPart,
     onClick: () -> Unit,
     onShareClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    var menuExpanded by remember { mutableStateOf(false) }
+
     val isCompleted = part.realizedTimeOnSeconds != null
     val realizedTimeText = if (isCompleted) {
         val totalSec = part.realizedTimeOnSeconds
@@ -104,7 +116,7 @@ fun WeeklyPartCard(
                     )
                 }
 
-                if (part.realizedTimeOnSeconds != null) {
+                if (isCompleted) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Realizado: $realizedTimeText",
@@ -132,16 +144,67 @@ fun WeeklyPartCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                if (part.realizedTimeOnSeconds != null) {
-                    androidx.compose.material3.IconButton(
-                        onClick = onShareClick,
+                Box {
+                    IconButton(
+                        onClick = { menuExpanded = true },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.share),
-                            contentDescription = "Share",
+                            painter = painterResource(R.drawable.more_vert),
+                            contentDescription = "Opções",
                             modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        if (isCompleted) {
+                            DropdownMenuItem(
+                                text = { Text("Compartilhar") },
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.share),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                onClick = {
+                                    menuExpanded = false
+                                    onShareClick()
+                                }
+                            )
+                        }
+                        DropdownMenuItem(
+                            text = { Text("Editar") },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.edit),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onEditClick()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Remover", color = MaterialTheme.colorScheme.error) },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.delete),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onDeleteClick()
+                            }
                         )
                     }
                 }
@@ -155,7 +218,7 @@ fun WeeklyPartCard(
                         else MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text(if (part.realizedTimeOnSeconds != null) "Refazer" else "Iniciar")
+                    Text(if (isCompleted) "Refazer" else "Iniciar")
                 }
             }
         }

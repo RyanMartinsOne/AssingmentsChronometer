@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.google.mlkit.vision.common.InputImage
 import com.martins.assignmentschronometer.R
+import com.martins.assignmentschronometer.data.model.WeeklyPart
+import com.martins.assignmentschronometer.ui.components.ManualWeeklyPartDialog
 import com.martins.assignmentschronometer.ui.components.MenuOption
 import com.martins.assignmentschronometer.ui.components.WeeklyPartCard
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
@@ -59,6 +61,9 @@ fun RecordScreen(
 ) {
     val context = LocalContext.current
     var isMenuExpanded by remember { mutableStateOf(false) }
+
+    var showingAddDialog by remember { mutableStateOf(false) }
+    var partToEdit by remember { mutableStateOf<WeeklyPart?>(null) }
 
 
     val imageFile = remember { File(context.cacheDir, "camera_capture.jpg") }
@@ -138,6 +143,14 @@ fun RecordScreen(
                         modifier = Modifier.padding(bottom = 14.dp)
                     ) {
                         MenuOption(
+                            text = "Adicionar manualmente",
+                            iconRes = R.drawable.manual_add,
+                            progress = revealProgress
+                        ) {
+                            showingAddDialog = true
+                            isMenuExpanded = false
+                        }
+                        MenuOption(
                             "Fotografar programa",
                             R.drawable.camera,
                             progress = revealProgress)
@@ -170,6 +183,8 @@ fun RecordScreen(
                 }
             }
         }
+
+
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -243,12 +258,32 @@ fun RecordScreen(
                                 onShareClick = {
                                     viewModel.requestShare(part)
                                 },
+                                onEditClick = {
+                                    partToEdit = part
+                                },
+                                onDeleteClick = {
+                                    viewModel.removePart(part.id)
+                                },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                             )
                         }
                     }
                 }
             }
+        }
+        if (showingAddDialog || partToEdit != null) {
+            ManualWeeklyPartDialog(
+                partToEdit = partToEdit,
+                onDismiss = {
+                    showingAddDialog = false
+                    partToEdit = null
+                },
+                onConfirm = { part ->
+                    viewModel.saveManualPart(part)
+                    showingAddDialog = false
+                    partToEdit = null
+                }
+            )
         }
     }
 }
