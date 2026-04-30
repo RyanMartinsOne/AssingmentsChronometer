@@ -24,39 +24,50 @@ object PdfOcrRepository {
         val allLines = mutableListOf<OcrLine>()
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-        context.contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
-            val renderer = PdfRenderer(pfd)
-            var pageOffsetY = 0
+        recognizer.use { recognizer ->
+            context.contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
+                PdfRenderer(pfd).use { renderer ->
+                    var pageOffsetY = 0
 
-            for (i in 0 until renderer.pageCount) {
-                val page = renderer.openPage(i)
-                val bitmap = createBitmap(page.width * 2, page.height * 2)
-                bitmap.eraseColor(Color.WHITE)
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                page.close()
+                    for (i in 0 until renderer.pageCount) {
+                        val page = renderer.openPage(i)
+                        val bitmap = createBitmap(page.width * 2, page.height * 2)
 
-                val image = InputImage.fromBitmap(bitmap, 0)
-                val result = recognizer.process(image).await()
-
-                for (block in result.textBlocks) {
-                    for (line in block.lines) {
-                        val box = line.boundingBox ?: continue
-                        allLines.add(
-                            OcrLine(
-                                text      = line.text.trim(),
-                                top       = box.top + pageOffsetY,
-                                left      = box.left,
-                                right     = box.right,
-                                pageIndex = i
+                        try {
+                            bitmap.eraseColor(Color.WHITE)
+                            page.render(
+                                bitmap,
+                                null,
+                                null,
+                                PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
                             )
-                        )
+
+                            val image = InputImage.fromBitmap(bitmap, 0)
+                            val result = recognizer.process(image).await()
+
+                            for (block in result.textBlocks) {
+                                for (line in block.lines) {
+                                    val box = line.boundingBox ?: continue
+                                    allLines.add(
+                                        OcrLine(
+                                            text = line.text.trim(),
+                                            top = box.top + pageOffsetY,
+                                            left = box.left,
+                                            right = box.right,
+                                            pageIndex = i
+                                        )
+                                    )
+                                }
+                            }
+
+                            pageOffsetY += bitmap.height
+                        } finally {
+                            page.close()
+                            bitmap.recycle()
+                        }
                     }
                 }
-
-                pageOffsetY += bitmap.height
             }
-
-            renderer.close()
         }
 
         return allLines.sortedBy { it.top }

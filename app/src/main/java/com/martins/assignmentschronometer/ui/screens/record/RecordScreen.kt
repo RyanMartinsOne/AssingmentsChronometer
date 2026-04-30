@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,27 +43,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.martins.assignmentschronometer.R
-import com.martins.assignmentschronometer.data.repository.OcrLine
 import com.martins.assignmentschronometer.ui.components.MenuOption
 import com.martins.assignmentschronometer.ui.components.WeeklyPartCard
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
+import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecordScreen(
-    viewModel: SharedViewModel,
+    viewModel: WeeklyPartsViewModel,
+    sharedViewModel: SharedViewModel,
     onNavigateToChronometer: () -> Unit
 ) {
     val context = LocalContext.current
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    val textRecognizer = remember {
-        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-    }
 
     val imageFile = remember { File(context.cacheDir, "camera_capture.jpg") }
     val imageUri: Uri = remember {
@@ -73,30 +70,11 @@ fun RecordScreen(
         )
     }
 
-    fun processImage(inputImage: InputImage) {
-        textRecognizer.process(inputImage)
-            .addOnSuccessListener { result ->
-                val ocrLines = result.textBlocks
-                    .flatMap { block -> block.lines }
-                    .map { line ->
-                        val box = line.boundingBox
-                        OcrLine(
-                            text = line.text,
-                            top = box?.top ?: 0,
-                            left = box?.left ?: 0,
-                            right = box?.right ?: 0,
-                            pageIndex = 0
-                        )
-                    }
-                viewModel.processExtractedText(ocrLines)
-            }
-            .addOnFailureListener { it.printStackTrace() }
-    }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) processImage(InputImage.fromFilePath(context, imageUri))
+        if (success) viewModel.processImageOcr(InputImage.fromFilePath(context, imageUri))
     }
 
     val fileLauncher = rememberLauncherForActivityResult(
@@ -107,8 +85,7 @@ fun RecordScreen(
             if (mimeType == "application/pdf") {
                 viewModel.processPdfUri(it)   //
             } else {
-                val img = InputImage.fromFilePath(context, it)
-                processImage(img)
+                viewModel.processImageOcr(InputImage.fromFilePath(context, it))
             }
         }
     }
@@ -130,6 +107,22 @@ fun RecordScreen(
         ),
         label = "reveal"
     )
+
+    val shareText = viewModel.shareText
+
+    LaunchedEffect(shareText) {
+        shareText?.let { text ->
+            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(android.content.Intent.EXTRA_TEXT, text)
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(
+                android.content.Intent.createChooser(intent, "Compartilhar com...")
+            )
+            viewModel.onShareHandled()
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -244,11 +237,11 @@ fun RecordScreen(
                             WeeklyPartCard(
                                 part = part,
                                 onClick = {
-                                    viewModel.selectPartForTiming(part)
+                                    sharedViewModel.selectPartForTiming(part)
                                     onNavigateToChronometer()
                                 },
                                 onShareClick = {
-                                    viewModel.sharePart(part)
+                                    viewModel.requestShare(part)
                                 },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                             )

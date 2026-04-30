@@ -16,10 +16,12 @@ import com.martins.assignmentschronometer.navigation.MainNavigation
 import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
+import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val sharedViewModel: SharedViewModel by viewModels()
+    private val weeklyPartsViewModel: WeeklyPartsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,8 @@ class MainActivity : ComponentActivity() {
                         MainNavigation(
                             navController = navController,
                             modifier = Modifier.padding(innerPadding),
-                            sharedViewModel = sharedViewModel
+                            sharedViewModel = sharedViewModel,
+                            weeklyPartsViewModel = weeklyPartsViewModel
                         )
                     }
                 }

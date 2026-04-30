@@ -10,12 +10,14 @@ import com.martins.assignmentschronometer.ui.screens.chronometer.ChronometerScre
 import com.martins.assignmentschronometer.ui.screens.record.RecordScreen
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsScreen
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
+import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
 @Composable
 fun MainNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    weeklyPartsViewModel: WeeklyPartsViewModel
     ) {
 
     NavHost(
@@ -25,7 +27,10 @@ fun MainNavigation(
     ) {
 
         composable(route = Screen.Home.route) {
-            ChronometerScreen(sharedViewModel)
+            ChronometerScreen(
+                sharedViewModel,
+                weeklyPartsViewModel
+            )
         }
 
         composable(route = Screen.Assignments.route) {
@@ -40,7 +45,8 @@ fun MainNavigation(
 
         composable(route = Screen.Record.route) {
             RecordScreen(
-                viewModel = sharedViewModel,
+                viewModel = weeklyPartsViewModel,
+                sharedViewModel = sharedViewModel,
                 onNavigateToChronometer = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }

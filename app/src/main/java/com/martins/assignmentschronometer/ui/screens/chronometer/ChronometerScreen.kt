@@ -33,11 +33,15 @@ import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.ui.components.CommentCountTag
 import com.martins.assignmentschronometer.ui.theme.LocalChronometerColors
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
+import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
 private val GoogleSans = FontFamily(Font(R.font.googlesans_regular))
 
 @Composable
-fun ChronometerScreen(sharedViewModel: SharedViewModel) {
+fun ChronometerScreen(
+    sharedViewModel: SharedViewModel,
+    weeklyPartsViewModel: WeeklyPartsViewModel
+) {
     val chronometerColors = LocalChronometerColors.current
     var showSaveDialog by remember { mutableStateOf(false) }
     val activePart = sharedViewModel.activePart
@@ -167,7 +171,11 @@ fun ChronometerScreen(sharedViewModel: SharedViewModel) {
                 onDismissRequest = { showSaveDialog = false },
                 confirmButton = {
                     TextButton(onClick = {
-                        activePart?.let { sharedViewModel.finishPartAndSaveTime(it.id) }
+                        activePart?.let {
+                            sharedViewModel.finishPart(it.id, it.room) { finishedPart ->
+                                weeklyPartsViewModel.updatePart(finishedPart)
+                            }
+                        }
                         showSaveDialog = false
                     }) {
                         Text("Salvar e Finalizar", fontWeight = FontWeight.Bold)
