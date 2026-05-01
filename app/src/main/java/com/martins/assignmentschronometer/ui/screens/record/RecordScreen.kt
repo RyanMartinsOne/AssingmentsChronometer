@@ -160,7 +160,7 @@ fun RecordScreen(
                         }
                         MenuOption(
                             "Importar PDF ou imagem",
-                            R.drawable.pdf,
+                            R.drawable.upload_file,
                             progress = revealProgress)
                         {
                             fileLauncher.launch("*/*")
@@ -262,7 +262,7 @@ fun RecordScreen(
                                     partToEdit = part
                                 },
                                 onDeleteClick = {
-                                    viewModel.removePart(part.id)
+                                    viewModel.removePart(part.uid)
                                 },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                             )
@@ -279,7 +279,7 @@ fun RecordScreen(
                     partToEdit = null
                 },
                 onConfirm = { part ->
-                    viewModel.saveManualPart(part)
+                    viewModel.saveManualPart(part, originalUid = partToEdit?.uid)
                     showingAddDialog = false
                     partToEdit = null
                 }

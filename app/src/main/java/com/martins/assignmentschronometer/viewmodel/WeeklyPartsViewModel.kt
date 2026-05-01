@@ -22,7 +22,9 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         private set
 
     val groupedWeeklyParts: Map<String, List<WeeklyPart>>
-        get() = weeklyParts.groupBy { it.dateText }
+        get() = weeklyParts
+            .sortedBy { it.id.toIntOrNull() ?: Int.MAX_VALUE }
+            .groupBy { it.dateText }
 
     var shareText by mutableStateOf<String?>(null)
         private set
@@ -82,12 +84,16 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         weeklyParts = weeklyParts + part
     }
 
-    fun saveManualPart(part: WeeklyPart) {
-        val exists = weeklyParts.any { it.id == part.id }
-        if (exists) updatePart(part) else addManualPart(part)
+    fun removePart(uid: String) {
+        weeklyParts = weeklyParts.filter { it.uid != uid }
     }
 
-    fun removePart(id: String) {
-        weeklyParts = weeklyParts.filter { it.id != id }
+    fun saveManualPart(part: WeeklyPart, originalUid: String? = null) {
+        val exists = weeklyParts.any { it.uid == originalUid }
+        if (exists) {
+            weeklyParts = weeklyParts.map { if (it.uid == originalUid) part else it }
+        } else {
+            addManualPart(part)
+        }
     }
 }
