@@ -1,6 +1,7 @@
 package com.martins.assignmentschronometer.data.model
 
 data class WeeklyPart(
+    val uid: String = java.util.UUID.randomUUID().toString(),
     val id: String,
     val title: String,
     val durationInMinutes: Int,
