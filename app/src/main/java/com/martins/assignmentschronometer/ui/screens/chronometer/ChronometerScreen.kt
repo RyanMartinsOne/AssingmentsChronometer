@@ -172,7 +172,7 @@ fun ChronometerScreen(
                 confirmButton = {
                     TextButton(onClick = {
                         activePart?.let {
-                            sharedViewModel.finishPart(it.id, it.room) { finishedPart ->
+                            sharedViewModel.finishPart(it.uid) { finishedPart ->
                                 weeklyPartsViewModel.updatePart(finishedPart)
                             }
                         }

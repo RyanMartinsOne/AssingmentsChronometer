@@ -76,7 +76,7 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun updatePart(updated: WeeklyPart) {
         weeklyParts = weeklyParts.map {
-            if (it.id == updated.id) updated else it
+            if (it.uid == updated.uid) updated else it
         }
     }
 
