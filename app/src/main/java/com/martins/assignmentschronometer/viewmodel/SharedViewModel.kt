@@ -95,9 +95,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         selectedAssignment = assignment
     }
 
-    fun finishPart(partId: String, room: String?, onSave: (WeeklyPart) -> Unit) {
+    fun finishPart(uid: String, onSave: (WeeklyPart) -> Unit) {
         val finished = activePart?.copy(realizedTimeOnSeconds = totalTimeOnSeconds)
-        if (finished != null && finished.id == partId && finished.room == room) {
+        if (finished != null && finished.uid == uid) {
             onSave(finished)
         }
         reset()
