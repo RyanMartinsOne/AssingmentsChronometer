@@ -1,5 +1,7 @@
 package com.martins.assignmentschronometer.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -23,7 +25,9 @@ fun MainNavigation(
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
     ) {
 
         composable(route = Screen.Home.route) {
@@ -37,8 +41,8 @@ fun MainNavigation(
             AssignmentsScreen(
                 onAssignmentClick = { assignment ->
                     sharedViewModel.selectAssignment(assignment)
-                    sharedViewModel.start()
                     navController.navigate(Screen.Home.route)
+                    sharedViewModel.start()
                 }
             )
         }

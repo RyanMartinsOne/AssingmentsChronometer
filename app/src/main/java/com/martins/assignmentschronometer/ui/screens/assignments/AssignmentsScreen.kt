@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,17 +42,18 @@ fun AssignmentsScreen(
     assignments: List<Assignment> = defaultAssignment,
     onAssignmentClick: (Assignment) -> Unit
 ) {
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(assignments, key = { it.titleRes }) { assignment ->
-            AssignmentCard(
-                assignment = assignment,
-                onClick = { onAssignmentClick(assignment) }
-            )
+    Surface(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(assignments, key = { it.titleRes }) { assignment ->
+                AssignmentCard(
+                    assignment = assignment,
+                    onClick = { onAssignmentClick(assignment) }
+                )
+            }
         }
     }
 }
