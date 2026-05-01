@@ -119,7 +119,12 @@ fun ManualWeeklyPartDialog(
                 }
                 OutlinedTextField(
                     value = duration,
-                    onValueChange = { duration = it }, //TODO limitar a 60 min
+                    onValueChange = { input ->
+                        val number = input.toIntOrNull()
+                        if (input.isEmpty() || (number != null && number <= 60)) {
+                            duration = input
+                        }
+                    },
                     label = { Text("Duração (minutos)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
