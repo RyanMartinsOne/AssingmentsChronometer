@@ -6,24 +6,17 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 
 class OverlayLifecycleOwner : LifecycleOwner, SavedStateRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val savedStateController = SavedStateRegistryController.create(this)
 
-    // Coroutine scope que mantém o Recomposer vivo
-    val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
     override val lifecycle: Lifecycle
-        get() = lifecycleRegistry
+    get() = lifecycleRegistry
 
     override val savedStateRegistry: SavedStateRegistry
-        get() = savedStateController.savedStateRegistry
+    get() = savedStateController.savedStateRegistry
 
     fun start() {
         savedStateController.performRestore(null)
@@ -37,6 +30,5 @@ class OverlayLifecycleOwner : LifecycleOwner, SavedStateRegistryOwner {
 
     fun destroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-        coroutineScope.cancel()
     }
 }

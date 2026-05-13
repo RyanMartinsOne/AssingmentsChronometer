@@ -20,6 +20,7 @@ import com.martins.assignmentschronometer.ui.screens.chronometer.ChronometerOver
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class ChronometerOverlayService : Service() {
@@ -27,6 +28,8 @@ class ChronometerOverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
     private val lifecycleOwner = OverlayLifecycleOwner()
+    private lateinit var recomposer: Recomposer
+    private lateinit var recomposerScope: CoroutineScope
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -58,8 +61,9 @@ class ChronometerOverlayService : Service() {
 
         val sharedViewModel = (application as App).sharedViewModel
         val coroutineContext = AndroidUiDispatcher.CurrentThread
-        val recomposerScope = CoroutineScope(SupervisorJob() + coroutineContext)
-        val recomposer = Recomposer(coroutineContext)
+
+        recomposerScope = CoroutineScope(SupervisorJob() + coroutineContext)
+        recomposer = Recomposer(coroutineContext)
 
         recomposerScope.launch {
             recomposer.runRecomposeAndApplyChanges()
@@ -94,6 +98,8 @@ class ChronometerOverlayService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         lifecycleOwner.destroy()
+        recomposer.cancel()
+        recomposerScope.cancel()
         overlayView?.let { windowManager.removeView(it) }
         overlayView = null
     }

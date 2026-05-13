@@ -38,7 +38,10 @@ fun ChronometerOverlayRoute(
             if (sharedViewModel.isRunning) sharedViewModel.pause() else sharedViewModel.start()
         },
         onReset = { sharedViewModel.resetOnOverlay() },
-        onClose = onClose
+        onClose = {
+            sharedViewModel.reset()
+            onClose()
+        }
     )
 }
 
