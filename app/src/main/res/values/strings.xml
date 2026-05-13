@@ -17,5 +17,6 @@
     <string name="assignment_spiritual_gems">Spiritual Gems</string>
 
     <string name="comment_count">Up to %d comments (30s)</string>
+    <string name="comment_count_overlay">Up to %d comments</string>
 
 </resources>

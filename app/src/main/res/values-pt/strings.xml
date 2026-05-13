@@ -19,5 +19,6 @@
         <string name="assignment_spiritual_gems">Joias Espirituais</string>
 
         <string name="comment_count">Até %d comentários (30s)</string>
+        <string name="comment_count_overlay">Até %d comentários</string>
 
 </resources>

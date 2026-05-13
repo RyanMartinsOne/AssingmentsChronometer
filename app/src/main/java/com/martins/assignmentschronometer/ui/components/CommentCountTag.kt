@@ -16,34 +16,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.martins.assignmentschronometer.R
 
 @Composable
 fun CommentCountTag(
     count: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isCompact: Boolean = false
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-        shape = RoundedCornerShape(18.dp),
-        modifier = modifier
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp)
+    if (count > 0) {
+        Surface(
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+            shape = RoundedCornerShape(if (isCompact) 12.dp else 18.dp),
+            modifier = modifier
         ) {
-            Icon(
-                painter = painterResource(R.drawable.raised_hand),
-                contentDescription = null,
-                modifier = Modifier.size(30.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(R.string.comment_count, count),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(
+                    horizontal = if (isCompact) 8.dp else 18.dp,
+                    vertical = if (isCompact) 4.dp else 14.dp
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.raised_hand),
+                    contentDescription = null,
+                    modifier = Modifier.size(if (isCompact) 16.dp else 30.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+
+                Spacer(modifier = Modifier.width(if (isCompact) 4.dp else 8.dp))
+
+                Text(
+                    text = if (isCompact)
+                        stringResource(R.string.comment_count_overlay, count)
+                    else
+                        stringResource(R.string.comment_count, count),
+                    style = if (isCompact)
+                        MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp)
+                    else
+                        MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }
