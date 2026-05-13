@@ -122,4 +122,12 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
         reset()
     }
+
+    fun savePartTimeAndResetForOverlay(onSave: (WeeklyPart) -> Unit) {
+        val finished = activePart?.copy(realizedTimeOnSeconds = totalTimeOnSeconds)
+        if (finished != null) {
+            onSave(finished)
+        }
+        reset()
+    }
 }

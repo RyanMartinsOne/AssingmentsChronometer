@@ -20,11 +20,13 @@ import androidx.compose.ui.unit.sp
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.ui.components.CommentCountTag
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
+import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
 @Composable
 fun ChronometerOverlayRoute(
     sharedViewModel: SharedViewModel,
     onDrag: (dx: Float, dy: Float) -> Unit,
+    weeklyPartsViewModel: WeeklyPartsViewModel,
     onClose: () -> Unit
 ) {
     ChronometerOverlayScreen(
@@ -39,7 +41,13 @@ fun ChronometerOverlayRoute(
         },
         onReset = { sharedViewModel.resetOnOverlay() },
         onClose = {
-            sharedViewModel.reset()
+            if (sharedViewModel.activePart != null) {
+                sharedViewModel.savePartTimeAndResetForOverlay { updatedPart ->
+                    weeklyPartsViewModel.updatePart(updatedPart)
+                }
+            } else {
+                sharedViewModel.reset()
+            }
             onClose()
         }
     )

@@ -60,8 +60,9 @@ class ChronometerOverlayService : Service() {
         }
 
         val sharedViewModel = (application as App).sharedViewModel
-        val coroutineContext = AndroidUiDispatcher.CurrentThread
+        val weeklyPartsViewModel = (application as App).weeklyPartsViewModel
 
+        val coroutineContext = AndroidUiDispatcher.CurrentThread
         recomposerScope = CoroutineScope(SupervisorJob() + coroutineContext)
         recomposer = Recomposer(coroutineContext)
 
@@ -79,6 +80,7 @@ class ChronometerOverlayService : Service() {
                 AssignmentsChronometerTheme {
                     ChronometerOverlayRoute(
                         sharedViewModel = sharedViewModel,
+                        weeklyPartsViewModel = weeklyPartsViewModel,
                         onDrag = { dx, dy ->
                             params.x += dx.toInt()
                             params.y += dy.toInt()

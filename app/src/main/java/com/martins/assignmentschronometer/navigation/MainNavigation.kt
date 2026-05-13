@@ -1,10 +1,14 @@
 package com.martins.assignmentschronometer.navigation
 
 import android.content.Intent
+import android.provider.Settings as AndroidSettings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,10 +19,6 @@ import com.martins.assignmentschronometer.ui.screens.record.RecordScreen
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsScreen
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
-import android.provider.Settings as AndroidSettings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun MainNavigation(
@@ -26,8 +26,7 @@ fun MainNavigation(
     modifier: Modifier = Modifier,
     sharedViewModel: SharedViewModel,
     weeklyPartsViewModel: WeeklyPartsViewModel
-    ) {
-
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
