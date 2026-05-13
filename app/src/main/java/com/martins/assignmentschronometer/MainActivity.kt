@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.martins.assignmentschronometer.navigation.MainNavigation
+import com.martins.assignmentschronometer.overlay.ChronometerOverlayService
 import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel

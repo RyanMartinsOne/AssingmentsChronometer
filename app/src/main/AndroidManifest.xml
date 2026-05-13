@@ -30,7 +30,7 @@
         </activity>
 
         <service
-            android:name=".ChronometerOverlayService"
+            android:name=".overlay.ChronometerOverlayService"
             android:exported="false" />
 
         <provider

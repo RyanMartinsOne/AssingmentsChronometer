@@ -1,4 +1,4 @@
-package com.martins.assignmentschronometer
+package com.martins.assignmentschronometer.overlay
 
 import android.app.Service
 import android.content.Intent
@@ -6,6 +6,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import androidx.compose.runtime.Recomposer
 import androidx.compose.ui.platform.AndroidUiDispatcher
@@ -14,6 +15,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.compositionContext
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.martins.assignmentschronometer.App
 import com.martins.assignmentschronometer.ui.screens.chronometer.ChronometerOverlayRoute
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +25,7 @@ import kotlinx.coroutines.launch
 class ChronometerOverlayService : Service() {
 
     private lateinit var windowManager: WindowManager
-    private var overlayView: android.view.View? = null
+    private var overlayView: View? = null
     private val lifecycleOwner = OverlayLifecycleOwner()
 
     override fun onBind(intent: Intent?): IBinder? = null

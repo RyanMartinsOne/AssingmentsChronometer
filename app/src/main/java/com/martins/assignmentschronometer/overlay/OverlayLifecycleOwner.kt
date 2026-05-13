@@ -1,4 +1,4 @@
-package com.martins.assignmentschronometer
+package com.martins.assignmentschronometer.overlay
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
