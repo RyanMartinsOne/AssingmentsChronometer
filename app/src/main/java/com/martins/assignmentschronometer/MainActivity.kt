@@ -1,10 +1,11 @@
 package com.martins.assignmentschronometer
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -17,11 +18,16 @@ import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
+import kotlin.jvm.java
 
 class MainActivity : ComponentActivity() {
 
-    private val sharedViewModel: SharedViewModel by viewModels()
-    private val weeklyPartsViewModel: WeeklyPartsViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by lazy {
+        (application as App).sharedViewModel
+    }
+    private val weeklyPartsViewModel: WeeklyPartsViewModel by lazy {
+        (application as App).weeklyPartsViewModel
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,5 +55,29 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (sharedViewModel.isRunning) {
+            showOverlay()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideOverlay()
+    }
+
+    private fun showOverlay() {
+        if (Settings.canDrawOverlays(this)) {
+            val intent = Intent(this, ChronometerOverlayService::class.java)
+            startService(intent)
+        }
+    }
+
+    private fun hideOverlay() {
+        val intent = Intent(this, ChronometerOverlayService::class.java)
+        stopService(intent)
     }
 }

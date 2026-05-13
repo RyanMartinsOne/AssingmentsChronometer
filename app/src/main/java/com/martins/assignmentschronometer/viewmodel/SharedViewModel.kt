@@ -26,6 +26,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     private var timerJob: Job? = null
 
+    var onTimerStarted: (() -> Unit)? = null
+
     val commentCount: Int by derivedStateOf {
         val duration = selectedAssignment?.durationOnSeconds ?: 0
         val remaining = duration - totalTimeOnSeconds
@@ -54,6 +56,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         if (isRunning) return
         isRunning = true
         isPaused = false
+
+        onTimerStarted?.invoke()
+
         timerJob = viewModelScope.launch {
             while (isRunning) {
                 delay(1000L)
@@ -75,6 +80,13 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         timerJob?.cancel()
         activePart = null
         selectedAssignment = null
+    }
+
+    fun resetOnOverlay() {
+        isRunning = false
+        isPaused = false
+        totalTimeOnSeconds = 0
+        timerJob?.cancel()
     }
 
     // ─── Designação ativa ─────────────────────────────────────────
