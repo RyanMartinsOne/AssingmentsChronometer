@@ -16,12 +16,16 @@ import androidx.compose.ui.platform.compositionContext
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.martins.assignmentschronometer.App
+import com.martins.assignmentschronometer.data.repository.SettingsRepository
 import com.martins.assignmentschronometer.ui.screens.chronometer.ChronometerOverlayRoute
+import com.martins.assignmentschronometer.ui.screens.chronometer.overlayWidthForScale
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ChronometerOverlayService : Service() {
 
@@ -42,8 +46,16 @@ class ChronometerOverlayService : Service() {
     private fun showOverlayView() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
+        val settingsRepository = SettingsRepository(applicationContext)
+        val settings = runBlocking {
+            settingsRepository.settingsFlow.first()
+        }
+
+        val overlayWidthDp = overlayWidthForScale(settings.overlayScaleX)
+        val overlayWidthPx = (overlayWidthDp.value * resources.displayMetrics.density).toInt()
+
         val params = WindowManager.LayoutParams(
-            (160 * resources.displayMetrics.density).toInt(),
+            overlayWidthPx,
             WindowManager.LayoutParams.WRAP_CONTENT,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -86,7 +98,9 @@ class ChronometerOverlayService : Service() {
                             params.y += dy.toInt()
                             windowManager.updateViewLayout(this@apply, params)
                         },
-                        onClose = { stopSelf() }
+                        onClose = { stopSelf() },
+                        overlayWidth = overlayWidthDp,
+                        verticalScale = settings.overlayScaleY
                     )
                 }
             }

@@ -23,42 +23,82 @@ import com.martins.assignmentschronometer.R
 fun CommentCountTag(
     count: Int,
     modifier: Modifier = Modifier,
-    isCompact: Boolean = false
+    isCompact: Boolean = false,
+    scale: Float = 1f
 ) {
-    if (count > 0) {
-        Surface(
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-            shape = RoundedCornerShape(if (isCompact) 12.dp else 18.dp),
-            modifier = modifier
+    if (count <= 0) return
+
+    val safeScale = scale.coerceIn(0.85f, 1.20f)
+
+    val cornerRadius = if (isCompact) {
+        (12f * safeScale).dp
+    } else {
+        (18f * safeScale).dp
+    }
+
+    val horizontalPadding = if (isCompact) {
+        (8f * safeScale).dp
+    } else {
+        (18f * safeScale).dp
+    }
+
+    val verticalPadding = if (isCompact) {
+        (4f * safeScale).dp
+    } else {
+        (14f * safeScale).dp
+    }
+
+    val iconSize = if (isCompact) {
+        (16f * safeScale).dp
+    } else {
+        (30f * safeScale).dp
+    }
+
+    val spacerWidth = if (isCompact) {
+        (4f * safeScale).dp
+    } else {
+        (8f * safeScale).dp
+    }
+
+    val compactFontSize = (12f * safeScale).sp
+
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+        shape = RoundedCornerShape(cornerRadius),
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(
+                horizontal = horizontalPadding,
+                vertical = verticalPadding
+            )
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(
-                    horizontal = if (isCompact) 8.dp else 18.dp,
-                    vertical = if (isCompact) 4.dp else 14.dp
-                )
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.raised_hand),
-                    contentDescription = null,
-                    modifier = Modifier.size(if (isCompact) 16.dp else 30.dp),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+            Icon(
+                painter = painterResource(R.drawable.raised_hand),
+                contentDescription = null,
+                modifier = Modifier.size(iconSize),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
 
-                Spacer(modifier = Modifier.width(if (isCompact) 4.dp else 8.dp))
+            Spacer(modifier = Modifier.width(spacerWidth))
 
-                Text(
-                    text = if (isCompact)
-                        stringResource(R.string.comment_count_overlay, count)
-                    else
-                        stringResource(R.string.comment_count, count),
-                    style = if (isCompact)
-                        MaterialTheme.typography.labelMedium.copy(fontSize = 12.sp)
-                    else
-                        MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+            Text(
+                text = if (isCompact) {
+                    stringResource(R.string.comment_count_overlay, count)
+                } else {
+                    stringResource(R.string.comment_count, count)
+                },
+                style = if (isCompact) {
+                    MaterialTheme.typography.labelMedium.copy(fontSize = compactFontSize)
+                } else {
+                    MaterialTheme.typography.titleLarge.copy(
+                        fontSize = (MaterialTheme.typography.titleLarge.fontSize.value * safeScale).sp
+                    )
+                },
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                maxLines = 1
+            )
         }
     }
 }

@@ -1,7 +1,14 @@
 package com.martins.assignmentschronometer.ui.screens.chronometer
 
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.martins.assignmentschronometer.R
@@ -22,12 +31,22 @@ import com.martins.assignmentschronometer.ui.components.CommentCountTag
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
+private val OverlayBaseWidth = 192.dp
+private val OverlayMinWidth = 168.dp
+
+fun overlayWidthForScale(scaleX: Float): Dp {
+    val scaled = OverlayBaseWidth * scaleX
+    return if (scaled < OverlayMinWidth) OverlayMinWidth else scaled
+}
+
 @Composable
 fun ChronometerOverlayRoute(
     sharedViewModel: SharedViewModel,
     onDrag: (dx: Float, dy: Float) -> Unit,
     weeklyPartsViewModel: WeeklyPartsViewModel,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    overlayWidth: Dp = OverlayBaseWidth,
+    verticalScale: Float = 1f
 ) {
     ChronometerOverlayScreen(
         time = sharedViewModel.formattedTime,
@@ -37,7 +56,11 @@ fun ChronometerOverlayRoute(
         isRunning = sharedViewModel.isRunning,
         onDrag = onDrag,
         onToggleTimer = {
-            if (sharedViewModel.isRunning) sharedViewModel.pause() else sharedViewModel.start()
+            if (sharedViewModel.isRunning) {
+                sharedViewModel.pause()
+            } else {
+                sharedViewModel.start()
+            }
         },
         onReset = { sharedViewModel.resetOnOverlay() },
         onClose = {
@@ -49,7 +72,9 @@ fun ChronometerOverlayRoute(
                 sharedViewModel.reset()
             }
             onClose()
-        }
+        },
+        overlayWidth = overlayWidth,
+        verticalScale = verticalScale
     )
 }
 
@@ -63,14 +88,32 @@ fun ChronometerOverlayScreen(
     onDrag: (dx: Float, dy: Float) -> Unit,
     onToggleTimer: () -> Unit,
     onReset: () -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    overlayWidth: Dp = OverlayBaseWidth,
+    verticalScale: Float = 1f
 ) {
-    val bgColor = if (isOverTime) Color(0xCCB00020) else MaterialTheme.colorScheme.surfaceContainer
-    val shape = RoundedCornerShape(16.dp)
+    val bgColor = if (isOverTime) {
+        Color(0xCCB00020)
+    } else {
+        MaterialTheme.colorScheme.surfaceContainer
+    }
+
+    val safeVerticalScale = verticalScale.coerceIn(0.83f, 1.20f)
+
+    val cornerRadius = (14f * safeVerticalScale.coerceIn(0.92f, 1.05f)).dp
+    val containerVerticalPadding = (3.5f * safeVerticalScale).dp
+    val commentTopPadding = (3f * safeVerticalScale).dp
+    val commentScale = ((safeVerticalScale + (overlayWidth.value / 192f)) / 2f).coerceIn(0.85f, 1.15f)
+    val timeFontSize = (37f * safeVerticalScale.coerceIn(0.92f, 1.16f)).sp
+    val timeHorizontalPadding = (6f * safeVerticalScale.coerceIn(0.92f, 1.04f)).dp
+    val timeVerticalPadding = (2f * safeVerticalScale).dp
+    val iconButtonSize = (32f * safeVerticalScale.coerceIn(0.92f, 1.18f)).dp
+    val iconSize = (18f * safeVerticalScale.coerceIn(0.92f, 1.08f)).dp
+    val bottomRowPadding = (2f * safeVerticalScale).dp
 
     Surface(
         modifier = Modifier
-            .width(200.dp)
+            .width(overlayWidth)
             .wrapContentHeight()
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
@@ -78,61 +121,84 @@ fun ChronometerOverlayScreen(
                     onDrag(dragAmount.x, dragAmount.y)
                 }
             },
-        shape = shape,
+        shape = RoundedCornerShape(cornerRadius),
         color = bgColor,
         tonalElevation = 4.dp,
         shadowElevation = 8.dp
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = containerVerticalPadding)
         ) {
             if (showCommentCount) {
                 CommentCountTag(
                     count = commentCount,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = commentTopPadding),
                     isCompact = true,
+                    scale = safeVerticalScale
                 )
             }
 
             Text(
                 text = time,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 34.sp,
+                fontSize = timeFontSize,
                 maxLines = 1,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                overflow = TextOverflow.Clip,
+                modifier = Modifier.padding(
+                    horizontal = timeHorizontalPadding,
+                    vertical = timeVerticalPadding
+                )
             )
 
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 2.dp)
+                    .padding(bottom = bottomRowPadding)
             ) {
-                IconButton(onClick = onToggleTimer, modifier = Modifier.size(36.dp)) {
+                IconButton(
+                    onClick = onToggleTimer,
+                    modifier = Modifier.size(iconButtonSize)
+                ) {
                     Icon(
-                        painter = painterResource(if (isRunning) R.drawable.pause else R.drawable.play),
-                        contentDescription = if (isRunning) stringResource(R.string.pause) else stringResource(R.string.resume),
+                        painter = painterResource(
+                            if (isRunning) R.drawable.pause else R.drawable.play
+                        ),
+                        contentDescription = if (isRunning) {
+                            stringResource(R.string.pause)
+                        } else {
+                            stringResource(R.string.resume)
+                        },
                         tint = Color.White,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(iconSize)
                     )
                 }
 
-                IconButton(onClick = onReset, modifier = Modifier.size(36.dp)) {
+                IconButton(
+                    onClick = onReset,
+                    modifier = Modifier.size(iconButtonSize)
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.restart),
                         contentDescription = stringResource(R.string.reset),
                         tint = Color.White,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(iconSize)
                     )
                 }
 
-                IconButton(onClick = onClose, modifier = Modifier.size(36.dp)) {
+                IconButton(
+                    onClick = onClose,
+                    modifier = Modifier.size(iconButtonSize)
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.delete),
                         contentDescription = "Fechar overlay",
                         tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(iconSize)
                     )
                 }
             }
