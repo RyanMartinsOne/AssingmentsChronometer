@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import com.martins.assignmentschronometer.viewmodel.SettingsViewModel
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
@@ -22,5 +23,9 @@ class App : Application(), ViewModelStoreOwner {
 
     val weeklyPartsViewModel: WeeklyPartsViewModel by lazy {
         ViewModelProvider(this, factory)[WeeklyPartsViewModel::class.java]
+    }
+
+    val settingsViewModel: SettingsViewModel by lazy {
+        ViewModelProvider(this, factory)[SettingsViewModel::class.java]
     }
 }
