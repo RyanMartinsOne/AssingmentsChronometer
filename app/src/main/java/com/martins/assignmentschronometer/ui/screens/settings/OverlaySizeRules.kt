@@ -12,7 +12,7 @@ object OverlaySizeRules {
     )
 
     val heightLevels: List<Float> = listOf(
-        0.90f, 0.93f, 0.96f, 0.99f, 1.02f, 1.05f, 1.08f, 1.11f
+        0.91f, 0.94f, 0.96f, 0.99f, 1.04f, 1.09f, 1.011f, 1.15f
     )
 
     fun scaleToClosestLevel(scale: Float, levels: List<Float>): Int {
@@ -59,7 +59,6 @@ object OverlaySizeRules {
         }
     }
 
-    // Novo: chamado quando o width muda, para garantir que o height ainda é válido
     fun adjustHeightForNewWidth(
         currentHeightLevel: Int,
         newWidthLevel: Int

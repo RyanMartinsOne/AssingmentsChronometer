@@ -22,11 +22,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         overlayMessage
     ) { prefs, message ->
         SettingsUiState(
-            darkModeEnabled = prefs.darkModeEnabled,
             dynamicColorsEnabled = prefs.dynamicColorsEnabled,
-            notificationsEnabled = prefs.notificationsEnabled,
-            autoSaveEnabled = prefs.autoSaveEnabled,
-            overtimeAlertEnabled = prefs.overtimeAlertEnabled,
             overlayScaleX = prefs.overlayScaleX,
             overlayScaleY = prefs.overlayScaleY,
             overlaySizeMessage = message
@@ -37,75 +33,45 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         initialValue = SettingsUiState()
     )
 
-    fun setDarkModeEnabled(value: Boolean) {
-        viewModelScope.launch { repository.setDarkModeEnabled(value) }
-    }
-
     fun setDynamicColorsEnabled(value: Boolean) {
         viewModelScope.launch { repository.setDynamicColorsEnabled(value) }
     }
 
-    fun setNotificationsEnabled(value: Boolean) {
-        viewModelScope.launch { repository.setNotificationsEnabled(value) }
-    }
-
-    fun setAutoSaveEnabled(value: Boolean) {
-        viewModelScope.launch { repository.setAutoSaveEnabled(value) }
-    }
-
-    fun setOvertimeAlertEnabled(value: Boolean) {
-        viewModelScope.launch { repository.setOvertimeAlertEnabled(value) }
-    }
-
     fun saveOverlayScaleX(value: Float) {
         viewModelScope.launch {
-            val currentHeightScale = uiState.value.overlayScaleY
-
             val currentHeightLevel = OverlaySizeRules.scaleToClosestLevel(
-                scale = currentHeightScale,
+                scale = uiState.value.overlayScaleY,
                 levels = OverlaySizeRules.heightLevels
             )
-
             val newWidthLevel = OverlaySizeRules.scaleToClosestLevel(
                 scale = value,
                 levels = OverlaySizeRules.widthLevels
             )
-
             val result = OverlaySizeRules.adjustHeightForNewWidth(
                 currentHeightLevel = currentHeightLevel,
                 newWidthLevel = newWidthLevel
             )
-
-            val appliedWidthScale = OverlaySizeRules.widthLevels[newWidthLevel]
-            val appliedHeightScale = OverlaySizeRules.heightLevels[result.appliedHeightLevel]
-
-            repository.setOverlayScaleX(appliedWidthScale)
-            repository.setOverlayScaleY(appliedHeightScale)
+            repository.setOverlayScaleX(OverlaySizeRules.widthLevels[newWidthLevel])
+            repository.setOverlayScaleY(OverlaySizeRules.heightLevels[result.appliedHeightLevel])
             overlayMessage.value = result.message
         }
     }
 
     fun saveOverlayScaleY(value: Float) {
         viewModelScope.launch {
-            val currentWidthScale = uiState.value.overlayScaleX
             val currentWidthLevel = OverlaySizeRules.scaleToClosestLevel(
-                scale = currentWidthScale,
+                scale = uiState.value.overlayScaleX,
                 levels = OverlaySizeRules.widthLevels
             )
-
             val requestedHeightLevel = OverlaySizeRules.scaleToClosestLevel(
                 scale = value,
                 levels = OverlaySizeRules.heightLevels
             )
-
             val result = OverlaySizeRules.tryApplyHeightLevel(
                 requestedHeightLevel = requestedHeightLevel,
                 currentWidthLevel = currentWidthLevel
             )
-
-            val appliedHeightScale = OverlaySizeRules.heightLevels[result.appliedHeightLevel]
-
-            repository.setOverlayScaleY(appliedHeightScale)
+            repository.setOverlayScaleY(OverlaySizeRules.heightLevels[result.appliedHeightLevel])
             overlayMessage.value = result.message
         }
     }
