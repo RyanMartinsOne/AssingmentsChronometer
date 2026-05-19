@@ -12,16 +12,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SettingsContent(
     uiState: SettingsUiState,
-    onDarkModeChange: (Boolean) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
-    onNotificationsChange: (Boolean) -> Unit,
-    onAutoSaveChange: (Boolean) -> Unit,
-    onOvertimeAlertChange: (Boolean) -> Unit,
     onOverlayScaleXSave: (Float) -> Unit,
     onOverlayScaleYSave: (Float) -> Unit,
     onOverlayMessageChange: (String?) -> Unit,
     onClearOverlayMessage: () -> Unit,
     onExportRecords: () -> Unit,
+    onImportRecords: () -> Unit,
     onClearRecords: () -> Unit,
     onRequestOverlayPermission: () -> Unit,
     onOpenLicenses: () -> Unit,
@@ -38,12 +35,10 @@ fun SettingsContent(
 
         item {
             AppearanceSettingsSection(
-                darkModeEnabled = uiState.darkModeEnabled,
                 dynamicColorsEnabled = uiState.dynamicColorsEnabled,
                 overlayScaleX = uiState.overlayScaleX,
                 overlayScaleY = uiState.overlayScaleY,
                 overlaySizeMessage = uiState.overlaySizeMessage,
-                onDarkModeChange = onDarkModeChange,
                 onDynamicColorsChange = onDynamicColorsChange,
                 onOverlayScaleXSave = onOverlayScaleXSave,
                 onOverlayScaleYSave = onOverlayScaleYSave,
@@ -53,19 +48,9 @@ fun SettingsContent(
         }
 
         item {
-            NotificationsSettingsSection(
-                notificationsEnabled = uiState.notificationsEnabled,
-                overtimeAlertEnabled = uiState.overtimeAlertEnabled,
-                onNotificationsChange = onNotificationsChange,
-                onOvertimeAlertChange = onOvertimeAlertChange
-            )
-        }
-
-        item {
             DataSettingsSection(
-                autoSaveEnabled = uiState.autoSaveEnabled,
-                onAutoSaveChange = onAutoSaveChange,
                 onExportRecords = onExportRecords,
+                onImportRecords = onImportRecords,
                 onClearRecords = onClearRecords
             )
         }

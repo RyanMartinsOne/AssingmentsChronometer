@@ -4,53 +4,47 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.martins.assignmentschronometer.R
+import com.martins.assignmentschronometer.ui.components.ClearRecordsDialog
 import com.martins.assignmentschronometer.ui.components.OverlaySizeSettingItem
+
+// ─── Appearance ───────────────────────────────────────────────────────────────
 
 @Composable
 internal fun AppearanceSettingsSection(
-    darkModeEnabled: Boolean,
     dynamicColorsEnabled: Boolean,
     overlayScaleX: Float,
     overlayScaleY: Float,
     overlaySizeMessage: String?,
-    onDarkModeChange: (Boolean) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
     onOverlayScaleXSave: (Float) -> Unit,
     onOverlayScaleYSave: (Float) -> Unit,
     onOverlayMessageChange: (String?) -> Unit,
     onClearOverlayMessage: () -> Unit
 ) {
-    SettingsSection(title = "Appearance") {
-        SettingsSwitchItem(
-            icon = ImageVector.vectorResource(R.drawable.dark_mode),
-            title = "Dark mode",
-            description = "Use a darker interface for low-light environments",
-            checked = darkModeEnabled,
-            onCheckedChange = onDarkModeChange
-        )
-
-        HorizontalDivider()
-
+    SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
         SettingsSwitchItem(
             icon = ImageVector.vectorResource(R.drawable.palette),
-            title = "Dynamic colors",
-            description = "Use Material You colors on supported devices",
+            title = stringResource(R.string.settings_dynamic_colors_title),
+            description = stringResource(R.string.settings_dynamic_colors_description),
             checked = dynamicColorsEnabled,
             onCheckedChange = onDynamicColorsChange
         )
@@ -59,8 +53,8 @@ internal fun AppearanceSettingsSection(
 
         OverlaySizeSettingItem(
             icon = ImageVector.vectorResource(R.drawable.aspect_ratio),
-            title = "Overlay size",
-            description = "Adjust width and height of the floating chronometer overlay",
+            title = stringResource(R.string.settings_overlay_size_title),
+            description = stringResource(R.string.settings_overlay_size_description),
             currentScaleX = overlayScaleX,
             currentScaleY = overlayScaleY,
             message = overlaySizeMessage,
@@ -72,80 +66,66 @@ internal fun AppearanceSettingsSection(
     }
 }
 
-@Composable
-internal fun NotificationsSettingsSection(
-    notificationsEnabled: Boolean,
-    overtimeAlertEnabled: Boolean,
-    onNotificationsChange: (Boolean) -> Unit,
-    onOvertimeAlertChange: (Boolean) -> Unit
-) {
-    SettingsSection(title = "Notifications") {
-        SettingsSwitchItem(
-            icon = ImageVector.vectorResource(R.drawable.notifications),
-            title = "Notifications",
-            description = "Enable chronometer notifications and reminders",
-            checked = notificationsEnabled,
-            onCheckedChange = onNotificationsChange
-        )
-
-        HorizontalDivider()
-
-        SettingsSwitchItem(
-            icon = ImageVector.vectorResource(R.drawable.notifications),
-            title = "Overtime alerts",
-            description = "Highlight overtime with alerts and accent colors",
-            checked = overtimeAlertEnabled,
-            onCheckedChange = onOvertimeAlertChange
-        )
-    }
-}
+// ─── Data ─────────────────────────────────────────────────────────────────────
 
 @Composable
 internal fun DataSettingsSection(
-    autoSaveEnabled: Boolean,
-    onAutoSaveChange: (Boolean) -> Unit,
     onExportRecords: () -> Unit,
+    onImportRecords: () -> Unit,
     onClearRecords: () -> Unit
 ) {
-    SettingsSection(title = "Data") {
-        SettingsSwitchItem(
-            icon = ImageVector.vectorResource(R.drawable.hourglass),
-            title = "Auto save realized time",
-            description = "Automatically save realized time when closing overlay",
-            checked = autoSaveEnabled,
-            onCheckedChange = onAutoSaveChange
-        )
+    var showClearDialog by remember { mutableStateOf(false) }
 
-        HorizontalDivider()
-
+    SettingsSection(title = stringResource(R.string.settings_section_data)) {
         SettingsActionItem(
-            icon = ImageVector.vectorResource(R.drawable.upload_file),
-            title = "Export records",
-            description = "Export weekly parts and realized times",
+            icon = ImageVector.vectorResource(R.drawable.upload),
+            title = stringResource(R.string.settings_export_title),
+            description = stringResource(R.string.settings_export_description),
             onClick = onExportRecords
         )
 
         HorizontalDivider()
 
         SettingsActionItem(
+            icon = ImageVector.vectorResource(R.drawable.download),
+            title = stringResource(R.string.settings_import_title),
+            description = stringResource(R.string.settings_import_description),
+            onClick = onImportRecords
+        )
+
+        HorizontalDivider()
+
+        SettingsActionItem(
             icon = ImageVector.vectorResource(R.drawable.delete),
-            title = "Clear all records",
-            description = "Remove all imported and manually created parts",
-            onClick = onClearRecords
+            title = stringResource(R.string.settings_clear_title),
+            description = stringResource(R.string.settings_clear_description),
+            onClick = { showClearDialog = true }
+        )
+    }
+
+    if (showClearDialog) {
+        ClearRecordsDialog(
+            onConfirm = {
+                showClearDialog = false
+                onClearRecords()
+            },
+            onDismiss = { showClearDialog = false }
         )
     }
 }
+
+// ─── Advanced ─────────────────────────────────────────────────────────────────
 
 @Composable
 internal fun AdvancedSettingsSection(
     onRequestOverlayPermission: () -> Unit,
     onOpenLicenses: () -> Unit
 ) {
-    SettingsSection(title = "Advanced") {
+    SettingsSection(title = stringResource(R.string.settings_section_advanced)) {
         SettingsActionItem(
             icon = ImageVector.vectorResource(R.drawable.security),
-            title = "Overlay permission",
-            description = "Allow floating chronometer over other apps",
+            title = stringResource(R.string.settings_overlay_permission_title),
+            description = stringResource(R.string.settings_overlay_permission_description),
             onClick = onRequestOverlayPermission
         )
 
@@ -153,12 +133,15 @@ internal fun AdvancedSettingsSection(
 
         SettingsActionItem(
             icon = ImageVector.vectorResource(R.drawable.info),
-            title = "Open source licenses",
-            description = "ML Kit, Jetpack Compose and other libraries",
+            title = stringResource(R.string.settings_licenses_title),
+            description = stringResource(R.string.settings_licenses_description),
             onClick = onOpenLicenses
         )
     }
 }
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+
 @Composable
 fun SettingsHeaderCard() {
     Box(
@@ -170,20 +153,21 @@ fun SettingsHeaderCard() {
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = "Assignments Chronometer",
+                text = stringResource(R.string.settings_header_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
-
             Text(
-                text = "Manage overlay behavior, OCR imports, chronometer preferences and appearance settings.",
+                text = stringResource(R.string.settings_header_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }
 }
+
+// ─── Internal scaffold ────────────────────────────────────────────────────────
 
 @Composable
 private fun SettingsSection(
@@ -196,7 +180,6 @@ private fun SettingsSection(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()

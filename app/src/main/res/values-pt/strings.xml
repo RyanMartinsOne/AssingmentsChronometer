@@ -1,24 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
         <string name="app_name">Controle do Tempo</string>
 
+        <!-- Controles do cronômetro -->
         <string name="start">Iniciar</string>
         <string name="pause">Pausar</string>
         <string name="resume">Continuar</string>
         <string name="reset">Reiniciar</string>
 
+        <!-- Navegação inferior -->
         <string name="nav_home">Início</string>
         <string name="nav_assignments">Designações</string>
         <string name="nav_record">Registros</string>
         <string name="nav_settings">Configurações</string>
 
+        <!-- Tipos de designação -->
         <string name="assignment_public_talk">Discurso Público</string>
         <string name="assignment_watchtower">A Sentinela</string>
         <string name="assignment_treasures">Tesouros da Palavra de Deus</string>
         <string name="assignment_spiritual_gems">Joias Espirituais</string>
 
+        <!-- Contagem de comentários -->
         <string name="comment_count">Até %d comentários (30s)</string>
         <string name="comment_count_overlay">Até %d comentários</string>
 
+        <!-- Tela de configurações -->
+        <string name="settings_title">Configurações</string>
+        <string name="settings_header_title">Controle do Tempo</string>
+        <string name="settings_header_description">Gerencie o comportamento do overlay, importações OCR, preferências do cronômetro e aparência.</string>
+
+        <!-- Configurações — seção Aparência -->
+        <string name="settings_section_appearance">Aparência</string>
+        <string name="settings_dynamic_colors_title">Cores dinâmicas</string>
+        <string name="settings_dynamic_colors_description">Usar cores do Material You em dispositivos compatíveis (Android 12+)</string>
+        <string name="settings_overlay_size_title">Tamanho do overlay</string>
+        <string name="settings_overlay_size_description">Ajuste a largura e altura do cronômetro flutuante</string>
+        <string name="settings_overlay_size_width">Largura</string>
+        <string name="settings_overlay_size_height">Altura</string>
+        <string name="settings_overlay_size_compact">Compacto</string>
+        <string name="settings_overlay_size_default">Padrão</string>
+        <string name="settings_overlay_size_large">Grande</string>
+        <string name="settings_overlay_size_label">L %d · A %d</string>
+
+        <!-- Configurações — seção Dados -->
+        <string name="settings_section_data">Dados</string>
+        <string name="settings_export_title">Exportar registros</string>
+        <string name="settings_export_description">Compartilhe suas partes semanais como arquivo .acdata</string>
+        <string name="settings_import_title">Importar registros</string>
+        <string name="settings_import_description">Restaure registros a partir de um arquivo .acdata</string>
+        <string name="settings_clear_title">Limpar todos os registros</string>
+        <string name="settings_clear_description">Remover todas as partes importadas e criadas manualmente</string>
+
+        <!-- Dialog de confirmação de limpeza -->
+        <string name="settings_clear_dialog_title">Limpar todos os registros?</string>
+        <string name="settings_clear_dialog_message">Isso irá remover permanentemente todas as partes semanais. Essa ação não pode ser desfeita.</string>
+        <string name="settings_clear_dialog_confirm">Limpar</string>
+        <string name="settings_clear_dialog_cancel">Cancelar</string>
+
+        <!-- Feedback de exportação/importação -->
+        <string name="settings_export_success">Registros exportados com sucesso</string>
+        <string name="settings_export_empty">Nenhum registro para exportar</string>
+        <string name="settings_export_error">Falha ao exportar os registros</string>
+        <string name="settings_import_success">%d registros importados</string>
+        <string name="settings_import_error">Falha ao ler o arquivo</string>
+        <string name="settings_import_invalid">Arquivo inválido ou corrompido</string>
+
+        <!-- Configurações — seção Avançado -->
+        <string name="settings_section_advanced">Avançado</string>
+        <string name="settings_overlay_permission_title">Permissão de overlay</string>
+        <string name="settings_overlay_permission_description">Permite que o cronômetro flutuante apareça sobre outros apps</string>
+        <string name="settings_licenses_title">Licenças de código aberto</string>
+        <string name="settings_licenses_description">ML Kit, Jetpack Compose e outras bibliotecas</string>
+
+        <!-- Tela de licenças -->
+        <string name="licenses_screen_title">Licenças de Código Aberto</string>
+        <string name="licenses_screen_subtitle">Este app foi construído sobre o trabalho de muitos.</string>
+        <string name="licenses_license_apache">Licença Apache 2.0</string>
+        <string name="licenses_license_mit">Licença MIT</string>
+        <string name="licenses_license_bsd">Licença BSD</string>
+
+        <!-- Formato de compartilhamento de parte -->
+        <string name="share_realized_time">Realizado: %s</string>
+        <string name="share_delay">Atraso: %s</string>
+        <string name="share_chooser_title">Compartilhar com…</string>
+
+        <!-- Tela de registros -->
+        <string name="record_empty_message">Importe o programa da semana usando o botão +</string>
+        <string name="record_add_manual">Adicionar manualmente</string>
+        <string name="record_take_photo">Fotografar programa</string>
+        <string name="record_import_file">Importar PDF ou imagem</string>
+        <string name="record_part_assigned">Designado: %s</string>
+        <string name="record_part_planned">Previsto: %d min</string>
+        <string name="record_part_realized">Realizado: %s</string>
+        <string name="record_action_share">Compartilhar</string>
+        <string name="record_action_edit">Editar</string>
+        <string name="record_action_delete">Remover</string>
+        <string name="record_action_start">Iniciar</string>
+        <string name="record_action_redo">Refazer</string>
+
+        <!-- Dialog de adição manual -->
+        <string name="dialog_add_part_title">Adicionar designação</string>
+        <string name="dialog_edit_part_title">Editar designação</string>
+        <string name="dialog_part_number">Nº da parte</string>
+        <string name="dialog_part_title_field">Título</string>
+        <string name="dialog_part_assignees">Designado(s)</string>
+        <string name="dialog_part_room">Sala</string>
+        <string name="dialog_part_duration">Duração (minutos)</string>
+        <string name="dialog_confirm_save">Salvar</string>
+        <string name="dialog_cancel">Cancelar</string>
+        <string name="dialog_save_finish">Salvar e Finalizar</string>
+        <string name="dialog_only_pause">Apenas Pausar</string>
+        <string name="dialog_record_time_title">Registrar Tempo</string>
+        <string name="dialog_record_time_message">Deseja salvar o tempo de %s para a designação de %s?</string>
 </resources>

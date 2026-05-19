@@ -1,22 +1,114 @@
 <resources>
     <string name="app_name">Assignments Chronometer</string>
 
+    <!-- Chronometer controls -->
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="reset">Reset</string>
 
+    <!-- Bottom navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_assignments">Assignments</string>
     <string name="nav_record">Record</string>
     <string name="nav_settings">Settings</string>
 
+    <!-- Assignment types -->
     <string name="assignment_public_talk">Public Talk</string>
     <string name="assignment_watchtower">Watchtower Study</string>
     <string name="assignment_treasures">Treasures from God\'s Word</string>
     <string name="assignment_spiritual_gems">Spiritual Gems</string>
 
+    <!-- Comment count -->
     <string name="comment_count">Up to %d comments (30s)</string>
     <string name="comment_count_overlay">Up to %d comments</string>
 
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_header_title">Assignments Chronometer</string>
+    <string name="settings_header_description">Manage overlay behavior, OCR imports, chronometer preferences and appearance settings.</string>
+
+    <!-- Settings — Appearance section -->
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_dynamic_colors_title">Dynamic colors</string>
+    <string name="settings_dynamic_colors_description">Use Material You colors on supported devices (Android 12+)</string>
+    <string name="settings_overlay_size_title">Overlay size</string>
+    <string name="settings_overlay_size_description">Adjust width and height of the floating chronometer overlay</string>
+    <string name="settings_overlay_size_width">Width</string>
+    <string name="settings_overlay_size_height">Height</string>
+    <string name="settings_overlay_size_compact">Compact</string>
+    <string name="settings_overlay_size_default">Default</string>
+    <string name="settings_overlay_size_large">Large</string>
+    <string name="settings_overlay_size_label">W %d · H %d</string>
+
+    <!-- Settings — Data section -->
+    <string name="settings_section_data">Data</string>
+    <string name="settings_export_title">Export records</string>
+    <string name="settings_export_description">Share your weekly parts as a .acdata file</string>
+    <string name="settings_import_title">Import records</string>
+    <string name="settings_import_description">Restore records from a .acdata file</string>
+    <string name="settings_clear_title">Clear all records</string>
+    <string name="settings_clear_description">Remove all imported and manually created parts</string>
+
+    <!-- Clear records dialog -->
+    <string name="settings_clear_dialog_title">Clear all records?</string>
+    <string name="settings_clear_dialog_message">This will permanently remove all weekly parts. This action cannot be undone.</string>
+    <string name="settings_clear_dialog_confirm">Clear</string>
+    <string name="settings_clear_dialog_cancel">Cancel</string>
+
+    <!-- Export feedback -->
+    <string name="settings_export_success">Records exported successfully</string>
+    <string name="settings_export_empty">No records to export</string>
+    <string name="settings_export_error">Failed to export records</string>
+    <string name="settings_import_success">%d records imported</string>
+    <string name="settings_import_error">Failed to read the file</string>
+    <string name="settings_import_invalid">Invalid or corrupted file</string>
+
+    <!-- Settings — Advanced section -->
+    <string name="settings_section_advanced">Advanced</string>
+    <string name="settings_overlay_permission_title">Overlay permission</string>
+    <string name="settings_overlay_permission_description">Allow the floating chronometer to appear over other apps</string>
+    <string name="settings_licenses_title">Open source licenses</string>
+    <string name="settings_licenses_description">ML Kit, Jetpack Compose and other libraries</string>
+
+    <!-- Licenses screen -->
+    <string name="licenses_screen_title">Open Source Licenses</string>
+    <string name="licenses_screen_subtitle">This app is built on the shoulders of giants.</string>
+    <string name="licenses_license_apache">Apache License 2.0</string>
+    <string name="licenses_license_mit">MIT License</string>
+    <string name="licenses_license_bsd">BSD License</string>
+
+    <!-- Weekly part share format -->
+    <string name="share_realized_time">Realized: %s</string>
+    <string name="share_delay">Delay: %s</string>
+    <string name="share_chooser_title">Share with…</string>
+
+    <!-- Record screen -->
+    <string name="record_empty_message">Import the week\'s program using the + button</string>
+    <string name="record_add_manual">Add manually</string>
+    <string name="record_take_photo">Take a photo</string>
+    <string name="record_import_file">Import PDF or image</string>
+    <string name="record_part_assigned">Assigned: %s</string>
+    <string name="record_part_planned">Planned: %d min</string>
+    <string name="record_part_realized">Realized: %s</string>
+    <string name="record_action_share">Share</string>
+    <string name="record_action_edit">Edit</string>
+    <string name="record_action_delete">Remove</string>
+    <string name="record_action_start">Start</string>
+    <string name="record_action_redo">Redo</string>
+
+    <!-- Manual part dialog -->
+    <string name="dialog_add_part_title">Add assignment</string>
+    <string name="dialog_edit_part_title">Edit assignment</string>
+    <string name="dialog_part_number">Part number</string>
+    <string name="dialog_part_title_field">Title</string>
+    <string name="dialog_part_assignees">Assigned to</string>
+    <string name="dialog_part_room">Room</string>
+    <string name="dialog_part_duration">Duration (minutes)</string>
+    <string name="dialog_confirm_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_save_finish">Save and Finish</string>
+    <string name="dialog_only_pause">Just Pause</string>
+    <string name="dialog_record_time_title">Record Time</string>
+    <string name="dialog_record_time_message">Save %s for %s\'s assignment?</string>
 </resources>
