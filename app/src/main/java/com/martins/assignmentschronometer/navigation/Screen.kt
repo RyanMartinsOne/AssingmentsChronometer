@@ -33,4 +33,11 @@ sealed class Screen(
         R.drawable.settings_filled,
         R.drawable.settings_outlined
     )
+
+    object Licenses : Screen(
+        route = "licenses",
+        titleRes = 0,
+        selectedIconsRes = 0,
+        unselectedIconRes = 0
+    )
 }

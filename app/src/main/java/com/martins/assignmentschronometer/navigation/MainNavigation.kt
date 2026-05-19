@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.martins.assignmentschronometer.ui.screens.assignments.AssignmentsScreen
 import com.martins.assignmentschronometer.ui.screens.chronometer.ChronometerScreen
+import com.martins.assignmentschronometer.ui.screens.licenses.LicensesScreen
 import com.martins.assignmentschronometer.ui.screens.record.RecordScreen
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsScreen
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
@@ -89,7 +90,19 @@ fun MainNavigation(
         }
 
         composable(route = Screen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(
+                onOpenLicenses = {
+                    navController.navigate(Screen.Licenses.route)
+                }
+            )
+        }
+
+        composable(route = Screen.Licenses.route) {
+            LicensesScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
