@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -70,6 +71,7 @@ dependencies {
     implementation(libs.mlkit.text.recognition)
     implementation(libs.play.services.mlkit.text.recognition)
     implementation(libs.coroutines.play.services)
+    implementation(libs.kotlinx.serialization.json)
 
     coreLibraryDesugaring(libs.android.desugar)
 
