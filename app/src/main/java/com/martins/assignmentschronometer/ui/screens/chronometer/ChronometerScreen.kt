@@ -199,27 +199,27 @@ fun ChronometerScreen(
                 onDismissRequest = { showSaveDialog = false },
                 confirmButton = {
                     TextButton(onClick = {
-                        activePart?.let {
-                            sharedViewModel.finishPart(it.uid) { finishedPart ->
+                        showSaveDialog = false
+
+                        activePart?.let { part ->
+                            sharedViewModel.finishPart(part.uid) { finishedPart ->
                                 weeklyPartsViewModel.updatePart(finishedPart)
                             }
                         }
-                        showSaveDialog = false
                     }) {
-                        Text("Salvar e Finalizar", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.dialog_save_finish), fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showSaveDialog = false }) {
-                        Text("Apenas Pausar")
+                        Text(stringResource(R.string.dialog_only_pause))
                     }
                 },
-                title = { Text("Registrar Tempo") },
+                title = { Text(stringResource(R.string.dialog_record_time_title)) },
                 text = {
-                    Text(
-                        "Deseja salvar o tempo de ${sharedViewModel.formattedTime} " +
-                                "para a designação de ${activePart?.assignees}?"
-                    )
+                    Text(stringResource(R.string.dialog_record_time_message, sharedViewModel.formattedTime,
+                        activePart?.assignees ?: ""
+                    ))
                 }
             )
         }

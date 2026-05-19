@@ -1,8 +1,12 @@
 package com.martins.assignmentschronometer.ui.screens.settings
 
+import androidx.annotation.StringRes
+import com.martins.assignmentschronometer.R
+
 data class OverlayAdjustmentResult(
     val appliedHeightLevel: Int,
-    val message: String?
+    @param:StringRes val messageRes: Int? = null,
+    val messageArgs: List<Any> = emptyList()
 )
 
 object OverlaySizeRules {
@@ -12,7 +16,7 @@ object OverlaySizeRules {
     )
 
     val heightLevels: List<Float> = listOf(
-        0.91f, 0.94f, 0.96f, 0.99f, 1.04f, 1.09f, 1.011f, 1.15f
+        0.91f, 0.94f, 0.96f, 0.99f, 1.04f, 1.08f, 1.11f, 1.15f
     )
 
     fun scaleToClosestLevel(scale: Float, levels: List<Float>): Int {
@@ -46,15 +50,13 @@ object OverlaySizeRules {
         val minWidthLevel = minimumWidthLevelForHeight(requestedHeightLevel)
 
         return if (currentWidthLevel >= minWidthLevel) {
-            OverlayAdjustmentResult(
-                appliedHeightLevel = requestedHeightLevel,
-                message = null
-            )
+            OverlayAdjustmentResult(appliedHeightLevel = requestedHeightLevel)
         } else {
             val fallbackHeightLevel = maxAllowedHeightLevelForWidth(currentWidthLevel)
             OverlayAdjustmentResult(
                 appliedHeightLevel = fallbackHeightLevel,
-                message = requiredWidthMessageForHeight(requestedHeightLevel)
+                messageRes = R.string.settings_overlay_error_height_requires_width,
+                messageArgs = listOf(minWidthLevel + 1)
             )
         }
     }
@@ -66,24 +68,14 @@ object OverlaySizeRules {
         val maxHeightForWidth = maxAllowedHeightLevelForWidth(newWidthLevel)
 
         return if (currentHeightLevel <= maxHeightForWidth) {
-            OverlayAdjustmentResult(
-                appliedHeightLevel = currentHeightLevel,
-                message = null
-            )
+            OverlayAdjustmentResult(appliedHeightLevel = currentHeightLevel)
         } else {
+            val minWidthLevelNeeded = minimumWidthLevelForHeight(currentHeightLevel)
             OverlayAdjustmentResult(
                 appliedHeightLevel = maxHeightForWidth,
-                message = requiredWidthMessageForHeight(currentHeightLevel)
+                messageRes = R.string.settings_overlay_error_height_requires_width,
+                messageArgs = listOf(minWidthLevelNeeded + 1)
             )
-        }
-    }
-
-    fun requiredWidthMessageForHeight(heightLevel: Int): String? {
-        return when {
-            heightLevel >= 7 -> "Aumente o width para o nível 5 ou mais para usar esse height."
-            heightLevel >= 6 -> "Aumente o width para o nível 4 ou mais para usar esse height."
-            heightLevel >= 5 -> "Aumente o width para o nível 3 ou mais para usar esse height."
-            else -> null
         }
     }
 }

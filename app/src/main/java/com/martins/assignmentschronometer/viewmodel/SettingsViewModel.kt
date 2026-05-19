@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.martins.assignmentschronometer.data.repository.SettingsRepository
+import com.martins.assignmentschronometer.ui.screens.settings.OverlayAdjustmentResult
 import com.martins.assignmentschronometer.ui.screens.settings.OverlaySizeRules
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,13 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = SettingsRepository(application.applicationContext)
-    private val overlayMessage = MutableStateFlow<String?>(null)
+
+    private data class OverlayMessage(
+        val resId: Int? = null,
+        val args: List<Any> = emptyList()
+    )
+
+    private val overlayMessage = MutableStateFlow(OverlayMessage())
 
     val uiState = combine(
         repository.settingsFlow,
@@ -25,7 +32,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             dynamicColorsEnabled = prefs.dynamicColorsEnabled,
             overlayScaleX = prefs.overlayScaleX,
             overlayScaleY = prefs.overlayScaleY,
-            overlaySizeMessage = message
+            overlaySizeMessageRes = message.resId,
+            overlaySizeMessageArgs = message.args
         )
     }.stateIn(
         scope = viewModelScope,
@@ -53,7 +61,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             )
             repository.setOverlayScaleX(OverlaySizeRules.widthLevels[newWidthLevel])
             repository.setOverlayScaleY(OverlaySizeRules.heightLevels[result.appliedHeightLevel])
-            overlayMessage.value = result.message
+
+            overlayMessage.value = OverlayMessage(result.messageRes, result.messageArgs)
         }
     }
 
@@ -72,15 +81,16 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 currentWidthLevel = currentWidthLevel
             )
             repository.setOverlayScaleY(OverlaySizeRules.heightLevels[result.appliedHeightLevel])
-            overlayMessage.value = result.message
+
+            overlayMessage.value = OverlayMessage(result.messageRes, result.messageArgs)
         }
     }
 
-    fun updateOverlayMessage(message: String?) {
-        overlayMessage.value = message
+    fun onHeightResultChanged(result: OverlayAdjustmentResult) {
+        overlayMessage.value = OverlayMessage(result.messageRes, result.messageArgs)
     }
 
     fun clearOverlayMessage() {
-        overlayMessage.value = null
+        overlayMessage.value = OverlayMessage(null, emptyList())
     }
 }

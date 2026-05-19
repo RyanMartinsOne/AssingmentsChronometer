@@ -15,7 +15,7 @@ fun SettingsContent(
     onDynamicColorsChange: (Boolean) -> Unit,
     onOverlayScaleXSave: (Float) -> Unit,
     onOverlayScaleYSave: (Float) -> Unit,
-    onOverlayMessageChange: (String?) -> Unit,
+    onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onClearOverlayMessage: () -> Unit,
     onExportRecords: () -> Unit,
     onImportRecords: () -> Unit,
@@ -38,11 +38,12 @@ fun SettingsContent(
                 dynamicColorsEnabled = uiState.dynamicColorsEnabled,
                 overlayScaleX = uiState.overlayScaleX,
                 overlayScaleY = uiState.overlayScaleY,
-                overlaySizeMessage = uiState.overlaySizeMessage,
+                overlaySizeMessageRes = uiState.overlaySizeMessageRes,
+                overlaySizeMessageArgs = uiState.overlaySizeMessageArgs,
                 onDynamicColorsChange = onDynamicColorsChange,
                 onOverlayScaleXSave = onOverlayScaleXSave,
                 onOverlayScaleYSave = onOverlayScaleYSave,
-                onOverlayMessageChange = onOverlayMessageChange,
+                onHeightResultChanged = onHeightResultChanged,
                 onClearOverlayMessage = onClearOverlayMessage
             )
         }

@@ -23,8 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.martins.assignmentschronometer.R
+import com.martins.assignmentschronometer.ui.screens.settings.OverlayAdjustmentResult
 import com.martins.assignmentschronometer.ui.screens.settings.OverlaySizeRules
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -35,10 +38,11 @@ fun OverlaySizeSettingItem(
     description: String,
     currentScaleX: Float,
     currentScaleY: Float,
-    message: String?,
+    messageRes: Int?,
+    messageArgs: List<Any>,
+    onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onScaleXSaved: (Float) -> Unit,
     onScaleYSaved: (Float) -> Unit,
-    onMessageChange: (String?) -> Unit,
     onClearMessage: () -> Unit
 ) {
     var localWidthLevel by remember(currentScaleX) {
@@ -90,7 +94,12 @@ fun OverlaySizeSettingItem(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
-                    text = "$description (W ${localWidthLevel + 1} · H ${localHeightLevel + 1})",
+                    text = stringResource(
+                        R.string.settings_overlay_size_label,
+                        description,
+                        localWidthLevel + 1,
+                        localHeightLevel + 1
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -98,25 +107,33 @@ fun OverlaySizeSettingItem(
         }
 
         Text(
-            text = "Width",
+            text = stringResource(R.string.settings_overlay_size_width),
             style = MaterialTheme.typography.labelMedium
         )
 
         Slider(
             value = localWidthLevel.toFloat(),
             onValueChange = {
-                localWidthLevel = it.toInt()
-                onClearMessage()
+                val newWidthLevel = it.toInt()
+                localWidthLevel = newWidthLevel
+
+                val result = OverlaySizeRules.adjustHeightForNewWidth(
+                    currentHeightLevel = localHeightLevel,
+                    newWidthLevel = newWidthLevel
+                )
+                localHeightLevel = result.appliedHeightLevel
+                onHeightResultChanged(result)
             },
             valueRange = 0f..OverlaySizeRules.widthLevels.lastIndex.toFloat(),
             steps = OverlaySizeRules.widthLevels.size - 2,
             onValueChangeFinished = {
                 onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
+                onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
             }
         )
 
         Text(
-            text = "Height",
+            text = stringResource(R.string.settings_overlay_size_height),
             style = MaterialTheme.typography.labelMedium
         )
 
@@ -124,12 +141,13 @@ fun OverlaySizeSettingItem(
             value = localHeightLevel.toFloat(),
             onValueChange = {
                 val requestedLevel = it.toInt()
+
                 val result = OverlaySizeRules.tryApplyHeightLevel(
                     requestedHeightLevel = requestedLevel,
                     currentWidthLevel = localWidthLevel
                 )
                 localHeightLevel = result.appliedHeightLevel
-                onMessageChange(result.message)
+                onHeightResultChanged(result)
             },
             valueRange = 0f..OverlaySizeRules.heightLevels.lastIndex.toFloat(),
             steps = OverlaySizeRules.heightLevels.size - 2,
@@ -138,9 +156,9 @@ fun OverlaySizeSettingItem(
             }
         )
 
-        if (message != null) {
+        if (messageRes != null) {
             Text(
-                text = message,
+                text = stringResource(messageRes, *messageArgs.toTypedArray()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.tertiary
             )
@@ -151,35 +169,35 @@ fun OverlaySizeSettingItem(
         ) {
             AssistChip(
                 onClick = {
-                    localWidthLevel = 1
-                    localHeightLevel = 1
+                    localWidthLevel = 0
+                    localHeightLevel = 2
                     onClearMessage()
                     onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
                     onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
                 },
-                label = { Text("Compact") }
+                label = { Text(stringResource(R.string.settings_overlay_size_compact)) }
             )
 
             AssistChip(
                 onClick = {
-                    localWidthLevel = 3
-                    localHeightLevel = 3
+                    localWidthLevel = 0
+                    localHeightLevel = 4
                     onClearMessage()
                     onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
                     onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
                 },
-                label = { Text("Default") }
+                label = { Text(stringResource(R.string.settings_overlay_size_default)) }
             )
 
             AssistChip(
                 onClick = {
-                    localWidthLevel = 6
-                    localHeightLevel = 6
+                    localWidthLevel = 4
+                    localHeightLevel = 7
                     onClearMessage()
                     onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
                     onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
                 },
-                label = { Text("Large") }
+                label = { Text(stringResource(R.string.settings_overlay_size_large)) }
             )
         }
 

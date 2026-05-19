@@ -109,7 +109,7 @@ fun SettingsScreen(
             onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
             onOverlayScaleXSave = settingsViewModel::saveOverlayScaleX,
             onOverlayScaleYSave = settingsViewModel::saveOverlayScaleY,
-            onOverlayMessageChange = settingsViewModel::updateOverlayMessage,
+            onHeightResultChanged = { result -> settingsViewModel.onHeightResultChanged(result) },
             onClearOverlayMessage = settingsViewModel::clearOverlayMessage,
             onExportRecords = {
                 exportLauncher.launch("records.acdata")

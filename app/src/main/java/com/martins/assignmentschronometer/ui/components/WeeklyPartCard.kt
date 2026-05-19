@@ -33,6 +33,7 @@ import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.WeeklyPart
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun WeeklyPartCard(
@@ -91,7 +92,7 @@ fun WeeklyPartCard(
                         .copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = "Designado: ${part.assignees}",
+                    text = stringResource(R.string.record_part_assigned, part.assignees),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -104,14 +105,18 @@ fun WeeklyPartCard(
                         shape = MaterialTheme.shapes.extraSmall
                     ) {
                         Text(
-                            text = part.room,
+                            text = when (part.room) {
+                                "Principal" -> stringResource(R.string.dialog_part_main_room)
+                                "Sala B" -> stringResource(R.string.dialog_part_room_b)
+                                else -> part.room
+                            },
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Previsto: ${part.durationInMinutes}min",
+                        text = stringResource(R.string.record_part_planned,part.durationInMinutes),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
@@ -119,7 +124,7 @@ fun WeeklyPartCard(
                 if (isCompleted) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Realizado: $realizedTimeText",
+                            text = stringResource(R.string.record_part_realized, realizedTimeText ?: "--:--"),
                             style = MaterialTheme.typography
                                 .bodySmall
                                 .copy(fontWeight = FontWeight.Bold),
@@ -151,7 +156,7 @@ fun WeeklyPartCard(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.more_vert),
-                            contentDescription = "Opções",
+                            contentDescription = stringResource(R.string.record_action_options),
                             modifier = Modifier.size(20.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -163,11 +168,11 @@ fun WeeklyPartCard(
                     ) {
                         if (isCompleted) {
                             DropdownMenuItem(
-                                text = { Text("Compartilhar") },
+                                text = { Text(stringResource(R.string.record_action_share)) },
                                 leadingIcon = {
                                     Icon(
                                         painter = painterResource(R.drawable.share),
-                                        contentDescription = null,
+                                        contentDescription = stringResource(R.string.record_action_share),
                                         modifier = Modifier.size(20.dp)
                                     )
                                 },
@@ -182,7 +187,7 @@ fun WeeklyPartCard(
                             leadingIcon = {
                                 Icon(
                                     painter = painterResource(R.drawable.edit),
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.record_action_edit),
                                     modifier = Modifier.size(20.dp)
                                 )
                             },
@@ -196,7 +201,7 @@ fun WeeklyPartCard(
                             leadingIcon = {
                                 Icon(
                                     painter = painterResource(R.drawable.delete),
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.record_action_delete),
                                     modifier = Modifier.size(20.dp),
                                     tint = MaterialTheme.colorScheme.error
                                 )
@@ -218,7 +223,7 @@ fun WeeklyPartCard(
                         else MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text(if (isCompleted) "Refazer" else "Iniciar")
+                    Text(if (isCompleted) stringResource(R.string.record_action_redo) else stringResource(R.string.record_action_start))
                 }
             }
         }

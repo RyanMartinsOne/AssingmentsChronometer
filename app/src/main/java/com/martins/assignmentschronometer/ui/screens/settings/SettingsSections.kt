@@ -33,11 +33,12 @@ internal fun AppearanceSettingsSection(
     dynamicColorsEnabled: Boolean,
     overlayScaleX: Float,
     overlayScaleY: Float,
-    overlaySizeMessage: String?,
+    overlaySizeMessageRes: Int?,
+    overlaySizeMessageArgs: List<Any>,
     onDynamicColorsChange: (Boolean) -> Unit,
     onOverlayScaleXSave: (Float) -> Unit,
     onOverlayScaleYSave: (Float) -> Unit,
-    onOverlayMessageChange: (String?) -> Unit,
+    onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onClearOverlayMessage: () -> Unit
 ) {
     SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
@@ -57,10 +58,11 @@ internal fun AppearanceSettingsSection(
             description = stringResource(R.string.settings_overlay_size_description),
             currentScaleX = overlayScaleX,
             currentScaleY = overlayScaleY,
-            message = overlaySizeMessage,
+            messageRes = overlaySizeMessageRes,
+            messageArgs = overlaySizeMessageArgs,
+            onHeightResultChanged = onHeightResultChanged,
             onScaleXSaved = onOverlayScaleXSave,
             onScaleYSaved = onOverlayScaleYSave,
-            onMessageChange = onOverlayMessageChange,
             onClearMessage = onClearOverlayMessage
         )
     }
@@ -78,19 +80,19 @@ internal fun DataSettingsSection(
 
     SettingsSection(title = stringResource(R.string.settings_section_data)) {
         SettingsActionItem(
-            icon = ImageVector.vectorResource(R.drawable.upload),
-            title = stringResource(R.string.settings_export_title),
-            description = stringResource(R.string.settings_export_description),
-            onClick = onExportRecords
+            icon = ImageVector.vectorResource(R.drawable.download),
+            title = stringResource(R.string.settings_import_title),
+            description = stringResource(R.string.settings_import_description),
+            onClick = onImportRecords
         )
 
         HorizontalDivider()
 
         SettingsActionItem(
-            icon = ImageVector.vectorResource(R.drawable.download),
-            title = stringResource(R.string.settings_import_title),
-            description = stringResource(R.string.settings_import_description),
-            onClick = onImportRecords
+            icon = ImageVector.vectorResource(R.drawable.upload),
+            title = stringResource(R.string.settings_export_title),
+            description = stringResource(R.string.settings_export_description),
+            onClick = onExportRecords
         )
 
         HorizontalDivider()

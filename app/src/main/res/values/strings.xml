@@ -23,6 +23,9 @@
     <string name="comment_count">Up to %d comments (30s)</string>
     <string name="comment_count_overlay">Up to %d comments</string>
 
+    <!-- Overlay -->
+    <string name="overlay_close">Close overlay</string>
+
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>
     <string name="settings_header_title">Assignments Chronometer</string>
@@ -39,7 +42,8 @@
     <string name="settings_overlay_size_compact">Compact</string>
     <string name="settings_overlay_size_default">Default</string>
     <string name="settings_overlay_size_large">Large</string>
-    <string name="settings_overlay_size_label">W %d · H %d</string>
+    <string name="settings_overlay_size_label">%1$s (W %2$d · H %3$d)</string>
+    <string name="settings_overlay_error_height_requires_width">Increase width to level %d or higher to use this height.</string>
 
     <!-- Settings — Data section -->
     <string name="settings_section_data">Data</string>
@@ -73,10 +77,11 @@
 
     <!-- Licenses screen -->
     <string name="licenses_screen_title">Open Source Licenses</string>
-    <string name="licenses_screen_subtitle">This app is built on the shoulders of giants.</string>
+    <string name="licenses_screen_subtitle">This app was built thanks to the work of many.</string>
     <string name="licenses_license_apache">Apache License 2.0</string>
     <string name="licenses_license_mit">MIT License</string>
     <string name="licenses_license_bsd">BSD License</string>
+    <string name="licenses_arrow_back">Back</string>
 
     <!-- Weekly part share format -->
     <string name="share_realized_time">Realized: %s</string>
@@ -91,6 +96,7 @@
     <string name="record_part_assigned">Assigned: %s</string>
     <string name="record_part_planned">Planned: %d min</string>
     <string name="record_part_realized">Realized: %s</string>
+    <string name="record_action_options">Options</string>
     <string name="record_action_share">Share</string>
     <string name="record_action_edit">Edit</string>
     <string name="record_action_delete">Remove</string>
@@ -104,6 +110,8 @@
     <string name="dialog_part_title_field">Title</string>
     <string name="dialog_part_assignees">Assigned to</string>
     <string name="dialog_part_room">Room</string>
+    <string name="dialog_part_main_room">Main Room</string>
+    <string name="dialog_part_room_b">Room B</string>
     <string name="dialog_part_duration">Duration (minutes)</string>
     <string name="dialog_confirm_save">Save</string>
     <string name="dialog_cancel">Cancel</string>

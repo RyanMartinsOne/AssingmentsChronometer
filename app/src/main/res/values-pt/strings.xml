@@ -24,6 +24,9 @@
         <string name="comment_count">Até %d comentários (30s)</string>
         <string name="comment_count_overlay">Até %d comentários</string>
 
+        <!-- Overlay -->
+        <string name="overlay_close">Fechar a sobreposição</string>
+
         <!-- Tela de configurações -->
         <string name="settings_title">Configurações</string>
         <string name="settings_header_title">Controle do Tempo</string>
@@ -40,7 +43,9 @@
         <string name="settings_overlay_size_compact">Compacto</string>
         <string name="settings_overlay_size_default">Padrão</string>
         <string name="settings_overlay_size_large">Grande</string>
-        <string name="settings_overlay_size_label">L %d · A %d</string>
+        <string name="settings_overlay_size_label">%1$s (L %2$d · A %3$d)</string>
+        <string name="settings_overlay_error_height_requires_width">Aumente a largura para o nível %d ou mais para usar essa altura.</string>
+
 
         <!-- Configurações — seção Dados -->
         <string name="settings_section_data">Dados</string>
@@ -78,6 +83,7 @@
         <string name="licenses_license_apache">Licença Apache 2.0</string>
         <string name="licenses_license_mit">Licença MIT</string>
         <string name="licenses_license_bsd">Licença BSD</string>
+        <string name="licenses_arrow_back">Voltar</string>
 
         <!-- Formato de compartilhamento de parte -->
         <string name="share_realized_time">Realizado: %s</string>
@@ -92,6 +98,7 @@
         <string name="record_part_assigned">Designado: %s</string>
         <string name="record_part_planned">Previsto: %d min</string>
         <string name="record_part_realized">Realizado: %s</string>
+        <string name="record_action_options">Opções</string>
         <string name="record_action_share">Compartilhar</string>
         <string name="record_action_edit">Editar</string>
         <string name="record_action_delete">Remover</string>
@@ -105,6 +112,8 @@
         <string name="dialog_part_title_field">Título</string>
         <string name="dialog_part_assignees">Designado(s)</string>
         <string name="dialog_part_room">Sala</string>
+        <string name="dialog_part_main_room">Sala Principal</string>
+        <string name="dialog_part_room_b">Sala B</string>
         <string name="dialog_part_duration">Duração (minutos)</string>
         <string name="dialog_confirm_save">Salvar</string>
         <string name="dialog_cancel">Cancelar</string>

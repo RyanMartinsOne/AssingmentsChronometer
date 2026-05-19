@@ -21,9 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.WeeklyPart
 import com.martins.assignmentschronometer.util.DateUtils
 
@@ -54,7 +56,7 @@ fun ManualWeeklyPartDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = if (isEditing) "Editar designação" else "Adicionar designação",
+                text = if (isEditing) stringResource(R.string.dialog_edit_part_title) else stringResource(R.string.dialog_add_part_title),
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
         },
@@ -64,7 +66,7 @@ fun ManualWeeklyPartDialog(
                     value = partNumber,
                     onValueChange = { if (it.length <= 1 && it.all {
                         c -> c.isDigit() }) partNumber = it },
-                    label = { Text("Nº da parte") },
+                    label = { Text(stringResource(R.string.dialog_part_number)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -74,14 +76,14 @@ fun ManualWeeklyPartDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Título") },
+                    label = { Text(stringResource(R.string.dialog_part_title_field)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
                 OutlinedTextField(
                     value = assignees,
                     onValueChange = { assignees = it },
-                    label = { Text("Designado(s)") },
+                    label = { Text(stringResource(R.string.dialog_part_assignees)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -93,24 +95,34 @@ fun ManualWeeklyPartDialog(
                         value = room,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Sala") },
-                        trailingIcon = { ExposedDropdownMenuDefaults
-                            .TrailingIcon(expanded = roomExpanded) },
+                        label = { Text(stringResource(R.string.dialog_part_room)) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults
+                                .TrailingIcon(expanded = roomExpanded)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType
-                                .PrimaryNotEditable,
-                                enabled = true)
+                            .menuAnchor(
+                                ExposedDropdownMenuAnchorType
+                                    .PrimaryNotEditable,
+                                enabled = true
+                            )
                     )
                     ExposedDropdownMenu(
                         expanded = roomExpanded,
                         onDismissRequest = { roomExpanded = false }
                     ) {
-                        listOf("Principal", "Sala B").forEach { option ->
+                        val roomOptions = listOf(
+                            "Principal" to stringResource(R.string.dialog_part_main_room),
+                            "Sala B" to stringResource(R.string.dialog_part_room_b)
+                        )
+
+                        roomOptions.forEach { (backendValue, displayValue) ->
                             DropdownMenuItem(
-                                text = { Text(option) },
+                                text = { Text(displayValue) },
                                 onClick = {
-                                    room = option
+                                    room =
+                                        backendValue
                                     roomExpanded = false
                                 }
                             )
@@ -125,7 +137,7 @@ fun ManualWeeklyPartDialog(
                             duration = input
                         }
                     },
-                    label = { Text("Duração (minutos)") },
+                    label = { Text(stringResource(R.string.dialog_part_duration)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -136,7 +148,7 @@ fun ManualWeeklyPartDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(stringResource(R.string.dialog_cancel))
             }
         },
         confirmButton = {
@@ -155,7 +167,7 @@ fun ManualWeeklyPartDialog(
                 },
                 enabled = isValid
             ) {
-                Text("Salvar")
+                Text(stringResource(R.string.dialog_confirm_save))
             }
         }
     )

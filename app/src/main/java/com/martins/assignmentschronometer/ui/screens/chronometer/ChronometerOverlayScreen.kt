@@ -196,7 +196,7 @@ fun ChronometerOverlayScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.delete),
-                        contentDescription = "Fechar overlay",
+                        contentDescription = stringResource(R.string.overlay_close),
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(iconSize)
                     )
