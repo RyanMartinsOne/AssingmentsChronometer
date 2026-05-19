@@ -13,8 +13,7 @@ import androidx.compose.ui.unit.dp
 fun SettingsContent(
     uiState: SettingsUiState,
     onDynamicColorsChange: (Boolean) -> Unit,
-    onOverlayScaleXSave: (Float) -> Unit,
-    onOverlayScaleYSave: (Float) -> Unit,
+    onSaveOverlayDimensions: (Float, Float) -> Unit,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onClearOverlayMessage: () -> Unit,
     onExportRecords: () -> Unit,
@@ -41,8 +40,7 @@ fun SettingsContent(
                 overlaySizeMessageRes = uiState.overlaySizeMessageRes,
                 overlaySizeMessageArgs = uiState.overlaySizeMessageArgs,
                 onDynamicColorsChange = onDynamicColorsChange,
-                onOverlayScaleXSave = onOverlayScaleXSave,
-                onOverlayScaleYSave = onOverlayScaleYSave,
+                onSaveDimensions = onSaveOverlayDimensions,
                 onHeightResultChanged = onHeightResultChanged,
                 onClearOverlayMessage = onClearOverlayMessage
             )

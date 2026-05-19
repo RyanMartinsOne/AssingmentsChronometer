@@ -55,7 +55,7 @@ fun SettingsScreen(
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let {weeklyPartsViewModel.importRecords(it)}
+        uri?.let { weeklyPartsViewModel.importRecords(it) }
     }
 
     val exportSuccessMsg = stringResource(R.string.settings_export_success)
@@ -107,8 +107,11 @@ fun SettingsScreen(
         SettingsContent(
             uiState = uiState,
             onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
-            onOverlayScaleXSave = settingsViewModel::saveOverlayScaleX,
-            onOverlayScaleYSave = settingsViewModel::saveOverlayScaleY,
+
+            onSaveOverlayDimensions = { width, height ->
+                settingsViewModel.saveOverlayDimensions(width, height)
+            },
+
             onHeightResultChanged = { result -> settingsViewModel.onHeightResultChanged(result) },
             onClearOverlayMessage = settingsViewModel::clearOverlayMessage,
             onExportRecords = {

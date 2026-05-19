@@ -45,44 +45,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { repository.setDynamicColorsEnabled(value) }
     }
 
-    fun saveOverlayScaleX(value: Float) {
+    fun saveOverlayDimensions(widthValue: Float, heightValue: Float) {
         viewModelScope.launch {
-            val currentHeightLevel = OverlaySizeRules.scaleToClosestLevel(
-                scale = uiState.value.overlayScaleY,
-                levels = OverlaySizeRules.heightLevels
-            )
-            val newWidthLevel = OverlaySizeRules.scaleToClosestLevel(
-                scale = value,
-                levels = OverlaySizeRules.widthLevels
-            )
-            val result = OverlaySizeRules.adjustHeightForNewWidth(
-                currentHeightLevel = currentHeightLevel,
-                newWidthLevel = newWidthLevel
-            )
-            repository.setOverlayScaleX(OverlaySizeRules.widthLevels[newWidthLevel])
-            repository.setOverlayScaleY(OverlaySizeRules.heightLevels[result.appliedHeightLevel])
-
-            overlayMessage.value = OverlayMessage(result.messageRes, result.messageArgs)
-        }
-    }
-
-    fun saveOverlayScaleY(value: Float) {
-        viewModelScope.launch {
-            val currentWidthLevel = OverlaySizeRules.scaleToClosestLevel(
-                scale = uiState.value.overlayScaleX,
-                levels = OverlaySizeRules.widthLevels
-            )
-            val requestedHeightLevel = OverlaySizeRules.scaleToClosestLevel(
-                scale = value,
-                levels = OverlaySizeRules.heightLevels
-            )
-            val result = OverlaySizeRules.tryApplyHeightLevel(
-                requestedHeightLevel = requestedHeightLevel,
-                currentWidthLevel = currentWidthLevel
-            )
-            repository.setOverlayScaleY(OverlaySizeRules.heightLevels[result.appliedHeightLevel])
-
-            overlayMessage.value = OverlayMessage(result.messageRes, result.messageArgs)
+            repository.setOverlayScaleX(widthValue)
+            repository.setOverlayScaleY(heightValue)
         }
     }
 

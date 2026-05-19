@@ -36,8 +36,7 @@ internal fun AppearanceSettingsSection(
     overlaySizeMessageRes: Int?,
     overlaySizeMessageArgs: List<Any>,
     onDynamicColorsChange: (Boolean) -> Unit,
-    onOverlayScaleXSave: (Float) -> Unit,
-    onOverlayScaleYSave: (Float) -> Unit,
+    onSaveDimensions: (Float, Float) -> Unit,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onClearOverlayMessage: () -> Unit
 ) {
@@ -61,8 +60,7 @@ internal fun AppearanceSettingsSection(
             messageRes = overlaySizeMessageRes,
             messageArgs = overlaySizeMessageArgs,
             onHeightResultChanged = onHeightResultChanged,
-            onScaleXSaved = onOverlayScaleXSave,
-            onScaleYSaved = onOverlayScaleYSave,
+            onSaveDimensions = onSaveDimensions, // Repassa a nova função unificada
             onClearMessage = onClearOverlayMessage
         )
     }

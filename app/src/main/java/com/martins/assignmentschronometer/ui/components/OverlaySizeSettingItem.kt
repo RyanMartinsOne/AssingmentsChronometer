@@ -41,8 +41,7 @@ fun OverlaySizeSettingItem(
     messageRes: Int?,
     messageArgs: List<Any>,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
-    onScaleXSaved: (Float) -> Unit,
-    onScaleYSaved: (Float) -> Unit,
+    onSaveDimensions: (Float, Float) -> Unit,
     onClearMessage: () -> Unit
 ) {
     var localWidthLevel by remember(currentScaleX) {
@@ -106,53 +105,36 @@ fun OverlaySizeSettingItem(
             }
         }
 
-        Text(
-            text = stringResource(R.string.settings_overlay_size_width),
-            style = MaterialTheme.typography.labelMedium
-        )
-
+        Text(text = stringResource(R.string.settings_overlay_size_width), style = MaterialTheme.typography.labelMedium)
         Slider(
             value = localWidthLevel.toFloat(),
             onValueChange = {
                 val newWidthLevel = it.toInt()
                 localWidthLevel = newWidthLevel
-
-                val result = OverlaySizeRules.adjustHeightForNewWidth(
-                    currentHeightLevel = localHeightLevel,
-                    newWidthLevel = newWidthLevel
-                )
+                val result = OverlaySizeRules.adjustHeightForNewWidth(localHeightLevel, newWidthLevel)
                 localHeightLevel = result.appliedHeightLevel
                 onHeightResultChanged(result)
             },
             valueRange = 0f..OverlaySizeRules.widthLevels.lastIndex.toFloat(),
             steps = OverlaySizeRules.widthLevels.size - 2,
             onValueChangeFinished = {
-                onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
-                onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
+                onSaveDimensions(localScaleX, localScaleY)
             }
         )
 
-        Text(
-            text = stringResource(R.string.settings_overlay_size_height),
-            style = MaterialTheme.typography.labelMedium
-        )
-
+        Text(text = stringResource(R.string.settings_overlay_size_height), style = MaterialTheme.typography.labelMedium)
         Slider(
             value = localHeightLevel.toFloat(),
             onValueChange = {
                 val requestedLevel = it.toInt()
-
-                val result = OverlaySizeRules.tryApplyHeightLevel(
-                    requestedHeightLevel = requestedLevel,
-                    currentWidthLevel = localWidthLevel
-                )
+                val result = OverlaySizeRules.tryApplyHeightLevel(requestedLevel, localWidthLevel)
                 localHeightLevel = result.appliedHeightLevel
                 onHeightResultChanged(result)
             },
             valueRange = 0f..OverlaySizeRules.heightLevels.lastIndex.toFloat(),
             steps = OverlaySizeRules.heightLevels.size - 2,
             onValueChangeFinished = {
-                onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
+                onSaveDimensions(localScaleX, localScaleY)
             }
         )
 
@@ -164,16 +146,13 @@ fun OverlaySizeSettingItem(
             )
         }
 
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AssistChip(
                 onClick = {
                     localWidthLevel = 0
                     localHeightLevel = 2
                     onClearMessage()
-                    onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
-                    onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
+                    onSaveDimensions(OverlaySizeRules.widthLevels[0], OverlaySizeRules.heightLevels[2])
                 },
                 label = { Text(stringResource(R.string.settings_overlay_size_compact)) }
             )
@@ -183,8 +162,7 @@ fun OverlaySizeSettingItem(
                     localWidthLevel = 0
                     localHeightLevel = 4
                     onClearMessage()
-                    onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
-                    onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
+                    onSaveDimensions(OverlaySizeRules.widthLevels[0], OverlaySizeRules.heightLevels[4])
                 },
                 label = { Text(stringResource(R.string.settings_overlay_size_default)) }
             )
@@ -194,16 +172,12 @@ fun OverlaySizeSettingItem(
                     localWidthLevel = 4
                     localHeightLevel = 7
                     onClearMessage()
-                    onScaleXSaved(OverlaySizeRules.widthLevels[localWidthLevel])
-                    onScaleYSaved(OverlaySizeRules.heightLevels[localHeightLevel])
+                    onSaveDimensions(OverlaySizeRules.widthLevels[4], OverlaySizeRules.heightLevels[7])
                 },
                 label = { Text(stringResource(R.string.settings_overlay_size_large)) }
             )
         }
 
-        OverlayPreviewCard(
-            overlayScaleX = localScaleX,
-            overlayScaleY = localScaleY
-        )
+        OverlayPreviewCard(overlayScaleX = localScaleX, overlayScaleY = localScaleY)
     }
 }
