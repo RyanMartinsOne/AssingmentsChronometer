@@ -96,10 +96,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun addManualPart(part: WeeklyPart) {
-        weeklyParts = weeklyParts + part
-    }
-
     fun removePart(uid: String) {
         weeklyParts = weeklyParts.filter { it.uid != uid }
     }
