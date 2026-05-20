@@ -119,4 +119,17 @@
     <string name="dialog_only_pause">Just Pause</string>
     <string name="dialog_record_time_title">Record Time</string>
     <string name="dialog_record_time_message">Save %s for %s\'s assignment?</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_start_timer_short">Start Timer</string>
+    <string name="shortcut_start_timer_long">Start the timer immediately</string>
+
+    <string name="shortcut_import_media_short">Import PDF/Photo</string>
+    <string name="shortcut_import_media_long">Import a PDF file or gallery image</string>
+
+    <string name="shortcut_scan_program_short">Scan Schedule</string>
+    <string name="shortcut_scan_program_long">Open the camera to scan the schedule</string>
+
+    <string name="shortcut_import_acdata_short">Import records</string>
+    <string name="shortcut_import_acdata_long">Select and import a records file</string>
 </resources>

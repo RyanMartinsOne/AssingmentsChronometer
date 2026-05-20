@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="shortcut_start_timer"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_start"
+        android:shortcutShortLabel="@string/shortcut_start_timer_short"
+        android:shortcutLongLabel="@string/shortcut_start_timer_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.martins.assignmentschronometer"
+            android:targetClass="com.martins.assignmentschronometer.MainActivity"
+            android:data="chronometer://start" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_import_media"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_import_media"
+        android:shortcutShortLabel="@string/shortcut_import_media_short"
+        android:shortcutLongLabel="@string/shortcut_import_media_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.martins.assignmentschronometer"
+            android:targetClass="com.martins.assignmentschronometer.MainActivity"
+            android:data="chronometer://import-media" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_scan_program"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_scan"
+        android:shortcutShortLabel="@string/shortcut_scan_program_short"
+        android:shortcutLongLabel="@string/shortcut_scan_program_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.martins.assignmentschronometer"
+            android:targetClass="com.martins.assignmentschronometer.MainActivity"
+            android:data="chronometer://scan" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_import_acdata"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_import_acdata"
+        android:shortcutShortLabel="@string/shortcut_import_acdata_short"
+        android:shortcutLongLabel="@string/shortcut_import_acdata_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.martins.assignmentschronometer"
+            android:targetClass="com.martins.assignmentschronometer.MainActivity"
+            android:data="chronometer://import-acdata" />
+    </shortcut>
+
+</shortcuts>

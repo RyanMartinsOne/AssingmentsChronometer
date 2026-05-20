@@ -29,14 +29,16 @@ fun MainNavigation(
     sharedViewModel: SharedViewModel,
     weeklyPartsViewModel: WeeklyPartsViewModel
 ) {
-    val pendingNav = weeklyPartsViewModel.pendingNavigationToRecord
+    val pendingShortcutRoute = weeklyPartsViewModel.pendingShortcutRoute
 
-    LaunchedEffect(pendingNav) {
-        if (pendingNav) {
-            navController.navigate(Screen.Record.route) {
-                launchSingleTop = true
+    LaunchedEffect(pendingShortcutRoute) {
+        pendingShortcutRoute?.let { route ->
+            if (navController.currentDestination?.route != route) {
+                navController.navigate(route) {
+                    launchSingleTop = true
+                }
             }
-            weeklyPartsViewModel.onNavigationHandled()
+            weeklyPartsViewModel.onShortcutRouteHandled()
         }
     }
 

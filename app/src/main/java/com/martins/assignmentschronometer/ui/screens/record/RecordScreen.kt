@@ -65,7 +65,6 @@ fun RecordScreen(
     var showingAddDialog by remember { mutableStateOf(false) }
     var partToEdit by remember { mutableStateOf<WeeklyPart?>(null) }
 
-
     val imageFile = remember { File(context.cacheDir, "camera_capture.jpg") }
     val imageUri: Uri = remember {
         FileProvider.getUriForFile(
@@ -74,7 +73,6 @@ fun RecordScreen(
             imageFile
         )
     }
-
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -88,12 +86,32 @@ fun RecordScreen(
         uri?.let {
             val mimeType = context.contentResolver.getType(it)
             if (mimeType == "application/pdf") {
-                viewModel.processPdfUri(it)   //
+                viewModel.processPdfUri(it)
             } else {
                 viewModel.processImageOcr(InputImage.fromFilePath(context, it))
             }
         }
     }
+
+    // ── Atalhos rápidos da home screen ──────────────────────────────────────
+
+    val pendingScan = viewModel.pendingScanAction
+    LaunchedEffect(pendingScan) {
+        if (pendingScan) {
+            cameraLauncher.launch(imageUri)
+            viewModel.onScanHandled()
+        }
+    }
+
+    val pendingImportMedia = viewModel.pendingImportMediaAction
+    LaunchedEffect(pendingImportMedia) {
+        if (pendingImportMedia) {
+            fileLauncher.launch("*/*")
+            viewModel.onImportMediaHandled()
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isMenuExpanded) 50 else 28,
@@ -153,7 +171,8 @@ fun RecordScreen(
                         MenuOption(
                             "Fotografar programa",
                             R.drawable.camera,
-                            progress = revealProgress)
+                            progress = revealProgress
+                        )
                         {
                             cameraLauncher.launch(imageUri)
                             isMenuExpanded = false
@@ -161,7 +180,8 @@ fun RecordScreen(
                         MenuOption(
                             "Importar PDF ou imagem",
                             R.drawable.upload_file,
-                            progress = revealProgress)
+                            progress = revealProgress
+                        )
                         {
                             fileLauncher.launch("*/*")
                             isMenuExpanded = false
@@ -171,7 +191,7 @@ fun RecordScreen(
 
                 LargeFloatingActionButton(
                     onClick = { isMenuExpanded = !isMenuExpanded },
-                      shape = RoundedCornerShape(cornerPercent),
+                    shape = RoundedCornerShape(cornerPercent),
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.add),

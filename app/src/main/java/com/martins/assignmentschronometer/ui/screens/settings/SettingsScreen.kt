@@ -58,6 +58,13 @@ fun SettingsScreen(
         uri?.let { weeklyPartsViewModel.importRecords(it) }
     }
 
+    LaunchedEffect(weeklyPartsViewModel.pendingImportAcdataAction) {
+        if (weeklyPartsViewModel.pendingImportAcdataAction) {
+            importLauncher.launch(arrayOf("application/octet-stream"))
+            weeklyPartsViewModel.onImportAcdataHandled()
+        }
+    }
+
     val exportSuccessMsg = stringResource(R.string.settings_export_success)
     val exportEmptyMsg = stringResource(R.string.settings_export_empty)
     val exportErrorMsg = stringResource(R.string.settings_export_error)
@@ -69,6 +76,7 @@ fun SettingsScreen(
     } else {
         ""
     }
+
     LaunchedEffect(recordsEvent) {
         val message = when (recordsEvent) {
             RecordsEvent.ExportSuccess -> exportSuccessMsg

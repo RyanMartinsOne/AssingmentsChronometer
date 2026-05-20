@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.martins.assignmentschronometer.navigation.MainNavigation
+import com.martins.assignmentschronometer.navigation.Screen
 import com.martins.assignmentschronometer.overlay.ChronometerOverlayService
 import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
@@ -73,6 +74,31 @@ class MainActivity : ComponentActivity() {
         if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) return
 
         val uri = intent.data ?: return
+
+        if (uri.scheme == "chronometer") {
+            when (uri.host) {
+                "start" -> {
+                    sharedViewModel.start()
+                }
+
+                "import-media" -> {
+                    weeklyPartsViewModel.navigateToShortcutRoute(Screen.Record.route)
+                    weeklyPartsViewModel.triggerImportMedia()
+                }
+
+                "scan" -> {
+                    weeklyPartsViewModel.navigateToShortcutRoute(Screen.Record.route)
+                    weeklyPartsViewModel.triggerScan()
+                }
+
+                "import-acdata" -> {
+                    weeklyPartsViewModel.navigateToShortcutRoute(Screen.Settings.route)
+                    weeklyPartsViewModel.triggerImportAcdata()
+                }
+            }
+            this.intent = Intent()
+            return
+        }
 
         weeklyPartsViewModel.importRecords(uri)
         this.intent = Intent()

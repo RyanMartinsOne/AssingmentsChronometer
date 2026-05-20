@@ -48,6 +48,37 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         pendingNavigationToRecord = false
     }
 
+    // --- Shortcuts ---
+
+    var pendingShortcutRoute by mutableStateOf<String?>(null)
+        private set
+
+    fun navigateToShortcutRoute(route: String) {
+        pendingShortcutRoute = route
+    }
+
+    fun onShortcutRouteHandled() {
+        pendingShortcutRoute = null
+    }
+
+    var pendingImportMediaAction by mutableStateOf(false)
+        private set
+
+    var pendingScanAction by mutableStateOf(false)
+        private set
+
+    var pendingImportAcdataAction by mutableStateOf(false)
+        private set
+
+    fun triggerImportMedia() { pendingImportMediaAction = true }
+    fun onImportMediaHandled() { pendingImportMediaAction = false }
+
+    fun triggerScan() { pendingScanAction = true }
+    fun onScanHandled() { pendingScanAction = false }
+
+    fun triggerImportAcdata() { pendingImportAcdataAction = true }
+    fun onImportAcdataHandled() { pendingImportAcdataAction = false }
+
     // ─── Share ────────────────────────────────────────────────────────────────
 
     fun requestShare(part: WeeklyPart) {
