@@ -1,6 +1,7 @@
 package com.martins.assignmentschronometer.viewmodel
 
 import android.app.Application
+import android.os.SystemClock
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,15 +17,19 @@ import kotlinx.coroutines.launch
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    // ─── Cronômetro ───────────────────────────────────────────────
     var totalTimeOnSeconds by mutableIntStateOf(0)
         private set
+
     var isRunning by mutableStateOf(false)
         private set
+
     var isPaused by mutableStateOf(false)
         private set
 
     private var timerJob: Job? = null
+
+    private var startTime = 0L
+    private var accumulatedTimeMillis = 0L
 
     var onTimerStarted: (() -> Unit)? = null
 
@@ -47,7 +52,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     val formattedTime: String
         get() {
             val hours = totalTimeOnSeconds / 3600
-            val minutes = totalTimeOnSeconds / 60
+            val minutes = (totalTimeOnSeconds % 3600) / 60
             val seconds = totalTimeOnSeconds % 60
             return "%02d:%02d:%02d".format(hours, minutes, seconds)
         }
@@ -59,25 +64,30 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
         onTimerStarted?.invoke()
 
+        startTime = SystemClock.elapsedRealtime()
+
         timerJob = viewModelScope.launch {
             while (isRunning) {
-                delay(1000L)
-                totalTimeOnSeconds++
+                val elapsedMillis = SystemClock.elapsedRealtime() - startTime
+                val totalMillis = elapsedMillis + accumulatedTimeMillis
+
+                totalTimeOnSeconds = (totalMillis / 1000).toInt()
+
+                delay(200L)
             }
         }
     }
 
     fun safeStart(hasPermission: Boolean, onPermissionRequired: () -> Unit) {
-        if (hasPermission) {
-            start()
-        } else {
-            onPermissionRequired()
-        }
+        if (hasPermission) start() else onPermissionRequired()
     }
 
     fun pause() {
+        if (!isRunning) return
         isRunning = false
         isPaused = true
+
+        accumulatedTimeMillis += SystemClock.elapsedRealtime() - startTime
         timerJob?.cancel()
     }
 
@@ -85,6 +95,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         isRunning = false
         isPaused = false
         totalTimeOnSeconds = 0
+        accumulatedTimeMillis = 0L
+        startTime = 0L
         timerJob?.cancel()
         activePart = null
         selectedAssignment = null
@@ -94,10 +106,11 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         isRunning = false
         isPaused = false
         totalTimeOnSeconds = 0
+        accumulatedTimeMillis = 0L
+        startTime = 0L
         timerJob?.cancel()
     }
 
-    // ─── Designação ativa ─────────────────────────────────────────
     var activePart by mutableStateOf<WeeklyPart?>(null)
         private set
 
