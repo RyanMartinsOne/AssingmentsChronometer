@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
@@ -28,6 +29,17 @@ fun MainNavigation(
     sharedViewModel: SharedViewModel,
     weeklyPartsViewModel: WeeklyPartsViewModel
 ) {
+    val pendingNav = weeklyPartsViewModel.pendingNavigationToRecord
+
+    LaunchedEffect(pendingNav) {
+        if (pendingNav) {
+            navController.navigate(Screen.Record.route) {
+                launchSingleTop = true
+            }
+            weeklyPartsViewModel.onNavigationHandled()
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
@@ -82,9 +94,7 @@ fun MainNavigation(
                 viewModel = weeklyPartsViewModel,
                 sharedViewModel = sharedViewModel,
                 onNavigateToChronometer = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
-                    }
+                    navController.popBackStack(Screen.Home.route, inclusive = false)
                 }
             )
         }

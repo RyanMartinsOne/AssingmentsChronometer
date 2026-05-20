@@ -19,7 +19,6 @@ import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
-import kotlin.jvm.java
 
 class MainActivity : ComponentActivity() {
 
@@ -33,6 +32,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        if (savedInstanceState == null) {
+            handleIncomingIntent(intent)
+        }
+
         setContent {
             AssignmentsChronometerTheme {
                 Surface(
@@ -56,6 +60,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent?) {
+        if (intent == null || intent.action != Intent.ACTION_VIEW) return
+        if ((intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) return
+
+        val uri = intent.data ?: return
+
+        weeklyPartsViewModel.importRecords(uri)
+        this.intent = Intent()
     }
 
     override fun onUserLeaveHint() {

@@ -39,6 +39,15 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     var recordsEvent by mutableStateOf<RecordsEvent?>(null)
         private set
 
+    var pendingNavigationToRecord by mutableStateOf(false)
+        private set
+
+    private var lastProcessedUri: Uri? = null
+
+    fun onNavigationHandled() {
+        pendingNavigationToRecord = false
+    }
+
     // ─── Share ────────────────────────────────────────────────────────────────
 
     fun requestShare(part: WeeklyPart) {
@@ -127,16 +136,21 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun importRecords(uri: Uri) {
+        if (uri == lastProcessedUri) return
+        lastProcessedUri = uri
+
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = RecordsRepository.import(appContext, uri)) {
                 is ImportResult.Success -> {
-                    // Re-parse from file to get actual parts; result only gives count.
-                    // We store the parts by re-importing them directly.
                     val importedParts = importPartsFrom(uri)
                     if (importedParts != null) {
                         weeklyParts = importedParts
                     }
                     recordsEvent = RecordsEvent.ImportSuccess(result.count)
+
+                    viewModelScope.launch(Dispatchers.Main) {
+                        pendingNavigationToRecord = true
+                    }
                 }
                 ImportResult.Invalid -> recordsEvent = RecordsEvent.ImportInvalid
                 ImportResult.Error   -> recordsEvent = RecordsEvent.ImportError
@@ -188,8 +202,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         recordsEvent = null
     }
 }
-
-// ─── One-shot events ──────────────────────────────────────────────────────────
 
 sealed class RecordsEvent {
     object ExportSuccess : RecordsEvent()

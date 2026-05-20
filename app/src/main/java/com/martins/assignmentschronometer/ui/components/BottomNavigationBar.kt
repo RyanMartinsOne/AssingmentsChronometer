@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.martins.assignmentschronometer.navigation.Screen
 
@@ -33,12 +34,16 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = isSelected,
                 onClick = {
                     if (!isSelected) {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                        if (screen.route == Screen.Home.route) {
+                            navController.popBackStack(Screen.Home.route, inclusive = false)
+                        } else {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 },
@@ -57,5 +62,4 @@ fun BottomNavigationBar(navController: NavController) {
             )
         }
     }
-
 }
