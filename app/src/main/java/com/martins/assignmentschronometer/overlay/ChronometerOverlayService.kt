@@ -100,7 +100,8 @@ class ChronometerOverlayService : Service() {
                         },
                         onClose = { stopSelf() },
                         overlayWidth = overlayWidthDp,
-                        verticalScale = settings.overlayScaleY
+                        verticalScale = settings.overlayScaleY,
+                        overlayOpacity = settings.overlayOpacity
                     )
                 }
             }

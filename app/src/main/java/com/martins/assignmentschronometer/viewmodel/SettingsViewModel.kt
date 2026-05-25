@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.martins.assignmentschronometer.data.repository.SettingsRepository
 import com.martins.assignmentschronometer.ui.screens.settings.OverlayAdjustmentResult
-import com.martins.assignmentschronometer.ui.screens.settings.OverlaySizeRules
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,6 +31,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             dynamicColorsEnabled = prefs.dynamicColorsEnabled,
             overlayScaleX = prefs.overlayScaleX,
             overlayScaleY = prefs.overlayScaleY,
+            overlayOpacity = prefs.overlayOpacity,
             overlaySizeMessageRes = message.resId,
             overlaySizeMessageArgs = message.args
         )
@@ -49,6 +49,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             repository.setOverlayScaleX(widthValue)
             repository.setOverlayScaleY(heightValue)
+        }
+    }
+
+    fun saveOverlayOpacity(opacity: Float) {
+        viewModelScope.launch {
+            repository.setOverlayOpacity(opacity)
         }
     }
 

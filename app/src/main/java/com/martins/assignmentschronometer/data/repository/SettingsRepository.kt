@@ -18,7 +18,8 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
 data class SettingsPreferences(
     val dynamicColorsEnabled: Boolean,
     val overlayScaleX: Float,
-    val overlayScaleY: Float
+    val overlayScaleY: Float,
+    val overlayOpacity: Float
 )
 
 class SettingsRepository(private val context: Context) {
@@ -27,6 +28,7 @@ class SettingsRepository(private val context: Context) {
         val DYNAMIC_COLORS = booleanPreferencesKey("dynamic_colors")
         val OVERLAY_SCALE_X = floatPreferencesKey("overlay_scale_x")
         val OVERLAY_SCALE_Y = floatPreferencesKey("overlay_scale_y")
+        val OVERLAY_OPACITY = floatPreferencesKey("overlay_opacity")
     }
 
     val settingsFlow: Flow<SettingsPreferences> = context.settingsDataStore.data.map { prefs ->
@@ -34,7 +36,8 @@ class SettingsRepository(private val context: Context) {
             dynamicColorsEnabled = prefs[Keys.DYNAMIC_COLORS]
                 ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S),
             overlayScaleX = prefs[Keys.OVERLAY_SCALE_X] ?: 1.0f,
-            overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.0f
+            overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.0f,
+            overlayOpacity = prefs[Keys.OVERLAY_OPACITY] ?: 1.0f
         )
     }
 
@@ -48,5 +51,9 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setOverlayScaleY(value: Float) {
         context.settingsDataStore.edit { it[Keys.OVERLAY_SCALE_Y] = value }
+    }
+
+    suspend fun setOverlayOpacity(value: Float) {
+        context.settingsDataStore.edit { it[Keys.OVERLAY_OPACITY] = value }
     }
 }

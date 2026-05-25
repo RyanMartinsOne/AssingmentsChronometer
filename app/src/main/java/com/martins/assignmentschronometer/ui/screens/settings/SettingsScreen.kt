@@ -33,7 +33,6 @@ import androidx.core.net.toUri
 @Composable
 fun SettingsScreen(
     onOpenLicenses: () -> Unit = {},
-    // 1. Adicionei o callback de navegação aqui
     onNavigateToRecord: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -124,6 +123,10 @@ fun SettingsScreen(
         SettingsContent(
             uiState = uiState,
             onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
+
+            onSaveOverlayOpacity = { opacity ->
+                settingsViewModel.saveOverlayOpacity(opacity)
+            },
 
             onSaveOverlayDimensions = { width, height ->
                 settingsViewModel.saveOverlayDimensions(width, height)

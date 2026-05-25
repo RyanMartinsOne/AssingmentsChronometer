@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 fun SettingsContent(
     uiState: SettingsUiState,
     onDynamicColorsChange: (Boolean) -> Unit,
+    onSaveOverlayOpacity: (Float) -> Unit,
     onSaveOverlayDimensions: (Float, Float) -> Unit,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onClearOverlayMessage: () -> Unit,
@@ -35,11 +36,13 @@ fun SettingsContent(
         item {
             AppearanceSettingsSection(
                 dynamicColorsEnabled = uiState.dynamicColorsEnabled,
+                overlayOpacity = uiState.overlayOpacity,
                 overlayScaleX = uiState.overlayScaleX,
                 overlayScaleY = uiState.overlayScaleY,
                 overlaySizeMessageRes = uiState.overlaySizeMessageRes,
                 overlaySizeMessageArgs = uiState.overlaySizeMessageArgs,
                 onDynamicColorsChange = onDynamicColorsChange,
+                onSaveOpacity = onSaveOverlayOpacity,
                 onSaveDimensions = onSaveOverlayDimensions,
                 onHeightResultChanged = onHeightResultChanged,
                 onClearOverlayMessage = onClearOverlayMessage

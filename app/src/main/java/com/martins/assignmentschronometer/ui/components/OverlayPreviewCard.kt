@@ -17,6 +17,7 @@ import com.martins.assignmentschronometer.ui.screens.chronometer.overlayWidthFor
 fun OverlayPreviewCard(
     overlayScaleX: Float,
     overlayScaleY: Float,
+    overlayOpacity: Float,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -38,11 +39,13 @@ fun OverlayPreviewCard(
                 showCommentCount = true,
                 isRunning = true,
                 onDrag = { _, _ -> },
+                isDraggable = false,
                 onToggleTimer = {},
                 onReset = {},
                 onClose = {},
                 overlayWidth = overlayWidthForScale(overlayScaleX),
-                verticalScale = overlayScaleY
+                verticalScale = overlayScaleY,
+                overlayOpacity = overlayOpacity
             )
         }
     }

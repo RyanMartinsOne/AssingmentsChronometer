@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,34 +34,32 @@ import com.martins.assignmentschronometer.ui.screens.settings.OverlaySizeRules
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun OverlaySizeSettingItem(
+fun OverlayAppearanceSettingItem(
     icon: ImageVector,
     title: String,
     description: String,
     currentScaleX: Float,
     currentScaleY: Float,
+    currentOpacity: Float,
     messageRes: Int?,
     messageArgs: List<Any>,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onSaveDimensions: (Float, Float) -> Unit,
+    onSaveOpacity: (Float) -> Unit,
     onClearMessage: () -> Unit
 ) {
     var localWidthLevel by remember(currentScaleX) {
         mutableIntStateOf(
-            OverlaySizeRules.scaleToClosestLevel(
-                currentScaleX,
-                OverlaySizeRules.widthLevels
-            )
+            OverlaySizeRules.scaleToClosestLevel(currentScaleX, OverlaySizeRules.widthLevels)
         )
     }
-
     var localHeightLevel by remember(currentScaleY) {
         mutableIntStateOf(
-            OverlaySizeRules.scaleToClosestLevel(
-                currentScaleY,
-                OverlaySizeRules.heightLevels
-            )
+            OverlaySizeRules.scaleToClosestLevel(currentScaleY, OverlaySizeRules.heightLevels)
         )
+    }
+    var localOpacity by remember(currentOpacity) {
+        mutableFloatStateOf(currentOpacity)
     }
 
     val localScaleX = OverlaySizeRules.widthLevels[localWidthLevel]
@@ -78,7 +78,6 @@ fun OverlaySizeSettingItem(
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -89,9 +88,7 @@ fun OverlaySizeSettingItem(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium
                 )
-
                 Spacer(modifier = Modifier.height(2.dp))
-
                 Text(
                     text = stringResource(
                         R.string.settings_overlay_size_label,
@@ -104,8 +101,10 @@ fun OverlaySizeSettingItem(
                 )
             }
         }
-
-        Text(text = stringResource(R.string.settings_overlay_size_width), style = MaterialTheme.typography.labelMedium)
+        Text(
+            text = stringResource(R.string.settings_overlay_size_width),
+            style = MaterialTheme.typography.labelMedium
+        )
         Slider(
             value = localWidthLevel.toFloat(),
             onValueChange = {
@@ -117,12 +116,13 @@ fun OverlaySizeSettingItem(
             },
             valueRange = 0f..OverlaySizeRules.widthLevels.lastIndex.toFloat(),
             steps = OverlaySizeRules.widthLevels.size - 2,
-            onValueChangeFinished = {
-                onSaveDimensions(localScaleX, localScaleY)
-            }
+            onValueChangeFinished = { onSaveDimensions(localScaleX, localScaleY) }
         )
 
-        Text(text = stringResource(R.string.settings_overlay_size_height), style = MaterialTheme.typography.labelMedium)
+        Text(
+            text = stringResource(R.string.settings_overlay_size_height),
+            style = MaterialTheme.typography.labelMedium
+        )
         Slider(
             value = localHeightLevel.toFloat(),
             onValueChange = {
@@ -133,9 +133,7 @@ fun OverlaySizeSettingItem(
             },
             valueRange = 0f..OverlaySizeRules.heightLevels.lastIndex.toFloat(),
             steps = OverlaySizeRules.heightLevels.size - 2,
-            onValueChangeFinished = {
-                onSaveDimensions(localScaleX, localScaleY)
-            }
+            onValueChangeFinished = { onSaveDimensions(localScaleX, localScaleY) }
         )
 
         if (messageRes != null) {
@@ -146,31 +144,50 @@ fun OverlaySizeSettingItem(
             )
         }
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.settings_overlay_opacity),
+                style = MaterialTheme.typography.labelMedium
+            )
+            Text(
+                text = "${(localOpacity * 100).toInt()}%",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Slider(
+            value = localOpacity,
+            onValueChange = { localOpacity = it },
+            valueRange = 0.1f..1.0f,
+            onValueChangeFinished = { onSaveOpacity(localOpacity) }
+        )
+
+        HorizontalDivider()
+
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AssistChip(
                 onClick = {
-                    localWidthLevel = 0
-                    localHeightLevel = 2
+                    localWidthLevel = 0; localHeightLevel = 2
                     onClearMessage()
                     onSaveDimensions(OverlaySizeRules.widthLevels[0], OverlaySizeRules.heightLevels[2])
                 },
                 label = { Text(stringResource(R.string.settings_overlay_size_compact)) }
             )
-
             AssistChip(
                 onClick = {
-                    localWidthLevel = 0
-                    localHeightLevel = 4
+                    localWidthLevel = 0; localHeightLevel = 4
                     onClearMessage()
                     onSaveDimensions(OverlaySizeRules.widthLevels[0], OverlaySizeRules.heightLevels[4])
                 },
                 label = { Text(stringResource(R.string.settings_overlay_size_default)) }
             )
-
             AssistChip(
                 onClick = {
-                    localWidthLevel = 4
-                    localHeightLevel = 7
+                    localWidthLevel = 4; localHeightLevel = 7
                     onClearMessage()
                     onSaveDimensions(OverlaySizeRules.widthLevels[4], OverlaySizeRules.heightLevels[7])
                 },
@@ -178,6 +195,11 @@ fun OverlaySizeSettingItem(
             )
         }
 
-        OverlayPreviewCard(overlayScaleX = localScaleX, overlayScaleY = localScaleY)
+        // ── Preview ──────────────────────────────────────────────────────────
+        OverlayPreviewCard(
+            overlayScaleX = localScaleX,
+            overlayScaleY = localScaleY,
+            overlayOpacity = localOpacity
+        )
     }
 }

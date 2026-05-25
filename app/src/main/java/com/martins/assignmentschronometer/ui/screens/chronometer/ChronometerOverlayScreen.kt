@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +46,7 @@ fun ChronometerOverlayRoute(
     onDrag: (dx: Float, dy: Float) -> Unit,
     weeklyPartsViewModel: WeeklyPartsViewModel,
     onClose: () -> Unit,
+    overlayOpacity: Float = 1.0f,
     overlayWidth: Dp = OverlayBaseWidth,
     verticalScale: Float = 1f
 ) {
@@ -73,6 +75,7 @@ fun ChronometerOverlayRoute(
             }
             onClose()
         },
+        overlayOpacity = overlayOpacity,
         overlayWidth = overlayWidth,
         verticalScale = verticalScale
     )
@@ -86,10 +89,12 @@ fun ChronometerOverlayScreen(
     showCommentCount: Boolean,
     isRunning: Boolean,
     onDrag: (dx: Float, dy: Float) -> Unit,
+    isDraggable: Boolean = true,
     onToggleTimer: () -> Unit,
     onReset: () -> Unit,
     onClose: () -> Unit,
     overlayWidth: Dp = OverlayBaseWidth,
+    overlayOpacity: Float = 1.0f,
     verticalScale: Float = 1f
 ) {
     val bgColor = if (isOverTime) {
@@ -103,7 +108,7 @@ fun ChronometerOverlayScreen(
     val cornerRadius = (14f * safeVerticalScale.coerceIn(0.92f, 1.05f)).dp
     val containerVerticalPadding = (3.5f * safeVerticalScale).dp
     val commentTopPadding = (3f * safeVerticalScale).dp
-    val commentScale = ((safeVerticalScale + (overlayWidth.value / 192f)) / 2f).coerceIn(0.85f, 1.15f)
+    val commentScale = (((safeVerticalScale + (overlayWidth.value / 192f)) / 2f) * 1.3f).coerceIn(1.0f, 1.8f)
     val timeFontSize = (37f * safeVerticalScale.coerceIn(0.92f, 1.16f)).sp
     val timeHorizontalPadding = (6f * safeVerticalScale.coerceIn(0.92f, 1.04f)).dp
     val timeVerticalPadding = (2f * safeVerticalScale).dp
@@ -115,12 +120,17 @@ fun ChronometerOverlayScreen(
         modifier = Modifier
             .width(overlayWidth)
             .wrapContentHeight()
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    onDrag(dragAmount.x, dragAmount.y)
-                }
-            },
+            .graphicsLayer { alpha = overlayOpacity }
+            .then(
+                if (isDraggable) {
+                    Modifier.pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            onDrag(dragAmount.x, dragAmount.y)
+                        }
+                    }
+                } else Modifier
+            ),
         shape = RoundedCornerShape(cornerRadius),
         color = bgColor,
         tonalElevation = 4.dp,
@@ -137,7 +147,7 @@ fun ChronometerOverlayScreen(
                     count = commentCount,
                     modifier = Modifier.padding(top = commentTopPadding),
                     isCompact = true,
-                    scale = safeVerticalScale
+                    scale = commentScale
                 )
             }
 
@@ -173,7 +183,7 @@ fun ChronometerOverlayScreen(
                         } else {
                             stringResource(R.string.resume)
                         },
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.size(iconSize)
                     )
                 }
@@ -185,7 +195,7 @@ fun ChronometerOverlayScreen(
                     Icon(
                         painter = painterResource(R.drawable.restart),
                         contentDescription = stringResource(R.string.reset),
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.size(iconSize)
                     )
                 }

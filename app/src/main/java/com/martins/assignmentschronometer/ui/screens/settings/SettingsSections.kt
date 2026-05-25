@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.ui.components.ClearRecordsDialog
-import com.martins.assignmentschronometer.ui.components.OverlaySizeSettingItem
+import com.martins.assignmentschronometer.ui.components.OverlayAppearanceSettingItem
 
 // ─── Appearance ───────────────────────────────────────────────────────────────
 
@@ -33,10 +33,12 @@ internal fun AppearanceSettingsSection(
     dynamicColorsEnabled: Boolean,
     overlayScaleX: Float,
     overlayScaleY: Float,
+    overlayOpacity: Float,
     overlaySizeMessageRes: Int?,
     overlaySizeMessageArgs: List<Any>,
     onDynamicColorsChange: (Boolean) -> Unit,
     onSaveDimensions: (Float, Float) -> Unit,
+    onSaveOpacity: (Float) -> Unit,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
     onClearOverlayMessage: () -> Unit
 ) {
@@ -51,16 +53,18 @@ internal fun AppearanceSettingsSection(
 
         HorizontalDivider()
 
-        OverlaySizeSettingItem(
+        OverlayAppearanceSettingItem(
             icon = ImageVector.vectorResource(R.drawable.aspect_ratio),
-            title = stringResource(R.string.settings_overlay_size_title),
+            title = stringResource(R.string.settings_overlay_appearance_title),
             description = stringResource(R.string.settings_overlay_size_description),
             currentScaleX = overlayScaleX,
             currentScaleY = overlayScaleY,
+            currentOpacity = overlayOpacity,
             messageRes = overlaySizeMessageRes,
             messageArgs = overlaySizeMessageArgs,
             onHeightResultChanged = onHeightResultChanged,
-            onSaveDimensions = onSaveDimensions, // Repassa a nova função unificada
+            onSaveDimensions = onSaveDimensions,
+            onSaveOpacity = onSaveOpacity,
             onClearMessage = onClearOverlayMessage
         )
     }

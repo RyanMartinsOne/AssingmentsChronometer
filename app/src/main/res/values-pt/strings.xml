@@ -30,22 +30,22 @@
         <!-- Tela de configurações -->
         <string name="settings_title">Configurações</string>
         <string name="settings_header_title">Controle do Tempo</string>
-        <string name="settings_header_description">Gerencie o comportamento do overlay, importações OCR, preferências do cronômetro e aparência.</string>
+        <string name="settings_header_description">Gerencie o comportamento da sobreposição, importações OCR, preferências do cronômetro e aparência.</string>
 
         <!-- Configurações — seção Aparência -->
         <string name="settings_section_appearance">Aparência</string>
         <string name="settings_dynamic_colors_title">Cores dinâmicas</string>
         <string name="settings_dynamic_colors_description">Usar cores do Material You em dispositivos compatíveis (Android 12+)</string>
-        <string name="settings_overlay_size_title">Tamanho do overlay</string>
-        <string name="settings_overlay_size_description">Ajuste a largura e altura do cronômetro flutuante</string>
+        <string name="settings_overlay_appearance_title">Aparência da sobreposição</string>
+        <string name="settings_overlay_size_description">Ajuste a opacidade, largura e altura do cronômetro flutuante</string>
         <string name="settings_overlay_size_width">Largura</string>
         <string name="settings_overlay_size_height">Altura</string>
+        <string name="settings_overlay_opacity">Opacidade</string>
         <string name="settings_overlay_size_compact">Compacto</string>
         <string name="settings_overlay_size_default">Padrão</string>
         <string name="settings_overlay_size_large">Grande</string>
         <string name="settings_overlay_size_label">%1$s (L %2$d · A %3$d)</string>
         <string name="settings_overlay_error_height_requires_width">Aumente a largura para o nível %d ou mais para usar essa altura.</string>
-
 
         <!-- Configurações — seção Dados -->
         <string name="settings_section_data">Dados</string>
@@ -72,7 +72,7 @@
 
         <!-- Configurações — seção Avançado -->
         <string name="settings_section_advanced">Avançado</string>
-        <string name="settings_overlay_permission_title">Permissão de overlay</string>
+        <string name="settings_overlay_permission_title">Permissão de sobreposição</string>
         <string name="settings_overlay_permission_description">Permite que o cronômetro flutuante apareça sobre outros apps</string>
         <string name="settings_licenses_title">Licenças de código aberto</string>
         <string name="settings_licenses_description">ML Kit, Jetpack Compose e outras bibliotecas</string>

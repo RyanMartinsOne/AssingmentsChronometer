@@ -35,10 +35,11 @@
     <string name="settings_section_appearance">Appearance</string>
     <string name="settings_dynamic_colors_title">Dynamic colors</string>
     <string name="settings_dynamic_colors_description">Use Material You colors on supported devices (Android 12+)</string>
-    <string name="settings_overlay_size_title">Overlay size</string>
-    <string name="settings_overlay_size_description">Adjust width and height of the floating chronometer overlay</string>
+    <string name="settings_overlay_appearance_title">Overlay appearance</string>
+    <string name="settings_overlay_size_description">Adjust opacity, width and height of the floating chronometer overlay</string>
     <string name="settings_overlay_size_width">Width</string>
     <string name="settings_overlay_size_height">Height</string>
+    <string name="settings_overlay_opacity">Opacity</string>
     <string name="settings_overlay_size_compact">Compact</string>
     <string name="settings_overlay_size_default">Default</string>
     <string name="settings_overlay_size_large">Large</string>
