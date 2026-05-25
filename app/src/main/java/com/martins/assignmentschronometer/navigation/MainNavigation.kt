@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,15 +30,21 @@ fun MainNavigation(
     sharedViewModel: SharedViewModel,
     weeklyPartsViewModel: WeeklyPartsViewModel
 ) {
+    fun navigateToTopLevel(route: String) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     val pendingShortcutRoute = weeklyPartsViewModel.pendingShortcutRoute
 
     LaunchedEffect(pendingShortcutRoute) {
         pendingShortcutRoute?.let { route ->
-            if (navController.currentDestination?.route != route) {
-                navController.navigate(route) {
-                    launchSingleTop = true
-                }
-            }
+            navigateToTopLevel(route)
             weeklyPartsViewModel.onShortcutRouteHandled()
         }
     }
@@ -64,7 +71,7 @@ fun MainNavigation(
             ) {
                 if (AndroidSettings.canDrawOverlays(context)) {
                     sharedViewModel.start()
-                    navController.navigate(Screen.Home.route)
+                    navigateToTopLevel(Screen.Home.route)
                 }
             }
 
@@ -85,7 +92,7 @@ fun MainNavigation(
                     )
 
                     if (isPermissionGranted) {
-                        navController.navigate(Screen.Home.route)
+                        navigateToTopLevel(Screen.Home.route)
                     }
                 }
             )
@@ -96,7 +103,7 @@ fun MainNavigation(
                 viewModel = weeklyPartsViewModel,
                 sharedViewModel = sharedViewModel,
                 onNavigateToChronometer = {
-                    navController.popBackStack(Screen.Home.route, inclusive = false)
+                    navigateToTopLevel(Screen.Home.route)
                 }
             )
         }
@@ -107,11 +114,7 @@ fun MainNavigation(
                     navController.navigate(Screen.Licenses.route)
                 },
                 onNavigateToRecord = {
-                    navController.navigate(Screen.Record.route) {
-                        popUpTo(Screen.Home.route) {
-                            inclusive = false
-                        }
-                    }
+                    navigateToTopLevel(Screen.Record.route)
                 }
             )
         }
