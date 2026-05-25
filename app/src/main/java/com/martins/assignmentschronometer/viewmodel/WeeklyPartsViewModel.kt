@@ -17,6 +17,7 @@ import com.martins.assignmentschronometer.util.OcrParser
 import com.martins.assignmentschronometer.util.toShareText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class WeeklyPartsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -39,6 +40,10 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     var recordsEvent by mutableStateOf<RecordsEvent?>(null)
         private set
 
+    /** Mensagem de feedback para a UI exibir como Toast (ex: "Arquivo não suportado") */
+    var uiFeedbackMessage by mutableStateOf<String?>(null)
+        private set
+
     var pendingNavigationToRecord by mutableStateOf(false)
         private set
 
@@ -46,6 +51,10 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun onNavigationHandled() {
         pendingNavigationToRecord = false
+    }
+
+    fun clearUiFeedbackMessage() {
+        uiFeedbackMessage = null
     }
 
     // --- Shortcuts ---
@@ -89,22 +98,59 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         shareText = null
     }
 
-    // ─── OCR / PDF ────────────────────────────────────────────────────────────
+    // ─── OCR / PDF / IMAGENS ──────────────────────────────────────────────────
 
     fun processExtractedText(ocrLines: List<OcrLine>) {
         weeklyParts = OcrParser.parseCurrentWeek(ocrLines)
     }
 
-    fun processPdfUri(uri: Uri) {
+    fun processFileUri(uri: Uri) {
         viewModelScope.launch {
             val mimeType = appContext.contentResolver.getType(uri)
-            if (mimeType != "application/pdf") return@launch
-            val lines = PdfOcrRepository.extractLines(appContext, uri)
-            weeklyParts = OcrParser.parseCurrentWeek(lines)
+
+            when {
+                mimeType == "application/pdf" -> {
+                    try {
+                        val lines = PdfOcrRepository.extractLines(appContext, uri)
+                        weeklyParts = OcrParser.parseCurrentWeek(lines)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        uiFeedbackMessage = "Erro ao processar o PDF."
+                    }
+                }
+                mimeType?.startsWith("image/") == true -> {
+                    try {
+                        val inputImage = com.google.mlkit.vision.common.InputImage.fromFilePath(appContext, uri)
+                        processImageOcr(inputImage)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        uiFeedbackMessage = "Não foi possível carregar esta imagem."
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        uiFeedbackMessage = "Erro ao processar a imagem."
+                    }
+                }
+                else -> {
+                    uiFeedbackMessage = "Formato não suportado. Escolha um PDF ou Imagem."
+                }
+            }
         }
     }
 
-    fun processImageOcr(inputImage: com.google.mlkit.vision.common.InputImage) {
+    fun processCameraImage(uri: Uri) {
+        try {
+            val inputImage = com.google.mlkit.vision.common.InputImage.fromFilePath(appContext, uri)
+            processImageOcr(inputImage)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            uiFeedbackMessage = "Erro ao ler a foto capturada."
+        } catch (e: Exception) {
+            e.printStackTrace()
+            uiFeedbackMessage = "Erro ao processar a foto."
+        }
+    }
+
+    private fun processImageOcr(inputImage: com.google.mlkit.vision.common.InputImage) {
         val recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(
             com.google.mlkit.vision.text.latin.TextRecognizerOptions.DEFAULT_OPTIONS
         )
@@ -124,7 +170,10 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
                     }
                 processExtractedText(ocrLines)
             }
-            .addOnFailureListener { it.printStackTrace() }
+            .addOnFailureListener {
+                it.printStackTrace()
+                uiFeedbackMessage = "O reconhecimento de texto falhou."
+            }
             .addOnCompleteListener { recognizer.close() }
     }
 
@@ -224,7 +273,8 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
                     realizedTimeOnSeconds = it.realizedTimeOnSeconds
                 )
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             null
         }
     }

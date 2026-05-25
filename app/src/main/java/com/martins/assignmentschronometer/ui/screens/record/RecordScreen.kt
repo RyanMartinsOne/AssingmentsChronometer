@@ -42,7 +42,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import com.google.mlkit.vision.common.InputImage
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.WeeklyPart
 import com.martins.assignmentschronometer.ui.components.ManualWeeklyPartDialog
@@ -77,19 +76,21 @@ fun RecordScreen(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) viewModel.processImageOcr(InputImage.fromFilePath(context, imageUri))
+        if (success) {
+            viewModel.processCameraImage(imageUri)
+        }
     }
 
     val fileLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            val mimeType = context.contentResolver.getType(it)
-            if (mimeType == "application/pdf") {
-                viewModel.processPdfUri(it)
-            } else {
-                viewModel.processImageOcr(InputImage.fromFilePath(context, it))
-            }
+        uri?.let { viewModel.processFileUri(it) }
+    }
+
+    LaunchedEffect(viewModel.uiFeedbackMessage) {
+        viewModel.uiFeedbackMessage?.let { message ->
+            android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
+            viewModel.clearUiFeedbackMessage()
         }
     }
 

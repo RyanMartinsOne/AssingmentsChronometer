@@ -79,7 +79,7 @@ object RecordsRepository {
             ImportResult.Success(parts.size)
         } catch (e: kotlinx.serialization.SerializationException) {
             ImportResult.Invalid
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             e.printStackTrace()
             ImportResult.Error
         }

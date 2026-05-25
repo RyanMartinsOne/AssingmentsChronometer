@@ -32,7 +32,9 @@ import androidx.core.net.toUri
 
 @Composable
 fun SettingsScreen(
-    onOpenLicenses: () -> Unit = {}
+    onOpenLicenses: () -> Unit = {},
+    // 1. Adicionei o callback de navegação aqui
+    onNavigateToRecord: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val app = context.applicationContext as App
@@ -62,6 +64,13 @@ fun SettingsScreen(
         if (weeklyPartsViewModel.pendingImportAcdataAction) {
             importLauncher.launch(arrayOf("application/octet-stream"))
             weeklyPartsViewModel.onImportAcdataHandled()
+        }
+    }
+    
+    LaunchedEffect(weeklyPartsViewModel.pendingNavigationToRecord) {
+        if (weeklyPartsViewModel.pendingNavigationToRecord) {
+            onNavigateToRecord()
+            weeklyPartsViewModel.onNavigationHandled()
         }
     }
 

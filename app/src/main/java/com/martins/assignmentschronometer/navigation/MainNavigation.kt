@@ -105,6 +105,13 @@ fun MainNavigation(
             SettingsScreen(
                 onOpenLicenses = {
                     navController.navigate(Screen.Licenses.route)
+                },
+                onNavigateToRecord = {
+                    navController.navigate(Screen.Record.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = false
+                        }
+                    }
                 }
             )
         }
