@@ -7,14 +7,35 @@ import kotlin.math.abs
 
 object OcrParser {
 
-    private val partDetailRegex = Regex("""^(\d+)\.\s*(.+?)\s*\((\d+)\s*min\)""")
+    private val partDetailRegex = Regex("""^(?:(\d+)\.\s*)?(.+?)\s*\((\d+)\s*min\)""")
     private val dateRegex = Regex("""(\d{1,2}\s+de\s+\w+\s+de\s+\d{4})""", RegexOption.IGNORE_CASE)
-
-    private val blackList = listOf(
-        "Cântico", "Oração", "Comentários", "TESOUROS", "FAÇA", "NOSSA", "REUNIÃO",
-        "Presidente", "Dirigente", "ISAÍAS", "Minutos", "Estudo", "Joias", "Leitura",
-        "Iniciando", "Cultivando", "Explicando", "Fazendo", "Discurso", "Boletim"
+    private val STRUCTURAL_TERMS = setOf(
+        // ── Seções do programa midweek ────────────────────────────────────────
+        "Cântico", "Oração", "Comentários", "Presidente", "Dirigente",
+        "Minutos", "Estudo", "Joias",
+        "TESOUROS", "FAÇA", "NOSSA", "REUNIÃO",
+        "Tesouros da Palavra", "Joias Espirituais",
+        "Nossa Vida Cristã", "Faça Seu Melhor",
+        "Vida e Ministério",
+        // ── Seções do programa de fim de semana ───────────────────────────────
+        "Nossa Reunião", "Discurso Público", "A Sentinela",
+        "Boletim", "Anúncios", "Informações",
+        // ── Verbos de instrução nas partes de campo ───────────────────────────
+        "Leitura", "Iniciando", "Cultivando", "Explicando",
+        "Fazendo", "Discurso", "Revisão"
     )
+
+    private fun isStructural(text: String): Boolean {
+        val normalized = text.trim()
+
+        if (normalized.contains(Regex("""\d+[:-\u2013\u2014]\d+"""))) return true
+
+        if (normalized.matches(Regex("""^\d+\..+"""))) return true
+
+        return STRUCTURAL_TERMS.any { term ->
+            normalized.contains(term, ignoreCase = true)
+        }
+    }
 
     fun parseCurrentWeek(
         ocrLines: List<OcrLine>,
@@ -43,7 +64,6 @@ object OcrParser {
     fun parseWithLines(ocrLines: List<OcrLine>): List<WeeklyPart> {
         if (ocrLines.isEmpty()) return emptyList()
 
-        // 1. Agrupamento em Linhas Visuais (Tolerance de 15 pixels)
         val sortedByTop = ocrLines.sortedBy { it.top }
         val rows = mutableListOf<List<OcrLine>>()
         var currentRow = mutableListOf<OcrLine>()
@@ -58,67 +78,90 @@ object OcrParser {
         }
         if (currentRow.isNotEmpty()) rows.add(currentRow.sortedBy { it.left })
 
+        val pageWidth = ocrLines.maxOfOrNull { it.right } ?: 1000
+        val nameSideThreshold = pageWidth / 2
+
         val dateByTop = buildDateByTop(sortedByTop)
         val results = mutableListOf<WeeklyPart>()
 
-        var lastPartId = ""
+        var lastPartId    = ""
         var lastPartTitle = ""
-        var lastPartTime = 0
-        var currentRoom = "Principal"
+        var lastPartTime  = 0
+        var currentRoom   = "Principal"
 
         for (row in rows) {
-            val date = dateByTop(row.first().top)
+            val date       = dateByTop(row.first().top)
             val rowFullText = row.joinToString(" ") { it.text }
 
             val partMatch = partDetailRegex.find(rowFullText)
             if (partMatch != null) {
-                lastPartId = partMatch.groupValues[1]
+                val rawId = partMatch.groupValues[1]
+                lastPartId    = rawId.ifEmpty { "N/A" }
                 lastPartTitle = partMatch.groupValues[2].trim()
-                lastPartTime = partMatch.groupValues[3].toIntOrNull() ?: 0
-                currentRoom = "Principal"
+                lastPartTime  = partMatch.groupValues[3].toIntOrNull() ?: 0
+                currentRoom   = "Principal"
             }
 
-            if (blackList.any { rowFullText.contains(it, ignoreCase = true) && (it == "Cântico" || it == "Oração") }) {
+            if (rowFullText.contains("Cântico", ignoreCase = true) ||
+                rowFullText.contains("Oração", ignoreCase = true)) {
                 lastPartId = ""
+                continue
             }
 
             if (lastPartId.isEmpty()) continue
 
+            if (rowFullText.contains("Sala B", ignoreCase = true)) {
+                currentRoom = "Sala B"
+            } else if (rowFullText.contains("Salão Principal", ignoreCase = true) ||
+                rowFullText.contains("Sala Principal", ignoreCase = true)) {
+                currentRoom = "Principal"
+            }
+
             for (item in row) {
                 val txt = item.text.trim()
 
-                if (txt.contains("Sala B", true)) currentRoom = "Sala B"
-                else if (txt.contains("Salão Principal", true) || txt.contains("Sala Principal", true)) currentRoom = "Principal"
-
-                // Lógica de Detecção de Nome:
-                // 1. Deve estar à direita (left > 500) OU ser um bloco que sobrou após remover a Sala
-                // 2. Não pode estar na lista negra
-                // 3. Não pode ser o próprio título da parte
-
-                val potentialName = txt
+                var cleaned = txt
                     .replace("Salão Principal", "", ignoreCase = true)
                     .replace("Sala Principal", "", ignoreCase = true)
                     .replace("Sala B", "", ignoreCase = true)
-                    .replace(Regex("""^\d+\."""), "") // Remove "1." se vier grudado
+                    .replace(Regex("""^\d+\."""), "")
                     .trim()
 
-                if (potentialName.length > 3 &&
-                    !blackList.any { potentialName.contains(it, ignoreCase = true) } &&
-                    !potentialName.contains(lastPartTitle, ignoreCase = true)) {
+                cleaned = cleaned.replace(Regex("""\s+I(?=[A-Z])"""), " / ")
 
+                cleaned = cleaned.replace(Regex("""\s*/\s*"""), " / ").trim()
+
+                var itemRoom = currentRoom
+                if (txt.contains("Sala B", ignoreCase = true)) {
+                    itemRoom = "Sala B"
+                } else if (txt.contains("Salão Principal", ignoreCase = true) || txt.contains("Sala Principal", ignoreCase = true)) {
+                    itemRoom = "Principal"
+                }
+
+                val itemCenter        = (item.left + item.right) / 2
+                val isOnRightSide     = itemCenter >= nameSideThreshold
+
+                val isLongEnough      = cleaned.length > 3
+                val isNotStructural   = !isStructural(cleaned)
+                val isNotPartTitle    = !cleaned.contains(lastPartTitle, ignoreCase = true) &&
+                        !lastPartTitle.contains(cleaned, ignoreCase = true)
+
+
+                if (isOnRightSide && isLongEnough && isNotStructural && isNotPartTitle) {
                     results.add(
                         WeeklyPart(
-                            id = lastPartId,
-                            title = lastPartTitle,
+                            id              = lastPartId,
+                            title           = lastPartTitle,
                             durationInMinutes = lastPartTime,
-                            room = currentRoom,
-                            assignees = potentialName,
-                            dateText = date
+                            room            = itemRoom,
+                            assignees       = cleaned,
+                            dateText        = date
                         )
                     )
                 }
             }
         }
+
         return results
     }
 

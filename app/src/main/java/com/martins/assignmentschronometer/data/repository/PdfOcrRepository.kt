@@ -20,6 +20,9 @@ data class OcrLine(
 
 object PdfOcrRepository {
 
+    private const val RENDER_DPI = 300
+    private const val POINTS_PER_INCH = 72f
+
     suspend fun extractLines(context: Context, uri: Uri): List<OcrLine> {
         val allLines = mutableListOf<OcrLine>()
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -29,12 +32,18 @@ object PdfOcrRepository {
                 PdfRenderer(pfd).use { renderer ->
                     var pageOffsetY = 0
 
+                    val scale = RENDER_DPI / POINTS_PER_INCH
+
                     for (i in 0 until renderer.pageCount) {
                         val page = renderer.openPage(i)
-                        val bitmap = createBitmap(page.width * 2, page.height * 2)
+
+                        val bitmapWidth = (page.width * scale).toInt()
+                        val bitmapHeight = (page.height * scale).toInt()
+                        val bitmap = createBitmap(bitmapWidth, bitmapHeight)
 
                         try {
                             bitmap.eraseColor(Color.WHITE)
+
                             page.render(
                                 bitmap,
                                 null,
@@ -60,7 +69,7 @@ object PdfOcrRepository {
                                 }
                             }
 
-                            pageOffsetY += bitmap.height
+                            pageOffsetY += bitmapHeight
                         } finally {
                             page.close()
                             bitmap.recycle()
