@@ -89,7 +89,9 @@ class ChronometerOverlayService : Service() {
             compositionContext = recomposer
 
             setContent {
-                AssignmentsChronometerTheme {
+                AssignmentsChronometerTheme(
+                    dynamicColorsEnabled = settings.dynamicColorsEnabled
+                ) {
                     ChronometerOverlayRoute(
                         sharedViewModel = sharedViewModel,
                         weeklyPartsViewModel = weeklyPartsViewModel,

@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.martins.assignmentschronometer.navigation.MainNavigation
 import com.martins.assignmentschronometer.navigation.Screen
@@ -26,6 +28,7 @@ class MainActivity : ComponentActivity() {
     private val sharedViewModel: SharedViewModel by lazy {
         (application as App).sharedViewModel
     }
+
     private val weeklyPartsViewModel: WeeklyPartsViewModel by lazy {
         (application as App).weeklyPartsViewModel
     }
@@ -39,7 +42,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            AssignmentsChronometerTheme {
+            val settingsViewModel = (application as App).settingsViewModel
+            val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+
+            AssignmentsChronometerTheme(
+                dynamicColorsEnabled = settingsUiState.dynamicColorsEnabled
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -77,20 +85,15 @@ class MainActivity : ComponentActivity() {
 
         if (uri.scheme == "chronometer") {
             when (uri.host) {
-                "start" -> {
-                    sharedViewModel.start()
-                }
-
+                "start" -> sharedViewModel.start()
                 "import-media" -> {
                     weeklyPartsViewModel.navigateToShortcutRoute(Screen.Record.route)
                     weeklyPartsViewModel.triggerImportMedia()
                 }
-
                 "scan" -> {
                     weeklyPartsViewModel.navigateToShortcutRoute(Screen.Record.route)
                     weeklyPartsViewModel.triggerScan()
                 }
-
                 "import-acdata" -> {
                     weeklyPartsViewModel.navigateToShortcutRoute(Screen.Settings.route)
                     weeklyPartsViewModel.triggerImportAcdata()

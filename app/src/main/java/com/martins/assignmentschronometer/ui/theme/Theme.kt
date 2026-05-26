@@ -25,8 +25,8 @@ val LocalChronometerColors = staticCompositionLocalOf<ChronometerColors> {
 
 val FixedChronometerColors = ChronometerColors(
     overtimeBackground = Color(0xFFB00020),
-    overtimeButton     = Color.White,
-    overtimeOnButton   = Color(0xFFB00020)
+    overtimeButton = Color.White,
+    overtimeOnButton = Color(0xFFB00020)
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -44,12 +44,13 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun AssignmentsChronometerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColorsEnabled: Boolean,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
+        dynamicColorsEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme
