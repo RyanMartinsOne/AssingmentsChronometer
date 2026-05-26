@@ -110,6 +110,7 @@ fun SettingsScreen(
         importLauncher
     ) {
         SettingsActions(
+            onThemeModeChange = settingsViewModel::setThemeMode,
             onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
             onSaveOverlayOpacity = settingsViewModel::saveOverlayOpacity,
             onSaveOverlayDimensions = settingsViewModel::saveOverlayDimensions,

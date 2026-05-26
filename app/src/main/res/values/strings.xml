@@ -33,6 +33,14 @@
 
     <!-- Settings — Appearance section -->
     <string name="settings_section_appearance">Appearance</string>
+
+    <string name="settings_theme_mode_title">Theme</string>
+    <string name="settings_theme_mode_description">Choose how the app appearance should behave</string>
+    <string name="settings_theme_mode_system">System</string>
+    <string name="settings_theme_mode_light">Light</string>
+    <string name="settings_theme_mode_dark">Dark</string>
+    <string name="settings_theme_mode_dialog_title">Choose theme</string>
+
     <string name="settings_dynamic_colors_title">Dynamic colors</string>
     <string name="settings_dynamic_colors_description">Use Material You colors on supported devices (Android 12+)</string>
     <string name="settings_overlay_appearance_title">Overlay appearance</string>

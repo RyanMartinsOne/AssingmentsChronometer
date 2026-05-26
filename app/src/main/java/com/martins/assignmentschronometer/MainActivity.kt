@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
             val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
 
             AssignmentsChronometerTheme(
+                themeMode = settingsUiState.themeMode,
                 dynamicColorsEnabled = settingsUiState.dynamicColorsEnabled
             ) {
                 Surface(

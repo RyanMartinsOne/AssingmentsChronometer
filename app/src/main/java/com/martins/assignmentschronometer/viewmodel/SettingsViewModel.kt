@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.martins.assignmentschronometer.data.repository.SettingsRepository
 import com.martins.assignmentschronometer.ui.screens.settings.OverlayAdjustmentResult
 import com.martins.assignmentschronometer.ui.screens.settings.SettingsUiState
+import com.martins.assignmentschronometer.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -29,6 +30,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     ) { prefs, message ->
         SettingsUiState(
             dynamicColorsEnabled = prefs.dynamicColorsEnabled,
+            themeMode = prefs.themeMode,
             overlayScaleX = prefs.overlayScaleX,
             overlayScaleY = prefs.overlayScaleY,
             overlayOpacity = prefs.overlayOpacity,
@@ -43,6 +45,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun setDynamicColorsEnabled(value: Boolean) {
         viewModelScope.launch { repository.setDynamicColorsEnabled(value) }
+    }
+
+    fun setThemeMode(value: ThemeMode) {
+        viewModelScope.launch { repository.setThemeMode(value) }
     }
 
     fun saveOverlayDimensions(widthValue: Float, heightValue: Float) {

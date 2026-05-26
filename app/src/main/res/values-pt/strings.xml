@@ -34,6 +34,14 @@
 
         <!-- Configurações — seção Aparência -->
         <string name="settings_section_appearance">Aparência</string>
+
+        <string name="settings_theme_mode_title">Tema</string>
+        <string name="settings_theme_mode_description">Escolha o tema que o app terá</string>
+        <string name="settings_theme_mode_system">Sistema</string>
+        <string name="settings_theme_mode_light">Claro</string>
+        <string name="settings_theme_mode_dark">Escuro</string>
+        <string name="settings_theme_mode_dialog_title">Escolha o tema</string>
+
         <string name="settings_dynamic_colors_title">Cores dinâmicas</string>
         <string name="settings_dynamic_colors_description">Usar cores do Material You em dispositivos compatíveis (Android 12+)</string>
         <string name="settings_overlay_appearance_title">Aparência da sobreposição</string>

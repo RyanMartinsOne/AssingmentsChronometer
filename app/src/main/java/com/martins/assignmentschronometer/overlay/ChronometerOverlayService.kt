@@ -90,6 +90,7 @@ class ChronometerOverlayService : Service() {
 
             setContent {
                 AssignmentsChronometerTheme(
+                    themeMode = settings.themeMode,
                     dynamicColorsEnabled = settings.dynamicColorsEnabled
                 ) {
                     ChronometerOverlayRoute(

@@ -43,12 +43,18 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun AssignmentsChronometerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode,
     dynamicColorsEnabled: Boolean,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
+    val systemDarkTheme = isSystemInDarkTheme()
+    val darkTheme = when (themeMode) {
+        ThemeMode.SYSTEM -> systemDarkTheme
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
 
+    val context = LocalContext.current
     val colorScheme = when {
         dynamicColorsEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
