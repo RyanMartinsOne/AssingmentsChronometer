@@ -1,4 +1,4 @@
-package com.martins.assignmentschronometer.ui.screens.settings
+package com.martins.assignmentschronometer.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -30,6 +30,7 @@ internal fun SettingsSwitchItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

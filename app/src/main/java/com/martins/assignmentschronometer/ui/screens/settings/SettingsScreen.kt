@@ -6,6 +6,7 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,13 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.martins.assignmentschronometer.App
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.viewmodel.RecordsEvent
-import androidx.core.net.toUri
 
 @Composable
 fun SettingsScreen(
@@ -46,17 +46,16 @@ fun SettingsScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // ─── Export SAF launcher ──────────────────────────────────────────────────
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/octet-stream")
     ) { uri ->
-        uri?.let { weeklyPartsViewModel.exportRecords(it) }
+        uri?.let(weeklyPartsViewModel::exportRecords)
     }
 
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let { weeklyPartsViewModel.importRecords(it) }
+        uri?.let(weeklyPartsViewModel::importRecords)
     }
 
     LaunchedEffect(weeklyPartsViewModel.pendingImportAcdataAction) {
@@ -65,7 +64,7 @@ fun SettingsScreen(
             weeklyPartsViewModel.onImportAcdataHandled()
         }
     }
-    
+
     LaunchedEffect(weeklyPartsViewModel.pendingNavigationToRecord) {
         if (weeklyPartsViewModel.pendingNavigationToRecord) {
             onNavigateToRecord()
@@ -102,6 +101,34 @@ fun SettingsScreen(
         }
     }
 
+    val actions = remember(
+        context,
+        onOpenLicenses,
+        settingsViewModel,
+        weeklyPartsViewModel,
+        exportLauncher,
+        importLauncher
+    ) {
+        SettingsActions(
+            onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
+            onSaveOverlayOpacity = settingsViewModel::saveOverlayOpacity,
+            onSaveOverlayDimensions = settingsViewModel::saveOverlayDimensions,
+            onHeightResultChanged = settingsViewModel::onHeightResultChanged,
+            onClearOverlayMessage = settingsViewModel::clearOverlayMessage,
+            onExportRecords = { exportLauncher.launch("records.acdata") },
+            onImportRecords = { importLauncher.launch(arrayOf("application/octet-stream")) },
+            onClearRecords = weeklyPartsViewModel::clearAll,
+            onRequestOverlayPermission = {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    "package:${context.packageName}".toUri()
+                )
+                context.startActivity(intent)
+            },
+            onOpenLicenses = onOpenLicenses
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -122,35 +149,7 @@ fun SettingsScreen(
     ) { paddingValues ->
         SettingsContent(
             uiState = uiState,
-            onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
-
-            onSaveOverlayOpacity = { opacity ->
-                settingsViewModel.saveOverlayOpacity(opacity)
-            },
-
-            onSaveOverlayDimensions = { width, height ->
-                settingsViewModel.saveOverlayDimensions(width, height)
-            },
-
-            onHeightResultChanged = { result -> settingsViewModel.onHeightResultChanged(result) },
-            onClearOverlayMessage = settingsViewModel::clearOverlayMessage,
-            onExportRecords = {
-                exportLauncher.launch("records.acdata")
-            },
-            onImportRecords = {
-                importLauncher.launch(arrayOf("application/octet-stream"))
-            },
-            onClearRecords = {
-                weeklyPartsViewModel.clearAll()
-            },
-            onRequestOverlayPermission = {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    "package:${context.packageName}".toUri()
-                )
-                context.startActivity(intent)
-            },
-            onOpenLicenses = onOpenLicenses,
+            actions = actions,
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
