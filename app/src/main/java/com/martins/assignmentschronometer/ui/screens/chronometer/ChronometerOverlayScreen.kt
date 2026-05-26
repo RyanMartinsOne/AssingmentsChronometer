@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.ui.components.CommentCountTag
+import com.martins.assignmentschronometer.ui.screens.settings.OverlaySizeRules
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
@@ -107,14 +109,14 @@ fun ChronometerOverlayScreen(
 
     val cornerRadius = (14f * safeVerticalScale.coerceIn(0.92f, 1.05f)).dp
     val containerVerticalPadding = (3.5f * safeVerticalScale).dp
-    val commentTopPadding = (3f * safeVerticalScale).dp
-    val commentScale = (((safeVerticalScale + (overlayWidth.value / 192f)) / 2f) * 1.3f).coerceIn(1.0f, 1.8f)
+    val commentTopPadding = (2f * safeVerticalScale).dp
     val timeFontSize = (37f * safeVerticalScale.coerceIn(0.92f, 1.16f)).sp
     val timeHorizontalPadding = (6f * safeVerticalScale.coerceIn(0.92f, 1.04f)).dp
     val timeVerticalPadding = (2f * safeVerticalScale).dp
     val iconButtonSize = (32f * safeVerticalScale.coerceIn(0.92f, 1.18f)).dp
     val iconSize = (18f * safeVerticalScale.coerceIn(0.92f, 1.08f)).dp
     val bottomRowPadding = (2f * safeVerticalScale).dp
+    val commentScale = safeVerticalScale.coerceIn(1.02f, 1.08f)
 
     Surface(
         modifier = Modifier
@@ -129,7 +131,9 @@ fun ChronometerOverlayScreen(
                             onDrag(dragAmount.x, dragAmount.y)
                         }
                     }
-                } else Modifier
+                } else {
+                    Modifier
+                }
             ),
         shape = RoundedCornerShape(cornerRadius),
         color = bgColor,
@@ -145,9 +149,11 @@ fun ChronometerOverlayScreen(
             if (showCommentCount) {
                 CommentCountTag(
                     count = commentCount,
-                    modifier = Modifier.padding(top = commentTopPadding),
+                    modifier = Modifier
+                        .fillMaxWidth(0.96f)
+                        .padding(top = commentTopPadding),
                     isCompact = true,
-                    scale = commentScale
+                    scale = safeVerticalScale.coerceIn(1.03f, 1.08f)
                 )
             }
 

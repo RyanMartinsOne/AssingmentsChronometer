@@ -1,6 +1,8 @@
 package com.martins.assignmentschronometer.ui.screens.settings
 
 import androidx.annotation.StringRes
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.martins.assignmentschronometer.R
 
 data class OverlayAdjustmentResult(
@@ -77,5 +79,24 @@ object OverlaySizeRules {
                 messageArgs = listOf(minWidthLevelNeeded + 1)
             )
         }
+    }
+
+    fun recommendedCommentTagMaxWidth(overlayWidth: Dp): Dp {
+        return (overlayWidth * 0.56f).coerceIn(76.dp, 124.dp)
+    }
+
+    fun recommendedCompactCommentScale(
+        overlayWidth: Dp,
+        verticalScale: Float
+    ): Float {
+        val widthFactor = when {
+            overlayWidth < 176.dp -> 0.90f
+            overlayWidth < 188.dp -> 0.94f
+            overlayWidth < 200.dp -> 0.98f
+            else -> 1.00f
+        }
+
+        val verticalFactor = verticalScale.coerceIn(0.94f, 1.04f)
+        return (widthFactor * verticalFactor).coerceIn(0.88f, 1.02f)
     }
 }
