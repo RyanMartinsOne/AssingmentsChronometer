@@ -113,6 +113,7 @@ fun SettingsScreen(
             onThemeModeChange = settingsViewModel::setThemeMode,
             onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
             onShowCommentCountInOverlayChange = settingsViewModel::setShowCommentCountInOverlay,
+            onSimplifiedOverlayEnabledChange = settingsViewModel::setSimplifiedOverlayEnabled,
             onSaveOverlayOpacity = settingsViewModel::saveOverlayOpacity,
             onSaveOverlayDimensions = settingsViewModel::saveOverlayDimensions,
             onHeightResultChanged = settingsViewModel::onHeightResultChanged,

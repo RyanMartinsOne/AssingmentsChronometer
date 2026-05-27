@@ -23,7 +23,8 @@ data class SettingsPreferences(
     val overlayScaleX: Float,
     val overlayScaleY: Float,
     val overlayOpacity: Float,
-    val showCommentCountInOverlay: Boolean
+    val showCommentCountInOverlay: Boolean,
+    val simplifiedOverlayEnabled: Boolean
 )
 
 class SettingsRepository(private val context: Context) {
@@ -36,14 +37,14 @@ class SettingsRepository(private val context: Context) {
         val OVERLAY_OPACITY = floatPreferencesKey("overlay_opacity")
         val SHOW_COMMENT_COUNT_IN_OVERLAY =
             booleanPreferencesKey("show_comment_count_in_overlay")
+        val SIMPLIFIED_OVERLAY_ENABLED =
+            booleanPreferencesKey("simplified_overlay_enabled")
     }
 
     val settingsFlow: Flow<SettingsPreferences> = context.settingsDataStore.data.map { prefs ->
         val storedThemeMode = prefs[Keys.THEME_MODE]
         val themeMode = storedThemeMode
-            ?.let {
-                runCatching { ThemeMode.valueOf(it) }.getOrDefault(ThemeMode.SYSTEM)
-            }
+            ?.let { runCatching { ThemeMode.valueOf(it) }.getOrDefault(ThemeMode.SYSTEM) }
             ?: ThemeMode.SYSTEM
 
         SettingsPreferences(
@@ -53,7 +54,8 @@ class SettingsRepository(private val context: Context) {
             overlayScaleX = prefs[Keys.OVERLAY_SCALE_X] ?: 1.0f,
             overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.0f,
             overlayOpacity = prefs[Keys.OVERLAY_OPACITY] ?: 1.0f,
-            showCommentCountInOverlay = prefs[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] ?: true
+            showCommentCountInOverlay = prefs[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] ?: true,
+            simplifiedOverlayEnabled = prefs[Keys.SIMPLIFIED_OVERLAY_ENABLED] ?: false
         )
     }
 
@@ -80,6 +82,12 @@ class SettingsRepository(private val context: Context) {
     suspend fun setShowCommentCountInOverlay(value: Boolean) {
         context.settingsDataStore.edit {
             it[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] = value
+        }
+    }
+
+    suspend fun setSimplifiedOverlayEnabled(value: Boolean) {
+        context.settingsDataStore.edit {
+            it[Keys.SIMPLIFIED_OVERLAY_ENABLED] = value
         }
     }
 }

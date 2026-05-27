@@ -32,6 +32,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             dynamicColorsEnabled = prefs.dynamicColorsEnabled,
             themeMode = prefs.themeMode,
             showCommentCountInOverlay = prefs.showCommentCountInOverlay,
+            simplifiedOverlayEnabled = prefs.simplifiedOverlayEnabled,
             overlayScaleX = prefs.overlayScaleX,
             overlayScaleY = prefs.overlayScaleY,
             overlayOpacity = prefs.overlayOpacity,
@@ -55,6 +56,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setShowCommentCountInOverlay(value: Boolean) {
         viewModelScope.launch {
             repository.setShowCommentCountInOverlay(value)
+        }
+    }
+
+    fun setSimplifiedOverlayEnabled(value: Boolean) {
+        viewModelScope.launch {
+            repository.setSimplifiedOverlayEnabled(value)
         }
     }
 

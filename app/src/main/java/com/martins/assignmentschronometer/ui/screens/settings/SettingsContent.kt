@@ -42,6 +42,7 @@ data class SettingsActions(
     val onThemeModeChange: (ThemeMode) -> Unit,
     val onDynamicColorsChange: (Boolean) -> Unit,
     val onShowCommentCountInOverlayChange: (Boolean) -> Unit,
+    val onSimplifiedOverlayEnabledChange: (Boolean) -> Unit,
     val onSaveOverlayOpacity: (Float) -> Unit,
     val onSaveOverlayDimensions: (Float, Float) -> Unit,
     val onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
@@ -74,6 +75,7 @@ fun SettingsContent(
                 onThemeModeChange = actions.onThemeModeChange,
                 onDynamicColorsChange = actions.onDynamicColorsChange,
                 onShowCommentCountInOverlayChange = actions.onShowCommentCountInOverlayChange,
+                onSimplifiedOverlayEnabledChange = actions.onSimplifiedOverlayEnabledChange,
                 onSaveOpacity = actions.onSaveOverlayOpacity,
                 onSaveDimensions = actions.onSaveOverlayDimensions,
                 onHeightResultChanged = actions.onHeightResultChanged,
@@ -104,6 +106,7 @@ private fun AppearanceSettingsSection(
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
     onShowCommentCountInOverlayChange: (Boolean) -> Unit,
+    onSimplifiedOverlayEnabledChange: (Boolean) -> Unit,
     onSaveDimensions: (Float, Float) -> Unit,
     onSaveOpacity: (Float) -> Unit,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
@@ -146,6 +149,16 @@ private fun AppearanceSettingsSection(
 
         HorizontalDivider()
 
+        SettingsSwitchItem(
+            icon = ImageVector.vectorResource(R.drawable.compress),
+            title = stringResource(R.string.settings_simplified_overlay_title),
+            description = stringResource(R.string.settings_simplified_overlay_description),
+            checked = uiState.simplifiedOverlayEnabled,
+            onCheckedChange = onSimplifiedOverlayEnabledChange
+        )
+
+        HorizontalDivider()
+
         OverlayAppearanceSettingItem(
             icon = ImageVector.vectorResource(R.drawable.aspect_ratio),
             title = stringResource(R.string.settings_overlay_appearance_title),
@@ -159,7 +172,8 @@ private fun AppearanceSettingsSection(
             onHeightResultChanged = onHeightResultChanged,
             onSaveDimensions = onSaveDimensions,
             onSaveOpacity = onSaveOpacity,
-            onClearMessage = onClearOverlayMessage
+            onClearMessage = onClearOverlayMessage,
+            simplifiedOverlayEnabled = uiState.simplifiedOverlayEnabled
         )
     }
 

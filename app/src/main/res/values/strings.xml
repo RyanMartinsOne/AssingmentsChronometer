@@ -47,6 +47,9 @@
     <string name="settings_overlay_comment_count_title">Overlay comment count</string>
     <string name="settings_overlay_comment_count_description">Show comment count in overlay</string>
 
+    <string name="settings_simplified_overlay_title">Simplified overlay</string>
+    <string name="settings_simplified_overlay_description">Show simplified overlay, touch it to pause/resume</string>
+
     <string name="settings_overlay_appearance_title">Overlay appearance</string>
     <string name="settings_overlay_size_description">Adjust opacity, width and height of the floating chronometer overlay</string>
     <string name="settings_overlay_size_width">Width</string>

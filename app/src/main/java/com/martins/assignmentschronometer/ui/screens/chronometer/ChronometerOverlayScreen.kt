@@ -1,5 +1,6 @@
 package com.martins.assignmentschronometer.ui.screens.chronometer
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,7 @@ fun ChronometerOverlayRoute(
     weeklyPartsViewModel: WeeklyPartsViewModel,
     onClose: () -> Unit,
     showCommentCountInOverlay: Boolean,
+    simplifiedOverlayEnabled: Boolean,
     overlayOpacity: Float = 1.0f,
     overlayWidth: Dp = OverlayBaseWidth,
     verticalScale: Float = 1f
@@ -61,6 +63,7 @@ fun ChronometerOverlayRoute(
                     showCommentCountInOverlay,
         isRunning = sharedViewModel.isRunning,
         onDrag = onDrag,
+        isDraggable = true,
         onToggleTimer = {
             if (sharedViewModel.isRunning) {
                 sharedViewModel.pause()
@@ -79,9 +82,10 @@ fun ChronometerOverlayRoute(
             }
             onClose()
         },
-        overlayOpacity = overlayOpacity,
         overlayWidth = overlayWidth,
-        verticalScale = verticalScale
+        overlayOpacity = overlayOpacity,
+        verticalScale = verticalScale,
+        simplifiedOverlayEnabled = simplifiedOverlayEnabled
     )
 }
 
@@ -99,7 +103,8 @@ fun ChronometerOverlayScreen(
     onClose: () -> Unit,
     overlayWidth: Dp = OverlayBaseWidth,
     overlayOpacity: Float = 1.0f,
-    verticalScale: Float = 1f
+    verticalScale: Float = 1f,
+    simplifiedOverlayEnabled: Boolean = false
 ) {
     val bgColor = if (isOverTime) {
         Color(0xCCB00020)
@@ -108,7 +113,6 @@ fun ChronometerOverlayScreen(
     }
 
     val safeVerticalScale = verticalScale.coerceIn(0.83f, 1.20f)
-
     val cornerRadius = (14f * safeVerticalScale.coerceIn(0.92f, 1.05f)).dp
     val containerVerticalPadding = (3.5f * safeVerticalScale).dp
     val commentTopPadding = (2f * safeVerticalScale).dp
@@ -136,6 +140,13 @@ fun ChronometerOverlayScreen(
                             onDrag(dragAmount.x, dragAmount.y)
                         }
                     }
+                } else {
+                    Modifier
+                }
+            )
+            .then(
+                if (simplifiedOverlayEnabled) {
+                    Modifier.clickable { onToggleTimer() }
                 } else {
                     Modifier
                 }
@@ -174,53 +185,55 @@ fun ChronometerOverlayScreen(
                 )
             )
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = bottomRowPadding)
-            ) {
-                IconButton(
-                    onClick = onToggleTimer,
-                    modifier = Modifier.size(iconButtonSize)
+            if (!simplifiedOverlayEnabled) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = bottomRowPadding)
                 ) {
-                    Icon(
-                        painter = painterResource(
-                            if (isRunning) R.drawable.pause else R.drawable.play
-                        ),
-                        contentDescription = if (isRunning) {
-                            stringResource(R.string.pause)
-                        } else {
-                            stringResource(R.string.resume)
-                        },
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.size(iconSize)
-                    )
-                }
+                    IconButton(
+                        onClick = onToggleTimer,
+                        modifier = Modifier.size(iconButtonSize)
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                if (isRunning) R.drawable.pause else R.drawable.play
+                            ),
+                            contentDescription = if (isRunning) {
+                                stringResource(R.string.pause)
+                            } else {
+                                stringResource(R.string.resume)
+                            },
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    }
 
-                IconButton(
-                    onClick = onReset,
-                    modifier = Modifier.size(iconButtonSize)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.restart),
-                        contentDescription = stringResource(R.string.reset),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.size(iconSize)
-                    )
-                }
+                    IconButton(
+                        onClick = onReset,
+                        modifier = Modifier.size(iconButtonSize)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.restart),
+                            contentDescription = stringResource(R.string.reset),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    }
 
-                IconButton(
-                    onClick = onClose,
-                    modifier = Modifier.size(iconButtonSize)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.delete),
-                        contentDescription = stringResource(R.string.overlay_close),
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(iconSize)
-                    )
+                    IconButton(
+                        onClick = onClose,
+                        modifier = Modifier.size(iconButtonSize)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.delete),
+                            contentDescription = stringResource(R.string.overlay_close),
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(iconSize)
+                        )
+                    }
                 }
             }
         }

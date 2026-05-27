@@ -42,6 +42,7 @@ fun OverlayAppearanceSettingItem(
     currentScaleY: Float,
     currentOpacity: Float,
     showCommentCountInOverlay: Boolean,
+    simplifiedOverlayEnabled: Boolean,
     messageRes: Int?,
     messageArgs: List<Any>,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
@@ -201,7 +202,8 @@ fun OverlayAppearanceSettingItem(
             overlayScaleX = localScaleX,
             overlayScaleY = localScaleY,
             overlayOpacity = localOpacity,
-            showCommentCountInOverlay = showCommentCountInOverlay
+            showCommentCountInOverlay = showCommentCountInOverlay,
+            simplifiedOverlayEnabled = simplifiedOverlayEnabled
         )
     }
 }

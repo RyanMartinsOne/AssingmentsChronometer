@@ -103,6 +103,7 @@ class ChronometerOverlayService : Service() {
                         },
                         onClose = { stopSelf() },
                         showCommentCountInOverlay = settings.showCommentCountInOverlay,
+                        simplifiedOverlayEnabled = settings.simplifiedOverlayEnabled,
                         overlayWidth = overlayWidthDp,
                         verticalScale = settings.overlayScaleY,
                         overlayOpacity = settings.overlayOpacity
