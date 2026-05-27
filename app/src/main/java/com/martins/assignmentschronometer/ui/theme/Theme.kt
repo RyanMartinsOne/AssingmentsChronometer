@@ -71,10 +71,14 @@ fun AssignmentsChronometerTheme(
 
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (context as Activity).window
-            WindowCompat.getInsetsController(window, view).apply {
-                isAppearanceLightStatusBars = !darkTheme
-                isAppearanceLightNavigationBars = !darkTheme
+            val activity = context as? Activity ?: return@SideEffect
+            val controller = WindowCompat.getInsetsController(activity.window, view)
+
+            controller.isAppearanceLightStatusBars = !darkTheme
+            controller.isAppearanceLightNavigationBars = !darkTheme
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                activity.window.isNavigationBarContrastEnforced = false
             }
         }
     }
