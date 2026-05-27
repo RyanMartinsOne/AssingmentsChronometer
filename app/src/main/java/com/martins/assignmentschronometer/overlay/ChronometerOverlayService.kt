@@ -102,6 +102,7 @@ class ChronometerOverlayService : Service() {
                             windowManager.updateViewLayout(this@apply, params)
                         },
                         onClose = { stopSelf() },
+                        showCommentCountInOverlay = settings.showCommentCountInOverlay,
                         overlayWidth = overlayWidthDp,
                         verticalScale = settings.overlayScaleY,
                         overlayOpacity = settings.overlayOpacity

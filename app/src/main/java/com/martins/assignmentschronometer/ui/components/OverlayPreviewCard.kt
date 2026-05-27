@@ -18,6 +18,7 @@ fun OverlayPreviewCard(
     overlayScaleX: Float,
     overlayScaleY: Float,
     overlayOpacity: Float,
+    showCommentCountInOverlay: Boolean,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -36,7 +37,7 @@ fun OverlayPreviewCard(
                 time = "00:05:42",
                 isOverTime = false,
                 commentCount = 13,
-                showCommentCount = true,
+                showCommentCount = showCommentCountInOverlay,
                 isRunning = true,
                 onDrag = { _, _ -> },
                 isDraggable = false,

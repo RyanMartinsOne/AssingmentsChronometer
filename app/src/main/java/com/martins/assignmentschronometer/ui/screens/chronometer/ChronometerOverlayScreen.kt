@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -48,6 +47,7 @@ fun ChronometerOverlayRoute(
     onDrag: (dx: Float, dy: Float) -> Unit,
     weeklyPartsViewModel: WeeklyPartsViewModel,
     onClose: () -> Unit,
+    showCommentCountInOverlay: Boolean,
     overlayOpacity: Float = 1.0f,
     overlayWidth: Dp = OverlayBaseWidth,
     verticalScale: Float = 1f
@@ -56,7 +56,9 @@ fun ChronometerOverlayRoute(
         time = sharedViewModel.formattedTime,
         isOverTime = sharedViewModel.isOverTime,
         commentCount = sharedViewModel.commentCount,
-        showCommentCount = sharedViewModel.selectedAssignment?.showCommentCount == true,
+        showCommentCount =
+            (sharedViewModel.selectedAssignment?.showCommentCount == true) &&
+                    showCommentCountInOverlay,
         isRunning = sharedViewModel.isRunning,
         onDrag = onDrag,
         onToggleTimer = {
@@ -110,13 +112,16 @@ fun ChronometerOverlayScreen(
     val cornerRadius = (14f * safeVerticalScale.coerceIn(0.92f, 1.05f)).dp
     val containerVerticalPadding = (3.5f * safeVerticalScale).dp
     val commentTopPadding = (2f * safeVerticalScale).dp
+    val commentScale = OverlaySizeRules.recommendedCompactCommentScale(
+        overlayWidth = overlayWidth,
+        verticalScale = safeVerticalScale
+    )
     val timeFontSize = (37f * safeVerticalScale.coerceIn(0.92f, 1.16f)).sp
     val timeHorizontalPadding = (6f * safeVerticalScale.coerceIn(0.92f, 1.04f)).dp
     val timeVerticalPadding = (2f * safeVerticalScale).dp
     val iconButtonSize = (32f * safeVerticalScale.coerceIn(0.92f, 1.18f)).dp
     val iconSize = (18f * safeVerticalScale.coerceIn(0.92f, 1.08f)).dp
     val bottomRowPadding = (2f * safeVerticalScale).dp
-    val commentScale = safeVerticalScale.coerceIn(1.02f, 1.08f)
 
     Surface(
         modifier = Modifier
@@ -153,7 +158,7 @@ fun ChronometerOverlayScreen(
                         .fillMaxWidth(0.96f)
                         .padding(top = commentTopPadding),
                     isCompact = true,
-                    scale = safeVerticalScale.coerceIn(1.03f, 1.08f)
+                    scale = commentScale
                 )
             }
 

@@ -81,10 +81,6 @@ object OverlaySizeRules {
         }
     }
 
-    fun recommendedCommentTagMaxWidth(overlayWidth: Dp): Dp {
-        return (overlayWidth * 0.56f).coerceIn(76.dp, 124.dp)
-    }
-
     fun recommendedCompactCommentScale(
         overlayWidth: Dp,
         verticalScale: Float

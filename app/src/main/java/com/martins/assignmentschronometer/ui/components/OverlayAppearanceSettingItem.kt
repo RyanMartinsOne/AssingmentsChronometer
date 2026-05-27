@@ -41,6 +41,7 @@ fun OverlayAppearanceSettingItem(
     currentScaleX: Float,
     currentScaleY: Float,
     currentOpacity: Float,
+    showCommentCountInOverlay: Boolean,
     messageRes: Int?,
     messageArgs: List<Any>,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
@@ -199,7 +200,8 @@ fun OverlayAppearanceSettingItem(
         OverlayPreviewCard(
             overlayScaleX = localScaleX,
             overlayScaleY = localScaleY,
-            overlayOpacity = localOpacity
+            overlayOpacity = localOpacity,
+            showCommentCountInOverlay = showCommentCountInOverlay
         )
     }
 }

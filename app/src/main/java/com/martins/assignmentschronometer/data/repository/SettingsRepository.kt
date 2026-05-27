@@ -22,7 +22,8 @@ data class SettingsPreferences(
     val themeMode: ThemeMode,
     val overlayScaleX: Float,
     val overlayScaleY: Float,
-    val overlayOpacity: Float
+    val overlayOpacity: Float,
+    val showCommentCountInOverlay: Boolean
 )
 
 class SettingsRepository(private val context: Context) {
@@ -33,6 +34,8 @@ class SettingsRepository(private val context: Context) {
         val OVERLAY_SCALE_X = floatPreferencesKey("overlay_scale_x")
         val OVERLAY_SCALE_Y = floatPreferencesKey("overlay_scale_y")
         val OVERLAY_OPACITY = floatPreferencesKey("overlay_opacity")
+        val SHOW_COMMENT_COUNT_IN_OVERLAY =
+            booleanPreferencesKey("show_comment_count_in_overlay")
     }
 
     val settingsFlow: Flow<SettingsPreferences> = context.settingsDataStore.data.map { prefs ->
@@ -49,7 +52,8 @@ class SettingsRepository(private val context: Context) {
             themeMode = themeMode,
             overlayScaleX = prefs[Keys.OVERLAY_SCALE_X] ?: 1.0f,
             overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.0f,
-            overlayOpacity = prefs[Keys.OVERLAY_OPACITY] ?: 1.0f
+            overlayOpacity = prefs[Keys.OVERLAY_OPACITY] ?: 1.0f,
+            showCommentCountInOverlay = prefs[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] ?: true
         )
     }
 
@@ -71,5 +75,11 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setOverlayOpacity(value: Float) {
         context.settingsDataStore.edit { it[Keys.OVERLAY_OPACITY] = value }
+    }
+
+    suspend fun setShowCommentCountInOverlay(value: Boolean) {
+        context.settingsDataStore.edit {
+            it[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] = value
+        }
     }
 }

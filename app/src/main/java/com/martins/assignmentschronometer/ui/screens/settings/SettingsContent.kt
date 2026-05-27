@@ -41,6 +41,7 @@ import com.martins.assignmentschronometer.ui.theme.ThemeMode
 data class SettingsActions(
     val onThemeModeChange: (ThemeMode) -> Unit,
     val onDynamicColorsChange: (Boolean) -> Unit,
+    val onShowCommentCountInOverlayChange: (Boolean) -> Unit,
     val onSaveOverlayOpacity: (Float) -> Unit,
     val onSaveOverlayDimensions: (Float, Float) -> Unit,
     val onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
@@ -72,6 +73,7 @@ fun SettingsContent(
                 uiState = uiState,
                 onThemeModeChange = actions.onThemeModeChange,
                 onDynamicColorsChange = actions.onDynamicColorsChange,
+                onShowCommentCountInOverlayChange = actions.onShowCommentCountInOverlayChange,
                 onSaveOpacity = actions.onSaveOverlayOpacity,
                 onSaveDimensions = actions.onSaveOverlayDimensions,
                 onHeightResultChanged = actions.onHeightResultChanged,
@@ -101,6 +103,7 @@ private fun AppearanceSettingsSection(
     uiState: SettingsUiState,
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
+    onShowCommentCountInOverlayChange: (Boolean) -> Unit,
     onSaveDimensions: (Float, Float) -> Unit,
     onSaveOpacity: (Float) -> Unit,
     onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
@@ -133,6 +136,16 @@ private fun AppearanceSettingsSection(
 
         HorizontalDivider()
 
+        SettingsSwitchItem(
+            icon = ImageVector.vectorResource(R.drawable.raised_hand),
+            title = stringResource(R.string.settings_overlay_comment_count_title),
+            description = stringResource(R.string.settings_overlay_comment_count_description),
+            checked = uiState.showCommentCountInOverlay,
+            onCheckedChange = onShowCommentCountInOverlayChange
+        )
+
+        HorizontalDivider()
+
         OverlayAppearanceSettingItem(
             icon = ImageVector.vectorResource(R.drawable.aspect_ratio),
             title = stringResource(R.string.settings_overlay_appearance_title),
@@ -140,6 +153,7 @@ private fun AppearanceSettingsSection(
             currentScaleX = uiState.overlayScaleX,
             currentScaleY = uiState.overlayScaleY,
             currentOpacity = uiState.overlayOpacity,
+            showCommentCountInOverlay = uiState.showCommentCountInOverlay,
             messageRes = uiState.overlaySizeMessageRes,
             messageArgs = uiState.overlaySizeMessageArgs,
             onHeightResultChanged = onHeightResultChanged,

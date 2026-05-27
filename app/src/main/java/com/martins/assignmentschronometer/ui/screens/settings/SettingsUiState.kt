@@ -8,6 +8,7 @@ data class SettingsUiState(
     val overlayScaleX: Float = 1.0f,
     val overlayScaleY: Float = 1.0f,
     val overlayOpacity: Float = 1.0f,
+    val showCommentCountInOverlay: Boolean = true,
     val overlaySizeMessageRes: Int? = null,
     val overlaySizeMessageArgs: List<Any> = emptyList(),
 )

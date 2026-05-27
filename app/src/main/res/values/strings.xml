@@ -43,6 +43,10 @@
 
     <string name="settings_dynamic_colors_title">Dynamic colors</string>
     <string name="settings_dynamic_colors_description">Use Material You colors on supported devices (Android 12+)</string>
+
+    <string name="settings_overlay_comment_count_title">Overlay comment count</string>
+    <string name="settings_overlay_comment_count_description">Show comment count in overlay</string>
+
     <string name="settings_overlay_appearance_title">Overlay appearance</string>
     <string name="settings_overlay_size_description">Adjust opacity, width and height of the floating chronometer overlay</string>
     <string name="settings_overlay_size_width">Width</string>
