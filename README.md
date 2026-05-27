@@ -1,65 +1,67 @@
-# Assignments Chronometer (Controle do Tempo)
+# Assignments Chronometer
 
-Aplicativo Android para cronometrar e registrar designações em reuniões das Testemunhas de Jeová — tanto as do fim de semana (Discurso Público e A Sentinela) quanto as de meio de semana (Tesouros da Palavra, Joias Espirituais e demais partes da *Nossa Vida Cristã*).
+🇧🇷 [Português](README.pt.md)
 
----
-
-## Funcionalidades
-
-### Cronômetro
-- Cronômetro em tempo real com estados **Iniciando / Pausado / Reiniciado**
-- Indicação visual de tempo excedido (fundo vermelho ao ultrapassar a duração prevista)
-- Sobreposição flutuante (*overlay*) que permanece visível sobre outros aplicativos
-- Sobreposição simplificada: toque para pausar/continuar
-- Contagem regressiva de comentários para a parte de Joias Espirituais (slots de 30 s)
-
-### Registros de Partes Semanais
-- Importação automática via **OCR** a partir de foto da câmera ou arquivo PDF/imagem
-- Parser inteligente que identifica data, título, designado, sala e duração de cada parte
-- Adição e edição manual de partes via diálogo
-- Registro do tempo realizado e cálculo automático de atraso
-- Agrupamento das partes por semana com cabeçalho de data
-- Exportação e importação dos registros em formato `.acdata` (JSON)
-- Compartilhamento individual de partes via texto (WhatsApp, etc.)
-
-### Designações rápidas
-- Atalho para Discurso Público, A Sentinela, Tesouros e Joias Espirituais com duração pré-definida
-
-### Configurações
-- Tema: Sistema / Claro / Escuro
-- Cores dinâmicas (Material You — Android 12+)
-- Controle de opacidade, largura e altura da sobreposição (8 níveis cada)
-- Pressets rápidos: Compacto, Padrão, Grande
-- Mostrar/ocultar contagem de comentários na sobreposição
-- Ativar/desativar sobreposição simplificada
-- Gerenciamento de dados: exportar, importar e limpar registros
-- Permissão de sobreposição direta pela tela de configurações
-- Tela de licenças de código aberto
+An Android app for timing and recording assignments in Jehovah's Witnesses meetings — both weekend (Public Talk and Watchtower Study) and midweek (Treasures from God's Word, Spiritual Gems, and other *Christian Life and Ministry* parts).
 
 ---
 
-## Arquitetura
+## Features
 
-O projeto segue a arquitetura **MVVM** com separação em camadas:
+### Chronometer
+- Real-time stopwatch with **Start / Pause / Resume / Reset** states
+- Visual overtime indicator (red background when the planned duration is exceeded)
+- Floating overlay that stays visible over other apps
+- Simplified overlay mode: tap to pause/resume
+- Comment countdown for the Spiritual Gems part (30-second slots)
+
+### Weekly Part Records
+- Automatic import via **OCR** from a camera photo or PDF/image file
+- Smart parser that identifies date, title, assignee, room and duration for each part
+- Manual add and edit via dialog
+- Records realized time and automatically calculates delay
+- Parts grouped by week with a date sticky header
+- Export and import records as `.acdata` files (JSON)
+- Share individual parts as plain text (WhatsApp, etc.)
+
+### Quick Assignments
+- One-tap shortcuts for Public Talk, Watchtower Study, Treasures and Spiritual Gems with preset durations
+
+### Settings
+- Theme: System / Light / Dark
+- Dynamic colors (Material You — Android 12+)
+- Overlay opacity, width and height controls (8 levels each)
+- Quick presets: Compact, Default, Large
+- Show/hide comment count in overlay
+- Enable/disable simplified overlay
+- Data management: export, import and clear records
+- Overlay permission shortcut from the settings screen
+- Open-source licenses screen
+
+---
+
+## Architecture
+
+The project follows **MVVM** with clear layer separation:
 
 ```
 app/
 ├── data/
-│   ├── model/          # Modelos de domínio (Assignment, WeeklyPart)
-│   └── repository/     # Acesso a dados (Settings, Records, PdfOcr)
-├── overlay/            # Serviço e ciclo de vida da sobreposição
-├── navigation/         # NavHost e definição de rotas
+│   ├── model/          # Domain models (Assignment, WeeklyPart)
+│   └── repository/     # Data access (Settings, Records, PdfOcr)
+├── overlay/            # Overlay service and lifecycle owner
+├── navigation/         # NavHost and route definitions
 ├── ui/
-│   ├── components/     # Componentes reutilizáveis (cards, dialogs, etc.)
-│   ├── screens/        # Telas da aplicação
-│   └── theme/          # Tema Material3, cores e tipografia
-├── util/               # Utilitários (OCR parser, formatadores de data)
-├── viewmodel/          # ViewModels compartilhados via Application
-├── App.kt              # Application com ViewModelStore global
-└── MainActivity.kt     # Ponto de entrada, deep links e controle do overlay
+│   ├── components/     # Reusable composables (cards, dialogs, etc.)
+│   ├── screens/        # App screens
+│   └── theme/          # Material3 theme, colors and typography
+├── util/               # Utilities (OCR parser, date formatters)
+├── viewmodel/          # ViewModels shared via Application
+├── App.kt              # Application with global ViewModelStore
+└── MainActivity.kt     # Entry point, deep links and overlay control
 ```
 
-### Fluxo de dados
+### Data flow
 
 ```
 UI (Compose) ──► ViewModel ──► Repository ──► DataStore / ContentResolver
@@ -67,86 +69,86 @@ UI (Compose) ──► ViewModel ──► Repository ──► DataStore / Cont
                      │ state (Compose State / StateFlow)
 ```
 
-Os ViewModels (`SharedViewModel`, `WeeklyPartsViewModel`, `SettingsViewModel`) são instanciados na classe `App` e compartilhados entre `MainActivity` e o `ChronometerOverlayService`, garantindo estado consistente mesmo quando o overlay está visível sobre outros apps.
+The ViewModels (`SharedViewModel`, `WeeklyPartsViewModel`, `SettingsViewModel`) are instantiated in the `App` class and shared between `MainActivity` and `ChronometerOverlayService`, keeping state consistent even when the overlay is shown over other apps.
 
 ---
 
-## Stack Tecnológica
+## Tech Stack
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |---|---|
 | UI | Jetpack Compose + Material3 |
-| Navegação | Navigation Compose |
-| Estado | Compose State + StateFlow |
-| Persistência | DataStore Preferences |
+| Navigation | Navigation Compose |
+| State | Compose State + StateFlow |
+| Persistence | DataStore Preferences |
 | OCR | ML Kit Text Recognition (Latin) |
-| PDF → Bitmap | PdfRenderer (Android nativo) |
-| Serialização | Kotlinx Serialization JSON |
-| Concorrência | Kotlin Coroutines |
-| Overlay | WindowManager + ComposeView customizado |
+| PDF → Bitmap | PdfRenderer (Android native) |
+| Serialization | Kotlinx Serialization JSON |
+| Concurrency | Kotlin Coroutines |
+| Overlay | WindowManager + custom ComposeView |
 
 ---
 
-## Módulos e Classes Principais
+## Key Classes
 
 ### `App.kt`
-Instância global dos três ViewModels usando `ViewModelStoreOwner`. Permite que tanto a `MainActivity` quanto o `ChronometerOverlayService` compartilhem o mesmo estado.
+Global instance of the three ViewModels via `ViewModelStoreOwner`. Allows both `MainActivity` and `ChronometerOverlayService` to share the same state.
 
 ### `SharedViewModel`
-Controla o estado do cronômetro (tempo, running, paused) e a designação/parte atualmente ativa. Usa `SystemClock.elapsedRealtime()` para precisão independente do relógio do sistema.
+Controls the chronometer state (time, running, paused) and the currently active assignment/part. Uses `SystemClock.elapsedRealtime()` for accuracy independent of the system clock.
 
 ### `WeeklyPartsViewModel`
-Gerencia a lista de partes semanais. Coordena importação via OCR (câmera e PDF), exportação/importação de arquivos `.acdata` e ações de UI (navegação pendente, feedbacks de toast/snackbar).
+Manages the weekly parts list. Coordinates OCR import (camera and PDF), `.acdata` export/import, and UI actions (pending navigation, toast/snackbar feedback).
 
 ### `SettingsViewModel`
-Expõe `SettingsUiState` via `StateFlow` combinando as preferências do `SettingsRepository` com mensagens de validação das dimensões da sobreposição.
+Exposes `SettingsUiState` via `StateFlow` by combining `SettingsRepository` preferences with overlay dimension validation messages.
 
 ### `OcrParser`
-Interpreta as linhas OCR extraídas pelo ML Kit, identifica partes por regex (`^\d+\.\s*.+\(\d+\s*min\)`), associa designados à coluna direita da página e filtra termos estruturais do programa.
+Interprets OCR lines extracted by ML Kit, identifies parts via regex (`^\d+\.\s*.+\(\d+\s*min\)`), maps assignees to the right column of the page, and filters structural programme terms.
 
 ### `ChronometerOverlayService`
-Serviço que exibe a sobreposição usando `WindowManager` + `ComposeView` com ciclo de vida próprio (`OverlayLifecycleOwner`). Inicia quando o usuário sai do app com o cronômetro ativo; encerra ao retornar.
+Service that displays the overlay using `WindowManager` + `ComposeView` with its own lifecycle (`OverlayLifecycleOwner`). Starts when the user leaves the app while the timer is running; stops on return.
 
 ### `OverlaySizeRules`
-Regras de validação cruzada entre largura e altura da sobreposição: certos níveis de altura exigem um nível mínimo de largura para garantir legibilidade.
+Cross-validation rules between overlay width and height: certain height levels require a minimum width level to guarantee readability.
 
 ---
 
-## Navegação
+## Navigation
 
 ```
-Home (Cronômetro)
-├── Assignments (Designações rápidas) ──► Home
-├── Record (Registros) ──► Home
-└── Settings (Configurações) ──► Licenses
+Home (Chronometer)
+├── Assignments (Quick assignments) ──► Home
+├── Record (Weekly records) ──► Home
+└── Settings ──► Licenses
 ```
 
-A navegação usa `NavHost` com transições sem animação (`EnterTransition.None`) para respostas imediatas. Deep links via esquema `chronometer://` permitem atalhos da tela inicial do Android:
+Navigation uses `NavHost` with no transitions (`EnterTransition.None`) for instant responses. Deep links via the `chronometer://` scheme enable Android home-screen shortcuts:
 
-| URI | Ação |
+| URI | Action |
 |---|---|
-| `chronometer://start` | Inicia o cronômetro |
-| `chronometer://import-media` | Abre importação de PDF/imagem |
-| `chronometer://scan` | Abre a câmera |
-| `chronometer://import-acdata` | Abre importação de arquivo de registros |
+| `chronometer://start` | Start the timer |
+| `chronometer://import-media` | Open PDF/image import |
+| `chronometer://scan` | Open camera |
+| `chronometer://import-acdata` | Open records file import |
 
 ---
 
-## Formato de Arquivo `.acdata`
+## `.acdata` File Format
 
-Arquivo JSON com a seguinte estrutura:
+JSON file with the following structure:
 
 ```json
 {
   "version": 1,
   "parts": [
     {
-      "uid": "uuid-gerado",
+      "uid": "generated-uuid",
       "id": "3",
-      "title": "Joias Espirituais",
+      "title": "Spiritual Gems",
       "durationInMinutes": 10,
-      "room": "Principal",
-      "assignees": "João Silva",
+      "room": "Main Room",
+      "assignees": "John Smith",
       "dateText": "5 de junho de 2025",
       "realizedTimeOnSeconds": 623
     }
@@ -156,28 +158,28 @@ Arquivo JSON com a seguinte estrutura:
 
 ---
 
-## Localização
+## Localization
 
-O app possui suporte completo a duas localidades:
+The app fully supports two locales:
 
-- **`values/strings.xml`** — Inglês (fallback padrão)
-- **`values-pt/strings.xml`** — Português (Brasil)
+- **`values/strings.xml`** — English (default fallback)
+- **`values-pt/strings.xml`** — Brazilian Portuguese
 
-O parser de datas (`DateUtils.parseOcrDate`) reconhece meses em português (jan, fev, mar…) e também o formato `DD/MM`.
+The date parser (`DateUtils.parseOcrDate`) recognizes Portuguese month names (jan, fev, mar…) and the `DD/MM` format.
 
 ---
 
-## Permissões
+## Permissions
 
-| Permissão | Uso |
+| Permission | Purpose |
 |---|---|
-| `SYSTEM_ALERT_WINDOW` | Exibir a sobreposição flutuante |
-| `CAMERA` | Fotografar o programa da reunião |
-| `READ_EXTERNAL_STORAGE` | Importar PDF/imagem da galeria |
+| `SYSTEM_ALERT_WINDOW` | Display the floating overlay |
+| `CAMERA` | Photograph the meeting schedule |
+| `READ_EXTERNAL_STORAGE` | Import PDF/image from gallery |
 
 ---
 
-## Bibliotecas Open Source
+## Open Source Libraries
 
 - Jetpack Compose 1.6+ — Apache 2.0
 - Material3 for Compose 1.2+ — Apache 2.0
@@ -190,4 +192,3 @@ O parser de datas (`DateUtils.parseOcrDate`) reconhece meses em português (jan,
 - AndroidX Core KTX 1.13+ — Apache 2.0
 - AndroidX Activity Compose 1.9+ — Apache 2.0
 - AndroidX SavedState 1.2+ — Apache 2.0
-
