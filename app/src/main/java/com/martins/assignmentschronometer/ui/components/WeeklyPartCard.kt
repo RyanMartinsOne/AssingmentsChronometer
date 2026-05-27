@@ -22,18 +22,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.WeeklyPart
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 
 @Composable
 fun WeeklyPartCard(
@@ -44,24 +44,34 @@ fun WeeklyPartCard(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var menuExpanded by remember { mutableStateOf(false) }
+    var menuExpanded by remember(part.uid) { mutableStateOf(false) }
 
     val isCompleted = part.realizedTimeOnSeconds != null
-    val realizedTimeText = if (isCompleted) {
-        val totalSec = part.realizedTimeOnSeconds
-        val min = totalSec / 60
-        val sec = totalSec % 60
-        "%02d:%02d".format(min, sec)
-    } else null
+    val realizedTimeText = remember(part.realizedTimeOnSeconds) {
+        part.realizedTimeOnSeconds?.let { totalSec ->
+            val min = totalSec / 60
+            val sec = totalSec % 60
+            "%02d:%02d".format(min, sec)
+        }
+    }
+
+    val roomLabel = remember(part.room) {
+        when (part.room) {
+            "Principal" -> R.string.dialog_part_main_room
+            "Sala B" -> R.string.dialog_part_room_b
+            else -> null
+        }
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = if (part.realizedTimeOnSeconds != null)
+            containerColor = if (isCompleted) {
                 MaterialTheme.colorScheme.surfaceContainerLow
-            else MaterialTheme.colorScheme.surfaceContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainer
+            }
         )
     ) {
         Row(
@@ -70,13 +80,15 @@ fun WeeklyPartCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Box(modifier = Modifier.width(50.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.width(50.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = part.id,
-                    style = MaterialTheme.typography
-                        .headlineMedium
-                        .copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -87,10 +99,11 @@ fun WeeklyPartCard(
             ) {
                 Text(
                     text = part.title,
-                    style = MaterialTheme.typography
-                        .titleLarge
-                        .copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    )
                 )
+
                 Text(
                     text = stringResource(R.string.record_part_assigned, part.assignees),
                     style = MaterialTheme.typography.bodyLarge,
@@ -99,24 +112,27 @@ fun WeeklyPartCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = if (part.room == "Sala B")
+                        color = if (part.room == "Sala B") {
                             MaterialTheme.colorScheme.secondaryContainer
-                        else MaterialTheme.colorScheme.tertiaryContainer,
+                        } else {
+                            MaterialTheme.colorScheme.tertiaryContainer
+                        },
                         shape = MaterialTheme.shapes.extraSmall
                     ) {
                         Text(
-                            text = when (part.room) {
-                                "Principal" -> stringResource(R.string.dialog_part_main_room)
-                                "Sala B" -> stringResource(R.string.dialog_part_room_b)
-                                else -> part.room
-                            },
+                            text = roomLabel?.let { stringResource(it) } ?: part.room,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
+
                     Spacer(modifier = Modifier.width(8.dp))
+
                     Text(
-                        text = stringResource(R.string.record_part_planned,part.durationInMinutes),
+                        text = stringResource(
+                            R.string.record_part_planned,
+                            part.durationInMinutes
+                        ),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
@@ -124,20 +140,26 @@ fun WeeklyPartCard(
                 if (isCompleted) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = stringResource(R.string.record_part_realized, realizedTimeText ?: "--:--"),
-                            style = MaterialTheme.typography
-                                .bodySmall
-                                .copy(fontWeight = FontWeight.Bold),
-                            color = if (part.isDelayed) MaterialTheme.colorScheme.error
-                            else MaterialTheme.colorScheme.primary
+                            text = stringResource(
+                                R.string.record_part_realized,
+                                realizedTimeText ?: "--:--"
+                            ),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = if (part.isDelayed) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            }
                         )
 
                         part.delayText?.let { text ->
                             Text(
                                 text = " ($text)",
-                                style = MaterialTheme.typography
-                                    .bodySmall
-                                    .copy(fontWeight = FontWeight.Bold),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
@@ -168,7 +190,9 @@ fun WeeklyPartCard(
                     ) {
                         if (isCompleted) {
                             DropdownMenuItem(
-                                text = { Text(stringResource(R.string.record_action_share)) },
+                                text = {
+                                    Text(stringResource(R.string.record_action_share))
+                                },
                                 leadingIcon = {
                                     Icon(
                                         painter = painterResource(R.drawable.share),
@@ -182,8 +206,11 @@ fun WeeklyPartCard(
                                 }
                             )
                         }
+
                         DropdownMenuItem(
-                            text = { Text("Editar") },
+                            text = {
+                                Text(stringResource(R.string.record_action_edit))
+                            },
                             leadingIcon = {
                                 Icon(
                                     painter = painterResource(R.drawable.edit),
@@ -196,8 +223,14 @@ fun WeeklyPartCard(
                                 onEditClick()
                             }
                         )
+
                         DropdownMenuItem(
-                            text = { Text("Remover", color = MaterialTheme.colorScheme.error) },
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.record_action_delete),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            },
                             leadingIcon = {
                                 Icon(
                                     painter = painterResource(R.drawable.delete),
@@ -218,12 +251,20 @@ fun WeeklyPartCard(
                     onClick = onClick,
                     contentPadding = PaddingValues(horizontal = 12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (part.realizedTimeOnSeconds != null)
+                        containerColor = if (isCompleted) {
                             MaterialTheme.colorScheme.secondary
-                        else MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
                     )
                 ) {
-                    Text(if (isCompleted) stringResource(R.string.record_action_redo) else stringResource(R.string.record_action_start))
+                    Text(
+                        text = if (isCompleted) {
+                            stringResource(R.string.record_action_redo)
+                        } else {
+                            stringResource(R.string.record_action_start)
+                        }
+                    )
                 }
             }
         }

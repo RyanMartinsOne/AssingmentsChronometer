@@ -2,6 +2,8 @@ package com.martins.assignmentschronometer.viewmodel
 
 import android.app.Application
 import android.net.Uri
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,24 +25,24 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
 
     private val appContext get() = getApplication<Application>()
 
-    // ─── State ────────────────────────────────────────────────────────────────
-
     var weeklyParts by mutableStateOf<List<WeeklyPart>>(emptyList())
         private set
 
-    val groupedWeeklyParts: Map<String, List<WeeklyPart>>
-        get() = weeklyParts
+    private val groupedWeeklyPartsState: State<Map<String, List<WeeklyPart>>> = derivedStateOf {
+        weeklyParts
             .sortedBy { it.id.toIntOrNull() ?: Int.MAX_VALUE }
             .groupBy { it.dateText }
+    }
+
+    val groupedWeeklyParts: Map<String, List<WeeklyPart>>
+        get() = groupedWeeklyPartsState.value
 
     var shareText by mutableStateOf<String?>(null)
         private set
 
-    /** One-shot feedback for export / import operations. */
     var recordsEvent by mutableStateOf<RecordsEvent?>(null)
         private set
 
-    /** Mensagem de feedback para a UI exibir como Toast (ex: "Arquivo não suportado") */
     var uiFeedbackMessage by mutableStateOf<String?>(null)
         private set
 
@@ -56,8 +58,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     fun clearUiFeedbackMessage() {
         uiFeedbackMessage = null
     }
-
-    // --- Shortcuts ---
 
     var pendingShortcutRoute by mutableStateOf<String?>(null)
         private set
@@ -88,8 +88,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     fun triggerImportAcdata() { pendingImportAcdataAction = true }
     fun onImportAcdataHandled() { pendingImportAcdataAction = false }
 
-    // ─── Share ────────────────────────────────────────────────────────────────
-
     fun requestShare(part: WeeklyPart) {
         shareText = part.toShareText()
     }
@@ -97,8 +95,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     fun onShareHandled() {
         shareText = null
     }
-
-    // ─── OCR / PDF / IMAGENS ──────────────────────────────────────────────────
 
     fun processExtractedText(ocrLines: List<OcrLine>) {
         weeklyParts = OcrParser.parseCurrentWeek(ocrLines)
@@ -120,7 +116,9 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
                 }
                 mimeType?.startsWith("image/") == true -> {
                     try {
-                        val inputImage = com.google.mlkit.vision.common.InputImage.fromFilePath(appContext, uri)
+                        val inputImage =
+                            com.google.mlkit.vision.common.InputImage
+                                .fromFilePath(appContext, uri)
                         processImageOcr(inputImage)
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -139,7 +137,8 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun processCameraImage(uri: Uri) {
         try {
-            val inputImage = com.google.mlkit.vision.common.InputImage.fromFilePath(appContext, uri)
+            val inputImage =
+                com.google.mlkit.vision.common.InputImage.fromFilePath(appContext, uri)
             processImageOcr(inputImage)
         } catch (e: IOException) {
             e.printStackTrace()
@@ -154,6 +153,7 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         val recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(
             com.google.mlkit.vision.text.latin.TextRecognizerOptions.DEFAULT_OPTIONS
         )
+
         recognizer.process(inputImage)
             .addOnSuccessListener { result ->
                 val ocrLines = result.textBlocks
@@ -176,8 +176,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
             }
             .addOnCompleteListener { recognizer.close() }
     }
-
-    // ─── CRUD ─────────────────────────────────────────────────────────────────
 
     fun updatePart(updated: WeeklyPart) {
         weeklyParts = weeklyParts.map {
@@ -202,15 +200,13 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         weeklyParts = emptyList()
     }
 
-    // ─── Export / Import ──────────────────────────────────────────────────────
-
     fun exportRecords(uri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = RecordsRepository.export(appContext, uri, weeklyParts)
             recordsEvent = when (result) {
                 ExportResult.Success -> RecordsEvent.ExportSuccess
-                ExportResult.Empty   -> RecordsEvent.ExportEmpty
-                ExportResult.Error   -> RecordsEvent.ExportError
+                ExportResult.Empty -> RecordsEvent.ExportEmpty
+                ExportResult.Error -> RecordsEvent.ExportError
             }
         }
     }
@@ -233,7 +229,7 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
                     }
                 }
                 ImportResult.Invalid -> recordsEvent = RecordsEvent.ImportInvalid
-                ImportResult.Error   -> recordsEvent = RecordsEvent.ImportError
+                ImportResult.Error -> recordsEvent = RecordsEvent.ImportError
             }
         }
     }
@@ -243,6 +239,7 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
             val raw = appContext.contentResolver.openInputStream(uri)
                 ?.use { it.bufferedReader().readText() }
                 ?: return null
+
             val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
 
             @kotlinx.serialization.Serializable
