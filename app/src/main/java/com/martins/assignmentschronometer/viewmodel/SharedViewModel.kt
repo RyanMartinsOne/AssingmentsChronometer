@@ -102,7 +102,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         selectedAssignment = null
     }
 
-    fun resetOnOverlay() {
+    fun resetTimerOnly() {
         isRunning = false
         isPaused = false
         totalTimeOnSeconds = 0

@@ -23,6 +23,12 @@
     <string name="comment_count">Up to %d comments (30s)</string>
     <string name="comment_count_overlay">Up to %d comments</string>
 
+
+    <string name="dialog_reset_title">Reset timer</string>
+    <string name="dialog_reset_message">What do you want to do with the current part?</string>
+    <string name="dialog_reset_only_time">Reset time only</string>
+    <string name="dialog_reset_stop_part">Stop tracking part</string>
+
     <!-- Overlay -->
     <string name="overlay_close">Close overlay</string>
 
@@ -131,8 +137,8 @@
     <string name="dialog_part_duration">Duration (minutes)</string>
     <string name="dialog_confirm_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_save_finish">Save and Finish</string>
-    <string name="dialog_only_pause">Just Pause</string>
+    <string name="dialog_finish">Finish</string>
+    <string name="dialog_dont_save">Don\'t save</string>
     <string name="dialog_record_time_title">Record Time</string>
     <string name="dialog_record_time_message">Save %s for %s\'s assignment?</string>
 

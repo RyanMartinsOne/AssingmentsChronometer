@@ -51,8 +51,8 @@ fun ChronometerScreen(
     val context = LocalContext.current
     val chronometerColors = LocalChronometerColors.current
     var showSaveDialog by remember { mutableStateOf(false) }
+    var showResetDialog by remember { mutableStateOf(false) }
     val activePart = sharedViewModel.activePart
-
 
     fun hasOverlayPermission() = Settings.canDrawOverlays(context)
 
@@ -143,7 +143,6 @@ fun ChronometerScreen(
                 onClick = {
                     if (sharedViewModel.isRunning) {
                         sharedViewModel.pause()
-                        if (activePart != null) showSaveDialog = true
                     } else {
                         if (hasOverlayPermission()) {
                             sharedViewModel.start()
@@ -177,7 +176,8 @@ fun ChronometerScreen(
                     .fillMaxWidth(0.7f),
                 onClick = {
                     if (activePart != null && (sharedViewModel.isRunning || sharedViewModel.isPaused)) {
-                        showSaveDialog = true
+                        if (sharedViewModel.isRunning) sharedViewModel.pause()
+                        showResetDialog = true
                     } else {
                         sharedViewModel.reset()
                     }
@@ -192,34 +192,108 @@ fun ChronometerScreen(
                     )
                 )
             }
+
+            if (activePart != null) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    modifier = Modifier
+                        .height(70.dp)
+                        .fillMaxWidth(0.7f),
+                    onClick = {
+                        if (sharedViewModel.isRunning) sharedViewModel.pause()
+                        showSaveDialog = true
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.dialog_finish),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 20.sp,
+                            fontFamily = GoogleSans
+                        )
+                    )
+                }
+            }
         }
 
-        if (showSaveDialog) {
+        if (showSaveDialog && activePart != null) {
             AlertDialog(
                 onDismissRequest = { showSaveDialog = false },
+                title = {
+                    Text(text = stringResource(R.string.dialog_record_time_title))
+                },
+                text = {
+                    Text(
+                        text = stringResource(
+                            R.string.dialog_record_time_message,
+                            sharedViewModel.formattedTime,
+                            activePart.assignees
+                        )
+                    )
+                },
                 confirmButton = {
-                    TextButton(onClick = {
-                        showSaveDialog = false
-
-                        activePart?.let { part ->
-                            sharedViewModel.finishPart(part.uid) { finishedPart ->
+                    TextButton(
+                        onClick = {
+                            showSaveDialog = false
+                            sharedViewModel.finishPart(activePart.uid) { finishedPart ->
                                 weeklyPartsViewModel.updatePart(finishedPart)
                             }
                         }
-                    }) {
-                        Text(stringResource(R.string.dialog_save_finish), fontWeight = FontWeight.Bold)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.dialog_finish),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showSaveDialog = false }) {
-                        Text(stringResource(R.string.dialog_only_pause))
+                    TextButton(
+                        onClick = { 
+                            showSaveDialog = false 
+                            sharedViewModel.reset()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.dialog_dont_save),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            )
+        }
+
+        if (showResetDialog) {
+            AlertDialog(
+                onDismissRequest = { showResetDialog = false },
+                title = { Text(stringResource(R.string.dialog_reset_title)) },
+                text = { Text(stringResource(R.string.dialog_reset_message)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showResetDialog = false
+                        sharedViewModel.resetTimerOnly()
+                    }) {
+                        Text(
+                            stringResource(R.string.dialog_reset_only_time),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 },
-                title = { Text(stringResource(R.string.dialog_record_time_title)) },
-                text = {
-                    Text(stringResource(R.string.dialog_record_time_message, sharedViewModel.formattedTime,
-                        activePart?.assignees ?: ""
-                    ))
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showResetDialog = false
+                            sharedViewModel.reset()
+                        }
+                    ) {
+                        Text(
+                            stringResource(R.string.dialog_reset_stop_part),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             )
         }

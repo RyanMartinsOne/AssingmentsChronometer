@@ -24,6 +24,12 @@
         <string name="comment_count">Até %d comentários (30s)</string>
         <string name="comment_count_overlay">Até %d comentários</string>
 
+
+        <string name="dialog_reset_title">Reiniciar cronômetro</string>
+        <string name="dialog_reset_message">O que deseja fazer com a parte atual?</string>
+        <string name="dialog_reset_only_time">Reiniciar apenas o tempo</string>
+        <string name="dialog_reset_stop_part">Parar de marcar a parte</string>
+
         <!-- Overlay -->
         <string name="overlay_close">Fechar a sobreposição</string>
 
@@ -131,8 +137,8 @@
         <string name="dialog_part_duration">Duração (minutos)</string>
         <string name="dialog_confirm_save">Salvar</string>
         <string name="dialog_cancel">Cancelar</string>
-        <string name="dialog_save_finish">Salvar e Finalizar</string>
-        <string name="dialog_only_pause">Apenas Pausar</string>
+        <string name="dialog_finish">Finalizar</string>
+        <string name="dialog_dont_save">Não Salvar</string>
         <string name="dialog_record_time_title">Registrar Tempo</string>
         <string name="dialog_record_time_message">Deseja salvar o tempo de %s para a designação de %s?</string>
 

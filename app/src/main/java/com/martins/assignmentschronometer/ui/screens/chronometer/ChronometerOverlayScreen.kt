@@ -71,7 +71,7 @@ fun ChronometerOverlayRoute(
                 sharedViewModel.start()
             }
         },
-        onReset = { sharedViewModel.resetOnOverlay() },
+        onReset = { sharedViewModel.resetTimerOnly() },
         onClose = {
             if (sharedViewModel.activePart != null) {
                 sharedViewModel.savePartTimeAndResetForOverlay { updatedPart ->
