@@ -1,13 +1,18 @@
 [changelog]
 header = ""
 body = """
-{% if version %}## {{ version | trim_start_matches(pat="v") }}{% endif %}
+## What's Changed
+
 {% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+
 {% for commit in commits %}
 - {{ commit.message
-    | trim_start_matches(pat=commit.group ~ ": ")
-    | trim_start_matches(pat=commit.group ~ "(")
-    | replace(from="): ", to=": ")
+    | trim_start_matches(pat="feat: ")
+    | trim_start_matches(pat="fix: ")
+    | trim_start_matches(pat="perf: ")
+    | trim_start_matches(pat="refactor: ")
+    | trim_start_matches(pat="style: ")
   }}
 {% endfor %}
 {% endfor %}
@@ -20,19 +25,13 @@ conventional_commits = true
 filter_unconventional = true
 split_commits = false
 tag_pattern = "v[0-9]*"
-skip_tags = "alpha|beta|rc"
-ignore_tags = ""
-
-commit_preprocessors = [
-  { pattern = '\(([^)]+)\):', replace = ': ' }
-]
 
 commit_parsers = [
-  { message = "^feat", group = "feat" },
-  { message = "^fix", group = "fix" },
-  { message = "^perf", group = "perf" },
-  { message = "^refactor", group = "refactor" },
-  { message = "^style", group = "style" },
+  { message = "^feat", group = "<!-- 0 --> Features" },
+  { message = "^fix", group = "<!-- 1 --> Bug Fixes" },
+  { message = "^perf", group = "<!-- 2 --> Performance" },
+  { message = "^refactor", group = "<!-- 3 --> Refactoring" },
+  { message = "^style", group = "<!-- 4 --> Styling" },
   { message = "^chore", skip = true },
   { message = "^ci", skip = true },
   { message = "^test", skip = true },
