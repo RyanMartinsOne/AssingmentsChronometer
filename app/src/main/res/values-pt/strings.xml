@@ -51,6 +51,9 @@
         <string name="settings_dynamic_colors_title">Cores dinâmicas</string>
         <string name="settings_dynamic_colors_description">Usar cores do Material You em dispositivos compatíveis (Android 12+)</string>
 
+        <!-- Configurações — seção Sobreposição -->
+        <string name="settings_section_overlay">Sobreposição</string>
+
 
         <string name="settings_overlay_comment_count_title">Mostrar contagem de comentários</string>
         <string name="settings_overlay_comment_count_description">Mostrar contagem de comentários na sobreposição</string>"

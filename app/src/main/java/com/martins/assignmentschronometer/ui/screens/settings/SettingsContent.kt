@@ -74,7 +74,13 @@ fun SettingsContent(
             AppearanceSettingsSection(
                 uiState = uiState,
                 onThemeModeChange = actions.onThemeModeChange,
-                onDynamicColorsChange = actions.onDynamicColorsChange,
+                onDynamicColorsChange = actions.onDynamicColorsChange
+            )
+        }
+
+        item {
+            OverlaySettingsSection(
+                uiState = uiState,
                 onOverlayEnabledChange = actions.onOverlayEnabledChange,
                 onShowCommentCountInOverlayChange = actions.onShowCommentCountInOverlayChange,
                 onSimplifiedOverlayEnabledChange = actions.onSimplifiedOverlayEnabledChange,
@@ -107,13 +113,6 @@ private fun AppearanceSettingsSection(
     uiState: SettingsUiState,
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
-    onOverlayEnabledChange: (Boolean) -> Unit,
-    onShowCommentCountInOverlayChange: (Boolean) -> Unit,
-    onSimplifiedOverlayEnabledChange: (Boolean) -> Unit,
-    onSaveDimensions: (Float, Float) -> Unit,
-    onSaveOpacity: (Float) -> Unit,
-    onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
-    onClearOverlayMessage: () -> Unit
 ) {
     var showThemeModeDialog by remember { mutableStateOf(false) }
 
@@ -139,9 +138,63 @@ private fun AppearanceSettingsSection(
             checked = uiState.dynamicColorsEnabled,
             onCheckedChange = onDynamicColorsChange
         )
+    }
 
-        HorizontalDivider()
+    if (showThemeModeDialog) {
+        AlertDialog(
+            onDismissRequest = { showThemeModeDialog = false },
+            title = {
+                Text(text = stringResource(R.string.settings_theme_mode_dialog_title))
+            },
+            text = {
+                Column {
+                    ThemeMode.entries.forEach { mode ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onThemeModeChange(mode)
+                                    showThemeModeDialog = false
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = uiState.themeMode == mode,
+                                onClick = {
+                                    onThemeModeChange(mode)
+                                    showThemeModeDialog = false
+                                }
+                            )
 
+                            Text(
+                                text = when (mode) {
+                                    ThemeMode.SYSTEM -> stringResource(R.string.settings_theme_mode_system)
+                                    ThemeMode.LIGHT -> stringResource(R.string.settings_theme_mode_light)
+                                    ThemeMode.DARK -> stringResource(R.string.settings_theme_mode_dark)
+                                }
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {}
+        )
+    }
+}
+
+@Composable
+private fun OverlaySettingsSection(
+    uiState: SettingsUiState,
+    onOverlayEnabledChange: (Boolean) -> Unit,
+    onShowCommentCountInOverlayChange: (Boolean) -> Unit,
+    onSimplifiedOverlayEnabledChange: (Boolean) -> Unit,
+    onSaveDimensions: (Float, Float) -> Unit,
+    onSaveOpacity: (Float) -> Unit,
+    onHeightResultChanged: (OverlayAdjustmentResult) -> Unit,
+    onClearOverlayMessage: () -> Unit
+) {
+    SettingsSection(title = stringResource(R.string.settings_section_overlay)) {
         SettingsSwitchItem(
             icon = ImageVector.vectorResource(R.drawable.raised_hand),
             title = stringResource(R.string.settings_overlay_comment_count_title),
@@ -187,48 +240,6 @@ private fun AppearanceSettingsSection(
             onSaveOpacity = onSaveOpacity,
             onClearMessage = onClearOverlayMessage,
             simplifiedOverlayEnabled = uiState.simplifiedOverlayEnabled
-        )
-    }
-
-    if (showThemeModeDialog) {
-        AlertDialog(
-            onDismissRequest = { showThemeModeDialog = false },
-            title = {
-                Text(text = stringResource(R.string.settings_theme_mode_dialog_title))
-            },
-            text = {
-                Column {
-                    ThemeMode.entries.forEach { mode ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onThemeModeChange(mode)
-                                    showThemeModeDialog = false
-                                }
-                                .padding(vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = uiState.themeMode == mode,
-                                onClick = {
-                                    onThemeModeChange(mode)
-                                    showThemeModeDialog = false
-                                }
-                            )
-
-                            Text(
-                                text = when (mode) {
-                                    ThemeMode.SYSTEM -> stringResource(R.string.settings_theme_mode_system)
-                                    ThemeMode.LIGHT -> stringResource(R.string.settings_theme_mode_light)
-                                    ThemeMode.DARK -> stringResource(R.string.settings_theme_mode_dark)
-                                }
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {}
         )
     }
 }

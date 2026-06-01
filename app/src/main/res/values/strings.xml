@@ -50,6 +50,9 @@
     <string name="settings_dynamic_colors_title">Dynamic colors</string>
     <string name="settings_dynamic_colors_description">Use Material You colors on supported devices (Android 12+)</string>
 
+    <!-- Settings — Overlay section -->
+    <string name="settings_section_overlay">Overlay</string>
+
     <string name="settings_overlay_comment_count_title">Overlay comment count</string>
     <string name="settings_overlay_comment_count_description">Show comment count in overlay</string>
 
