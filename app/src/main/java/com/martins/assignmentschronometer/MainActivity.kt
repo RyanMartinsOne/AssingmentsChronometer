@@ -71,9 +71,9 @@ class MainActivity : ComponentActivity() {
 
             var showFirstLaunchDialog by remember { mutableStateOf(false) }
 
-            LaunchedEffect(settingsUiState.isFirstLaunchDone) {
-                if (!settingsUiState.isFirstLaunchDone) {
-                    showFirstLaunchDialog = true
+            LaunchedEffect(settingsUiState.isLoaded, settingsUiState.isFirstLaunchDone) {
+                if (settingsUiState.isLoaded) {
+                    showFirstLaunchDialog = !settingsUiState.isFirstLaunchDone
                 }
             }
 

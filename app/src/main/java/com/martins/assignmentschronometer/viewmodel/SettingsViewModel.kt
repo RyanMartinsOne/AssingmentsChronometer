@@ -29,6 +29,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         overlayMessage
     ) { prefs, message ->
         SettingsUiState(
+            isLoaded = true,
             dynamicColorsEnabled = prefs.dynamicColorsEnabled,
             themeMode = prefs.themeMode,
             showCommentCountInOverlay = prefs.showCommentCountInOverlay,
