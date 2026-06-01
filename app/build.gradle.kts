@@ -16,8 +16,12 @@ android {
         applicationId = "com.martins.assignmentschronometer"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+
+        val inputVersionName = project.findProperty("versionName") as? String ?: "1.0.0"
+        val inputVersionCode = (project.findProperty("versionCode") as? String)?.toIntOrNull() ?: 1
+
+        versionCode = inputVersionCode
+        versionName = inputVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
