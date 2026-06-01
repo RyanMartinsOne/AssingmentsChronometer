@@ -55,8 +55,8 @@ class SettingsRepository(private val context: Context) {
             dynamicColorsEnabled = prefs[Keys.DYNAMIC_COLORS]
                 ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S),
             themeMode = themeMode,
-            overlayScaleX = prefs[Keys.OVERLAY_SCALE_X] ?: 1.0f,
-            overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.0f,
+            overlayScaleX = prefs[Keys.OVERLAY_SCALE_X] ?: 0.86f,
+            overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.04f,
             overlayOpacity = prefs[Keys.OVERLAY_OPACITY] ?: 1.0f,
             showCommentCountInOverlay = prefs[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] ?: true,
             overlayEnabled = prefs[Keys.OVERLAY_ENABLED] ?: true,
