@@ -33,16 +33,56 @@ val FixedChronometerColors = ChronometerColors(
     overtimeOnButton = Color(0xFFB00020)
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val LightColorScheme = lightColorScheme(
+    primary                = LightPrimary,
+    onPrimary              = LightOnPrimary,
+    primaryContainer       = LightPrimaryContainer,
+    onPrimaryContainer     = LightOnPrimaryContainer,
+    secondary              = LightSecondary,
+    onSecondary            = LightOnSecondary,
+    secondaryContainer     = LightSecondaryContainer,
+    onSecondaryContainer   = LightOnSecondaryContainer,
+    tertiary               = LightTertiary,
+    onTertiary             = LightOnTertiary,
+    tertiaryContainer      = LightTertiaryContainer,
+    onTertiaryContainer    = LightOnTertiaryContainer,
+    background             = LightBackground,
+    onBackground           = LightOnBackground,
+    surface                = LightSurface,
+    onSurface              = LightOnSurface,
+    surfaceVariant         = LightSurfaceVariant,
+    onSurfaceVariant       = LightOnSurfaceVariant,
+    outline                = LightOutline,
+    outlineVariant         = LightOutlineVariant,
+    inverseSurface         = LightInverseSurface,
+    inverseOnSurface       = LightInverseOnSurface,
+    inversePrimary         = LightInversePrimary,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val DarkColorScheme = darkColorScheme(
+    primary                = DarkPrimary,
+    onPrimary              = DarkOnPrimary,
+    primaryContainer       = DarkPrimaryContainer,
+    onPrimaryContainer     = DarkOnPrimaryContainer,
+    secondary              = DarkSecondary,
+    onSecondary            = DarkOnSecondary,
+    secondaryContainer     = DarkSecondaryContainer,
+    onSecondaryContainer   = DarkOnSecondaryContainer,
+    tertiary               = DarkTertiary,
+    onTertiary             = DarkOnTertiary,
+    tertiaryContainer      = DarkTertiaryContainer,
+    onTertiaryContainer    = DarkOnTertiaryContainer,
+    background             = DarkBackground,
+    onBackground           = DarkOnBackground,
+    surface                = DarkSurface,
+    onSurface              = DarkOnSurface,
+    surfaceVariant         = DarkSurfaceVariant,
+    onSurfaceVariant       = DarkOnSurfaceVariant,
+    outline                = DarkOutline,
+    outlineVariant         = DarkOutlineVariant,
+    inverseSurface         = DarkInverseSurface,
+    inverseOnSurface       = DarkInverseOnSurface,
+    inversePrimary         = DarkInversePrimary,
 )
 
 @Composable
@@ -54,19 +94,19 @@ fun AssignmentsChronometerTheme(
     val systemDarkTheme = isSystemInDarkTheme()
     val darkTheme = when (themeMode) {
         ThemeMode.SYSTEM -> systemDarkTheme
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
+        ThemeMode.LIGHT  -> false
+        ThemeMode.DARK   -> true
     }
 
     val context = LocalContext.current
-    val view = LocalView.current
+    val view    = LocalView.current
 
     val colorScheme = when {
         dynamicColorsEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        else      -> LightColorScheme
     }
 
     if (!view.isInEditMode) {
@@ -74,7 +114,7 @@ fun AssignmentsChronometerTheme(
             val activity = context as? Activity ?: return@SideEffect
             val controller = WindowCompat.getInsetsController(activity.window, view)
 
-            controller.isAppearanceLightStatusBars = !darkTheme
+            controller.isAppearanceLightStatusBars    = !darkTheme
             controller.isAppearanceLightNavigationBars = !darkTheme
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -88,8 +128,8 @@ fun AssignmentsChronometerTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = Typography,
-            content = content
+            typography  = Typography,
+            content     = content
         )
     }
 }
