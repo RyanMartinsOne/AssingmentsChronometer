@@ -24,9 +24,11 @@ jobs:
       - name: Extract version from Git tag
         id: get_version
         run: |
+          # Removes the 'v' character from the tag name (e.g., v1.3.2 becomes 1.3.2)
           TAG_NAME=${GITHUB_REF#refs/tags/v}
           echo "VERSION_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
           
+          # Converts the version into a clean integer for versionCode (e.g., 1.3.2 becomes 10302)
           VERSION_CODE=$(echo "$TAG_NAME" | awk -F. '{printf "%d%02d%02d", $1, $2, $3}')
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
 
@@ -41,7 +43,9 @@ jobs:
 
       - name: Custom Rename APK File
         run: |
-          find app/build/outputs/apk/ -name "*.apk"
+          mkdir -p app/build/outputs/apk/custom_release
+          
+          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/custom_release/AssignmentsChronometer-v${{ steps.get_version.outputs.VERSION_NAME }}.apk
 
       - name: Sign the generated APK with your keystore
         uses: r0adkll/sign-android-release@v1.0.4
@@ -52,7 +56,6 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-          buildToolsVersion: "34.0.0"
 
       - name: Create GitHub Release and attach the signed APK
         uses: softprops/action-gh-release@v2
