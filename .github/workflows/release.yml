@@ -28,18 +28,9 @@ jobs:
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/v}
           echo "VERSION_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+
           VERSION_CODE=$(echo "$TAG_NAME" | awk -F. '{printf "%d%02d%02d", $1, $2, $3}')
           echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
-
-      - name: Generate Changelog
-        uses: orhun/git-cliff-action@v3
-        id: git-cliff
-        with:
-          config: .github/cliff.toml
-          args: --latest --strip all
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OUTPUT: CHANGES.md
 
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
@@ -70,11 +61,21 @@ jobs:
           cp "${{ steps.sign_app.outputs.signedReleaseFile }}" \
              "AssignmentsChronometer-v${{ steps.get_version.outputs.VERSION_NAME }}-signed.apk"
 
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v1
+
+      - name: Generate release notes from commits
+        run: |
+          git-cliff \
+            --config .github/cliff.toml \
+            --latest \
+            --strip all > release-notes.md
+
       - name: Create GitHub Release and attach the signed APK
         uses: softprops/action-gh-release@v2
         with:
-          body_path: CHANGES.md
           name: "Release v${{ steps.get_version.outputs.VERSION_NAME }}"
+          body_path: release-notes.md
           files: AssignmentsChronometer-v${{ steps.get_version.outputs.VERSION_NAME }}-signed.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,24 +1,42 @@
 [changelog]
 header = ""
 body = """
-{% if commits %}\
-## What's Changed
-{% for commit in commits %}\
-* {{ commit.message | upper_first }}
-{% endfor %}\
-{% endif %}\
+{% if version %}## {{ version | trim_start_matches(pat="v") }}{% endif %}
+{% for group, commits in commits | group_by(attribute="group") %}
+{% for commit in commits %}
+- {{ commit.message
+    | trim_start_matches(pat=commit.group ~ ": ")
+    | trim_start_matches(pat=commit.group ~ "(")
+    | replace(from="): ", to=": ")
+  }}
+{% endfor %}
+{% endfor %}
 """
+footer = ""
 trim = true
 
 [git]
 conventional_commits = true
 filter_unconventional = true
-commit_parsers = [
-  { message = "^feat", group = "feature" },
-  { message = "^fix",  group = "fix"     },
-  { message = "^perf", group = "perf"    },
-  { message = "^refactor", group = "refactor" },
-  { message = "^style|^ui", group = "style"   },
-  { message = ".*", skip = true },
+split_commits = false
+tag_pattern = "v[0-9]*"
+skip_tags = "alpha|beta|rc"
+ignore_tags = ""
+
+commit_preprocessors = [
+  { pattern = '\(([^)]+)\):', replace = ': ' }
 ]
-filter_commits = true
+
+commit_parsers = [
+  { message = "^feat", group = "feat" },
+  { message = "^fix", group = "fix" },
+  { message = "^perf", group = "perf" },
+  { message = "^refactor", group = "refactor" },
+  { message = "^style", group = "style" },
+  { message = "^chore", skip = true },
+  { message = "^ci", skip = true },
+  { message = "^test", skip = true },
+  { message = "^docs", skip = true },
+  { message = "^build", skip = true },
+  { message = "^revert", skip = true }
+]
