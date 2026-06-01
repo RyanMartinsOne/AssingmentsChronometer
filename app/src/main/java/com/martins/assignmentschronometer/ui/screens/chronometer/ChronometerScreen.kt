@@ -1,9 +1,5 @@
 package com.martins.assignmentschronometer.ui.screens.chronometer
 
-import android.content.Intent
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,14 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.ui.components.CommentCountTag
 import com.martins.assignmentschronometer.ui.theme.LocalChronometerColors
@@ -48,35 +42,17 @@ fun ChronometerScreen(
     sharedViewModel: SharedViewModel,
     weeklyPartsViewModel: WeeklyPartsViewModel
 ) {
-    val context = LocalContext.current
     val chronometerColors = LocalChronometerColors.current
     var showSaveDialog by remember { mutableStateOf(false) }
     var showResetDialog by remember { mutableStateOf(false) }
     val activePart = sharedViewModel.activePart
 
-    fun hasOverlayPermission() = Settings.canDrawOverlays(context)
-
-    val overlayLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (hasOverlayPermission()) {
-            sharedViewModel.start()
-        }
-    }
-
-    fun requestOverlayPermission() {
-        val intent = Intent(
-            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-            "package:${context.packageName}".toUri()
-        )
-        overlayLauncher.launch(intent)
-    }
-
     val backgroundColor by animateColorAsState(
-        targetValue = if (sharedViewModel.isOverTime)
+        targetValue = if (sharedViewModel.isOverTime) {
             chronometerColors.overtimeBackground
-        else
-            MaterialTheme.colorScheme.background,
+        } else {
+            MaterialTheme.colorScheme.background
+        },
         label = "backgroundColor"
     )
 
@@ -95,9 +71,12 @@ fun ChronometerScreen(
             ) {
                 Text(
                     text = activePart.title,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
                 Text(
                     text = activePart.assignees,
                     style = MaterialTheme.typography.bodyLarge,
@@ -144,11 +123,7 @@ fun ChronometerScreen(
                     if (sharedViewModel.isRunning) {
                         sharedViewModel.pause()
                     } else {
-                        if (hasOverlayPermission()) {
-                            sharedViewModel.start()
-                        } else {
-                            requestOverlayPermission()
-                        }
+                        sharedViewModel.start()
                     }
                 }
             ) {
@@ -176,7 +151,9 @@ fun ChronometerScreen(
                     .fillMaxWidth(0.7f),
                 onClick = {
                     if (activePart != null && (sharedViewModel.isRunning || sharedViewModel.isPaused)) {
-                        if (sharedViewModel.isRunning) sharedViewModel.pause()
+                        if (sharedViewModel.isRunning) {
+                            sharedViewModel.pause()
+                        }
                         showResetDialog = true
                     } else {
                         sharedViewModel.reset()
@@ -204,7 +181,9 @@ fun ChronometerScreen(
                         .height(70.dp)
                         .fillMaxWidth(0.7f),
                     onClick = {
-                        if (sharedViewModel.isRunning) sharedViewModel.pause()
+                        if (sharedViewModel.isRunning) {
+                            sharedViewModel.pause()
+                        }
                         showSaveDialog = true
                     }
                 ) {
@@ -252,8 +231,8 @@ fun ChronometerScreen(
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { 
-                            showSaveDialog = false 
+                        onClick = {
+                            showSaveDialog = false
                             sharedViewModel.reset()
                         }
                     ) {
@@ -269,15 +248,21 @@ fun ChronometerScreen(
         if (showResetDialog) {
             AlertDialog(
                 onDismissRequest = { showResetDialog = false },
-                title = { Text(stringResource(R.string.dialog_reset_title)) },
-                text = { Text(stringResource(R.string.dialog_reset_message)) },
+                title = {
+                    Text(stringResource(R.string.dialog_reset_title))
+                },
+                text = {
+                    Text(stringResource(R.string.dialog_reset_message))
+                },
                 confirmButton = {
-                    TextButton(onClick = {
-                        showResetDialog = false
-                        sharedViewModel.resetTimerOnly()
-                    }) {
+                    TextButton(
+                        onClick = {
+                            showResetDialog = false
+                            sharedViewModel.resetTimerOnly()
+                        }
+                    ) {
                         Text(
-                            stringResource(R.string.dialog_reset_only_time),
+                            text = stringResource(R.string.dialog_reset_only_time),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -290,7 +275,7 @@ fun ChronometerScreen(
                         }
                     ) {
                         Text(
-                            stringResource(R.string.dialog_reset_stop_part),
+                            text = stringResource(R.string.dialog_reset_stop_part),
                             color = MaterialTheme.colorScheme.error
                         )
                     }

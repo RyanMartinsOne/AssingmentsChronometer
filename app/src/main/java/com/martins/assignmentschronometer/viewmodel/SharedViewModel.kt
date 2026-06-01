@@ -78,10 +78,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun safeStart(hasPermission: Boolean, onPermissionRequired: () -> Unit) {
-        if (hasPermission) start() else onPermissionRequired()
-    }
-
     fun pause() {
         if (!isRunning) return
         isRunning = false

@@ -4,15 +4,27 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.martins.assignmentschronometer.navigation.MainNavigation
@@ -20,6 +32,7 @@ import com.martins.assignmentschronometer.navigation.Screen
 import com.martins.assignmentschronometer.overlay.ChronometerOverlayService
 import com.martins.assignmentschronometer.ui.components.BottomNavigationBar
 import com.martins.assignmentschronometer.ui.theme.AssignmentsChronometerTheme
+import com.martins.assignmentschronometer.viewmodel.SettingsViewModel
 import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 import com.martins.assignmentschronometer.viewmodel.WeeklyPartsViewModel
 
@@ -33,6 +46,10 @@ class MainActivity : ComponentActivity() {
         (application as App).weeklyPartsViewModel
     }
 
+    private val settingsViewModel: SettingsViewModel by lazy {
+        (application as App).settingsViewModel
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,8 +59,23 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val settingsViewModel = (application as App).settingsViewModel
             val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+
+            val firstLaunchOverlayLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) {
+                val granted = Settings.canDrawOverlays(this@MainActivity)
+                settingsViewModel.setOverlayEnabled(granted)
+                settingsViewModel.setFirstLaunchDone()
+            }
+
+            var showFirstLaunchDialog by remember { mutableStateOf(false) }
+
+            LaunchedEffect(settingsUiState.isFirstLaunchDone) {
+                if (!settingsUiState.isFirstLaunchDone) {
+                    showFirstLaunchDialog = true
+                }
+            }
 
             AssignmentsChronometerTheme(
                 themeMode = settingsUiState.themeMode,
@@ -65,6 +97,49 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding),
                             sharedViewModel = sharedViewModel,
                             weeklyPartsViewModel = weeklyPartsViewModel
+                        )
+                    }
+
+                    if (showFirstLaunchDialog) {
+                        AlertDialog(
+                            onDismissRequest = {},
+                            title = {
+                                Text(stringResource(R.string.first_launch_overlay_title))
+                            },
+                            text = {
+                                Text(stringResource(R.string.first_launch_overlay_message))
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        showFirstLaunchDialog = false
+
+                                        if (Settings.canDrawOverlays(this@MainActivity)) {
+                                            settingsViewModel.setOverlayEnabled(true)
+                                            settingsViewModel.setFirstLaunchDone()
+                                        } else {
+                                            val intent = Intent(
+                                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                "package:${packageName}".toUri()
+                                            )
+                                            firstLaunchOverlayLauncher.launch(intent)
+                                        }
+                                    }
+                                ) {
+                                    Text(stringResource(R.string.first_launch_overlay_enable))
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(
+                                    onClick = {
+                                        showFirstLaunchDialog = false
+                                        settingsViewModel.setOverlayEnabled(false)
+                                        settingsViewModel.setFirstLaunchDone()
+                                    }
+                                ) {
+                                    Text(stringResource(R.string.first_launch_overlay_skip))
+                                }
+                            }
                         )
                     }
                 }
@@ -121,7 +196,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showOverlay() {
-        if (Settings.canDrawOverlays(this)) {
+        val overlayEnabled = settingsViewModel.uiState.value.overlayEnabled
+        if (overlayEnabled && Settings.canDrawOverlays(this)) {
             val intent = Intent(this, ChronometerOverlayService::class.java)
             startService(intent)
         }

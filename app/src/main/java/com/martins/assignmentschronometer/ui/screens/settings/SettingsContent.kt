@@ -41,6 +41,7 @@ import com.martins.assignmentschronometer.ui.theme.ThemeMode
 data class SettingsActions(
     val onThemeModeChange: (ThemeMode) -> Unit,
     val onDynamicColorsChange: (Boolean) -> Unit,
+    val onOverlayEnabledChange: (Boolean) -> Unit,
     val onShowCommentCountInOverlayChange: (Boolean) -> Unit,
     val onSimplifiedOverlayEnabledChange: (Boolean) -> Unit,
     val onSaveOverlayOpacity: (Float) -> Unit,
@@ -74,6 +75,7 @@ fun SettingsContent(
                 uiState = uiState,
                 onThemeModeChange = actions.onThemeModeChange,
                 onDynamicColorsChange = actions.onDynamicColorsChange,
+                onOverlayEnabledChange = actions.onOverlayEnabledChange,
                 onShowCommentCountInOverlayChange = actions.onShowCommentCountInOverlayChange,
                 onSimplifiedOverlayEnabledChange = actions.onSimplifiedOverlayEnabledChange,
                 onSaveOpacity = actions.onSaveOverlayOpacity,
@@ -105,6 +107,7 @@ private fun AppearanceSettingsSection(
     uiState: SettingsUiState,
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorsChange: (Boolean) -> Unit,
+    onOverlayEnabledChange: (Boolean) -> Unit,
     onShowCommentCountInOverlayChange: (Boolean) -> Unit,
     onSimplifiedOverlayEnabledChange: (Boolean) -> Unit,
     onSaveDimensions: (Float, Float) -> Unit,
@@ -145,6 +148,16 @@ private fun AppearanceSettingsSection(
             description = stringResource(R.string.settings_overlay_comment_count_description),
             checked = uiState.showCommentCountInOverlay,
             onCheckedChange = onShowCommentCountInOverlayChange
+        )
+
+        HorizontalDivider()
+
+        SettingsSwitchItem(
+            icon = ImageVector.vectorResource(R.drawable.overlay),
+            title = stringResource(R.string.settings_overlay_enabled_title),
+            description = stringResource(R.string.settings_overlay_enabled_description),
+            checked = uiState.overlayEnabled,
+            onCheckedChange = onOverlayEnabledChange
         )
 
         HorizontalDivider()

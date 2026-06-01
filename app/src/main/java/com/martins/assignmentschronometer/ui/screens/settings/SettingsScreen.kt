@@ -58,6 +58,13 @@ fun SettingsScreen(
         uri?.let(weeklyPartsViewModel::importRecords)
     }
 
+    val overlayPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        val granted = Settings.canDrawOverlays(context)
+        settingsViewModel.setOverlayEnabled(granted)
+    }
+
     LaunchedEffect(weeklyPartsViewModel.pendingImportAcdataAction) {
         if (weeklyPartsViewModel.pendingImportAcdataAction) {
             importLauncher.launch(arrayOf("application/octet-stream"))
@@ -107,11 +114,27 @@ fun SettingsScreen(
         settingsViewModel,
         weeklyPartsViewModel,
         exportLauncher,
-        importLauncher
+        importLauncher,
+        overlayPermissionLauncher
     ) {
         SettingsActions(
             onThemeModeChange = settingsViewModel::setThemeMode,
             onDynamicColorsChange = settingsViewModel::setDynamicColorsEnabled,
+            onOverlayEnabledChange = { enable ->
+                if (!enable) {
+                    settingsViewModel.setOverlayEnabled(false)
+                } else {
+                    if (Settings.canDrawOverlays(context)) {
+                        settingsViewModel.setOverlayEnabled(true)
+                    } else {
+                        val intent = Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            "package:${context.packageName}".toUri()
+                        )
+                        overlayPermissionLauncher.launch(intent)
+                    }
+                }
+            },
             onShowCommentCountInOverlayChange = settingsViewModel::setShowCommentCountInOverlay,
             onSimplifiedOverlayEnabledChange = settingsViewModel::setSimplifiedOverlayEnabled,
             onSaveOverlayOpacity = settingsViewModel::saveOverlayOpacity,

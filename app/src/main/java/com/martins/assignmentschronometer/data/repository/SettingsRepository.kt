@@ -24,6 +24,8 @@ data class SettingsPreferences(
     val overlayScaleY: Float,
     val overlayOpacity: Float,
     val showCommentCountInOverlay: Boolean,
+    val overlayEnabled: Boolean,
+    val isFirstLaunchDone: Boolean,
     val simplifiedOverlayEnabled: Boolean
 )
 
@@ -37,6 +39,8 @@ class SettingsRepository(private val context: Context) {
         val OVERLAY_OPACITY = floatPreferencesKey("overlay_opacity")
         val SHOW_COMMENT_COUNT_IN_OVERLAY =
             booleanPreferencesKey("show_comment_count_in_overlay")
+        val OVERLAY_ENABLED = booleanPreferencesKey("overlay_enabled")
+        val FIRST_LAUNCH_DONE = booleanPreferencesKey("first_launch_done")
         val SIMPLIFIED_OVERLAY_ENABLED =
             booleanPreferencesKey("simplified_overlay_enabled")
     }
@@ -55,6 +59,8 @@ class SettingsRepository(private val context: Context) {
             overlayScaleY = prefs[Keys.OVERLAY_SCALE_Y] ?: 1.0f,
             overlayOpacity = prefs[Keys.OVERLAY_OPACITY] ?: 1.0f,
             showCommentCountInOverlay = prefs[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] ?: true,
+            overlayEnabled = prefs[Keys.OVERLAY_ENABLED] ?: true,
+            isFirstLaunchDone = prefs[Keys.FIRST_LAUNCH_DONE] ?: false,
             simplifiedOverlayEnabled = prefs[Keys.SIMPLIFIED_OVERLAY_ENABLED] ?: false
         )
     }
@@ -83,6 +89,14 @@ class SettingsRepository(private val context: Context) {
         context.settingsDataStore.edit {
             it[Keys.SHOW_COMMENT_COUNT_IN_OVERLAY] = value
         }
+    }
+
+    suspend fun setOverlayEnabled(value: Boolean) {
+        context.settingsDataStore.edit { it[Keys.OVERLAY_ENABLED] = value }
+    }
+
+    suspend fun setFirstLaunchDone() {
+        context.settingsDataStore.edit { it[Keys.FIRST_LAUNCH_DONE] = true }
     }
 
     suspend fun setSimplifiedOverlayEnabled(value: Boolean) {

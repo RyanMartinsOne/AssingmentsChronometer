@@ -51,11 +51,21 @@
         <string name="settings_dynamic_colors_title">Cores dinâmicas</string>
         <string name="settings_dynamic_colors_description">Usar cores do Material You em dispositivos compatíveis (Android 12+)</string>
 
-        <string name="settings_simplified_overlay_title">Sobreposição simplificada</string>
-        <string name="settings_simplified_overlay_description">Mostrar sobreposição simplificada, toque nela para pausar/continuar</string>
 
         <string name="settings_overlay_comment_count_title">Mostrar contagem de comentários</string>
         <string name="settings_overlay_comment_count_description">Mostrar contagem de comentários na sobreposição</string>"
+
+        <string name="first_launch_overlay_title">Sobreposição flutuante</string>
+        <string name="first_launch_overlay_message">Este app pode exibir um cronômetro flutuante sobre outros apps enquanto você usa o celular. Alguns dispositivos mais antigos podem não suportar esse recurso. Deseja ativar?</string>
+        <string name="first_launch_overlay_enable">Ativar</string>
+        <string name="first_launch_overlay_skip">Agora não</string>
+
+        <string name="settings_overlay_enabled_title">Ativar sobreposição flutuante</string>
+        <string name="settings_overlay_enabled_description">Exibir o cronômetro flutuante ao sair do app</string>
+
+        <string name="settings_simplified_overlay_title">Sobreposição simplificada</string>
+        <string name="settings_simplified_overlay_description">Mostrar sobreposição simplificada, toque nela para pausar/continuar</string>
+
         <string name="settings_overlay_appearance_title">Aparência da sobreposição</string>
         <string name="settings_overlay_size_description">Ajuste a opacidade, largura e altura do cronômetro flutuante</string>
         <string name="settings_overlay_size_width">Largura</string>

@@ -53,6 +53,14 @@
     <string name="settings_overlay_comment_count_title">Overlay comment count</string>
     <string name="settings_overlay_comment_count_description">Show comment count in overlay</string>
 
+    <string name="first_launch_overlay_title">Floating overlay</string>
+    <string name="first_launch_overlay_message">This app can show a floating timer over other apps while you use another app. Some older devices may not support this. Would you like to enable it?</string>
+    <string name="first_launch_overlay_enable">Enable</string>
+    <string name="first_launch_overlay_skip">Not now</string>
+
+    <string name="settings_overlay_enabled_title">Enable floating overlay</string>
+    <string name="settings_overlay_enabled_description">Show a floating timer when you leave the app</string>
+
     <string name="settings_simplified_overlay_title">Simplified overlay</string>
     <string name="settings_simplified_overlay_description">Show simplified overlay, touch it to pause/resume</string>
 
