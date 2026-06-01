@@ -41,8 +41,7 @@ jobs:
 
       - name: Custom Rename APK File
         run: |
-          mkdir -p app/build/outputs/apk/custom_release
-          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/custom_release/AssignmentsChronometer-v${{ steps.get_version.outputs.VERSION_NAME }}.apk
+          find app/build/outputs/apk/ -name "*.apk"
 
       - name: Sign the generated APK with your keystore
         uses: r0adkll/sign-android-release@v1.0.4
