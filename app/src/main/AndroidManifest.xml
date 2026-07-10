@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Elegibilidade para Live Updates (Android 16+) / Now Bar em One UI 8+.
          Não é uma permissão runtime: não abre diálogo pro usuário, só precisa
@@ -66,6 +65,10 @@
                 <data android:scheme="file" android:mimeType="*/*" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".overlay.ChronometerOverlayService"
+            android:exported="false" />
 
         <service
             android:name=".service.ChronometerTimerService"
