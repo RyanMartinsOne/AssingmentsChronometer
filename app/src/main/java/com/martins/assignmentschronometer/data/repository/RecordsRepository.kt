@@ -3,22 +3,13 @@ package com.martins.assignmentschronometer.data.repository
 import android.content.Context
 import android.net.Uri
 import com.martins.assignmentschronometer.data.model.WeeklyPart
+import com.martins.assignmentschronometer.data.model.WeeklyPartDto
+import com.martins.assignmentschronometer.data.model.toDto
+import com.martins.assignmentschronometer.data.model.toModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-// ─── Serializable mirror of WeeklyPart ───────────────────────────────────────
-
-@Serializable
-private data class WeeklyPartDto(
-    val uid: String,
-    val id: String,
-    val title: String,
-    val durationInMinutes: Int,
-    val room: String,
-    val assignees: String,
-    val dateText: String,
-    val realizedTimeOnSeconds: Int? = null
-)
+// ─── File format ──────────────────────────────────────────────────────────────
 
 @Serializable
 private data class AcDataFile(
@@ -35,7 +26,7 @@ sealed class ExportResult {
 }
 
 sealed class ImportResult {
-    data class Success(val count: Int) : ImportResult()
+    data class Success(val parts: List<WeeklyPart>) : ImportResult()
     object Invalid : ImportResult()
     object Error : ImportResult()
 }
@@ -53,8 +44,7 @@ object RecordsRepository {
         if (parts.isEmpty()) return ExportResult.Empty
 
         return try {
-            val dtos = parts.map { it.toDto() }
-            val payload = json.encodeToString(AcDataFile(parts = dtos))
+            val payload = json.encodeToString(AcDataFile(parts = parts.map { it.toDto() }))
             context.contentResolver.openOutputStream(uri)?.use { stream ->
                 stream.write(payload.toByteArray(Charsets.UTF_8))
             } ?: return ExportResult.Error
@@ -75,8 +65,7 @@ object RecordsRepository {
                 ?: return ImportResult.Error
 
             val file = json.decodeFromString<AcDataFile>(raw)
-            val parts = file.parts.map { it.toModel() }
-            ImportResult.Success(parts.size)
+            ImportResult.Success(file.parts.map { it.toModel() })
         } catch (e: kotlinx.serialization.SerializationException) {
             ImportResult.Invalid
         } catch (e: Throwable) {
@@ -84,28 +73,4 @@ object RecordsRepository {
             ImportResult.Error
         }
     }
-
-    // ─── Mappers ─────────────────────────────────────────────────────────────
-
-    private fun WeeklyPart.toDto() = WeeklyPartDto(
-        uid = uid,
-        id = id,
-        title = title,
-        durationInMinutes = durationInMinutes,
-        room = room,
-        assignees = assignees,
-        dateText = dateText,
-        realizedTimeOnSeconds = realizedTimeOnSeconds
-    )
-
-    private fun WeeklyPartDto.toModel() = WeeklyPart(
-        uid = uid,
-        id = id,
-        title = title,
-        durationInMinutes = durationInMinutes,
-        room = room,
-        assignees = assignees,
-        dateText = dateText,
-        realizedTimeOnSeconds = realizedTimeOnSeconds
-    )
 }

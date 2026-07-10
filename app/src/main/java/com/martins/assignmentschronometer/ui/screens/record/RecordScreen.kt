@@ -94,6 +94,17 @@ fun RecordScreen(
         }
     }
 
+    // ── Reanexa a parte ativa após uma possível recriação do processo ────────
+
+    val pendingRestoredPartUid = sharedViewModel.pendingRestoredPartUid
+    LaunchedEffect(pendingRestoredPartUid, viewModel.weeklyParts) {
+        val uid = pendingRestoredPartUid ?: return@LaunchedEffect
+        viewModel.weeklyParts.firstOrNull { it.uid == uid }?.let { part ->
+            sharedViewModel.reattachActivePart(part)
+            sharedViewModel.onRestoredPartHandled()
+        }
+    }
+
     // ── Atalhos rápidos da home screen ──────────────────────────────────────
 
     val pendingScan = viewModel.pendingScanAction

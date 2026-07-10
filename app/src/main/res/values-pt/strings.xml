@@ -167,4 +167,9 @@
 
         <string name="shortcut_import_acdata_short">Importar registros</string>
         <string name="shortcut_import_acdata_long">Selecionar e importar arquivo de registros</string>
+
+        <!-- Notificações -->
+        <string name="timer_notification_channel_name">Cronômetro em execução</string>
+        <string name="timer_notification_title">Cronômetro em execução</string>
+        <string name="timer_notification_message">Toque para voltar ao app</string>
 </resources>

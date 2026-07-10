@@ -15,18 +15,42 @@ import com.martins.assignmentschronometer.data.repository.ImportResult
 import com.martins.assignmentschronometer.data.repository.OcrLine
 import com.martins.assignmentschronometer.data.repository.PdfOcrRepository
 import com.martins.assignmentschronometer.data.repository.RecordsRepository
+import com.martins.assignmentschronometer.data.repository.WeeklyPartsStateRepository
 import com.martins.assignmentschronometer.util.OcrParser
 import com.martins.assignmentschronometer.util.toShareText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.IOException
 
 class WeeklyPartsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext get() = getApplication<Application>()
+    private val weeklyPartsStateRepository = WeeklyPartsStateRepository(appContext)
 
     var weeklyParts by mutableStateOf<List<WeeklyPart>>(emptyList())
         private set
+
+    init {
+        viewModelScope.launch {
+            val restored = weeklyPartsStateRepository.weeklyPartsFlow.first()
+            if (restored.isNotEmpty()) {
+                weeklyParts = restored
+            }
+        }
+    }
+
+    /**
+     * Single point of mutation for [weeklyParts]: updates the in-memory state
+     * and auto-persists it, so every call site (OCR import, manual add/edit,
+     * clear, etc.) stays in sync without remembering to persist separately.
+     */
+    private fun updateWeeklyParts(newParts: List<WeeklyPart>) {
+        weeklyParts = newParts
+        viewModelScope.launch {
+            weeklyPartsStateRepository.save(newParts)
+        }
+    }
 
     private val groupedWeeklyPartsState: State<Map<String, List<WeeklyPart>>> = derivedStateOf {
         weeklyParts
@@ -97,7 +121,7 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun processExtractedText(ocrLines: List<OcrLine>) {
-        weeklyParts = OcrParser.parseCurrentWeek(ocrLines)
+        updateWeeklyParts(OcrParser.parseCurrentWeek(ocrLines))
     }
 
     fun processFileUri(uri: Uri) {
@@ -108,7 +132,7 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
                 mimeType == "application/pdf" -> {
                     try {
                         val lines = PdfOcrRepository.extractLines(appContext, uri)
-                        weeklyParts = OcrParser.parseCurrentWeek(lines)
+                        updateWeeklyParts(OcrParser.parseCurrentWeek(lines))
                     } catch (e: Exception) {
                         e.printStackTrace()
                         uiFeedbackMessage = "Erro ao processar o PDF."
@@ -178,26 +202,27 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun updatePart(updated: WeeklyPart) {
-        weeklyParts = weeklyParts.map {
-            if (it.uid == updated.uid) updated else it
-        }
+        updateWeeklyParts(
+            weeklyParts.map { if (it.uid == updated.uid) updated else it }
+        )
     }
 
     fun removePart(uid: String) {
-        weeklyParts = weeklyParts.filter { it.uid != uid }
+        updateWeeklyParts(weeklyParts.filter { it.uid != uid })
     }
 
     fun saveManualPart(part: WeeklyPart, originalUid: String? = null) {
         val exists = weeklyParts.any { it.uid == originalUid }
-        weeklyParts = if (exists) {
+        val newParts = if (exists) {
             weeklyParts.map { if (it.uid == originalUid) part else it }
         } else {
             weeklyParts + part
         }
+        updateWeeklyParts(newParts)
     }
 
     fun clearAll() {
-        weeklyParts = emptyList()
+        updateWeeklyParts(emptyList())
     }
 
     fun exportRecords(uri: Uri) {
@@ -218,11 +243,8 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = RecordsRepository.import(appContext, uri)) {
                 is ImportResult.Success -> {
-                    val importedParts = importPartsFrom(uri)
-                    if (importedParts != null) {
-                        weeklyParts = importedParts
-                    }
-                    recordsEvent = RecordsEvent.ImportSuccess(result.count)
+                    updateWeeklyParts(result.parts)
+                    recordsEvent = RecordsEvent.ImportSuccess(result.parts.size)
 
                     viewModelScope.launch(Dispatchers.Main) {
                         pendingNavigationToRecord = true
@@ -231,48 +253,6 @@ class WeeklyPartsViewModel(application: Application) : AndroidViewModel(applicat
                 ImportResult.Invalid -> recordsEvent = RecordsEvent.ImportInvalid
                 ImportResult.Error -> recordsEvent = RecordsEvent.ImportError
             }
-        }
-    }
-
-    private fun importPartsFrom(uri: Uri): List<WeeklyPart>? {
-        return try {
-            val raw = appContext.contentResolver.openInputStream(uri)
-                ?.use { it.bufferedReader().readText() }
-                ?: return null
-
-            val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-
-            @kotlinx.serialization.Serializable
-            data class Dto(
-                val uid: String,
-                val id: String,
-                val title: String,
-                val durationInMinutes: Int,
-                val room: String,
-                val assignees: String,
-                val dateText: String,
-                val realizedTimeOnSeconds: Int? = null
-            )
-
-            @kotlinx.serialization.Serializable
-            data class File(val version: Int = 1, val parts: List<Dto>)
-
-            val file = json.decodeFromString<File>(raw)
-            file.parts.map {
-                WeeklyPart(
-                    uid = it.uid,
-                    id = it.id,
-                    title = it.title,
-                    durationInMinutes = it.durationInMinutes,
-                    room = it.room,
-                    assignees = it.assignees,
-                    dateText = it.dateText,
-                    realizedTimeOnSeconds = it.realizedTimeOnSeconds
-                )
-            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-            null
         }
     }
 

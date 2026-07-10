@@ -165,4 +165,9 @@
 
     <string name="shortcut_import_acdata_short">Import records</string>
     <string name="shortcut_import_acdata_long">Select and import a records file</string>
+
+    <!-- Notification -->
+    <string name="timer_notification_channel_name">Running chronometer</string>
+    <string name="timer_notification_title">Chronometer running</string>
+    <string name="timer_notification_message">Tap to return to the app</string>
 </resources>
