@@ -148,26 +148,59 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun reset() {
+        val wasRunning = isRunning
+
         isRunning = false
         isPaused = false
         totalTimeOnSeconds = 0
         accumulatedTimeMillis = 0L
         startTime = 0L
+
         timerJob?.cancel()
+        timerJob = null
+
         activePart = null
         selectedAssignment = null
-        stopForegroundTimerService()
+
+        if (wasRunning) {
+            stopForegroundTimerService()
+        }
+
+        clearPersistedState()
+    }
+
+    private fun clearSelection() {
+        isRunning = false
+        isPaused = false
+        totalTimeOnSeconds = 0
+        accumulatedTimeMillis = 0L
+        startTime = 0L
+
+        timerJob?.cancel()
+        timerJob = null
+
+        activePart = null
+        selectedAssignment = null
+
         clearPersistedState()
     }
 
     fun resetTimerOnly() {
+        val wasRunning = isRunning
+
         isRunning = false
         isPaused = false
         totalTimeOnSeconds = 0
         accumulatedTimeMillis = 0L
         startTime = 0L
+
         timerJob?.cancel()
-        stopForegroundTimerService()
+        timerJob = null
+
+        if (wasRunning) {
+            stopForegroundTimerService()
+        }
+
         clearPersistedState()
     }
 
@@ -178,13 +211,12 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         private set
 
     fun selectPartForTiming(part: WeeklyPart) {
-        reset()
+        clearSelection()
         activePart = part
     }
 
     fun selectAssignment(assignment: Assignment) {
-        reset()
-        activePart = null
+        clearSelection()
         selectedAssignment = assignment
     }
 
@@ -219,6 +251,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         val intent = Intent(appContext, ChronometerTimerService::class.java).apply {
             action = ChronometerTimerService.ACTION_STOP
         }
+
         appContext.startService(intent)
     }
 

@@ -35,20 +35,42 @@ class ChronometerTimerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            ACTION_STOP -> {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-                stopSelf()
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int
+    ): Int {
+
+        try {
+
+            when (intent?.action) {
+
+                ACTION_STOP -> {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    stopSelf()
+                }
+
+                else -> {
+
+                    val baseElapsedRealtime =
+                        intent?.getLongExtra(
+                            EXTRA_BASE_ELAPSED_REALTIME,
+                            SystemClock.elapsedRealtime()
+                        ) ?: SystemClock.elapsedRealtime()
+
+                    val notification = buildNotification(baseElapsedRealtime)
+
+                    startForeground(
+                        NOTIFICATION_ID,
+                        notification
+                    )
+                }
             }
-            else -> {
-                val baseElapsedRealtime = intent?.getLongExtra(
-                    EXTRA_BASE_ELAPSED_REALTIME,
-                    SystemClock.elapsedRealtime()
-                ) ?: SystemClock.elapsedRealtime()
-                startForeground(NOTIFICATION_ID, buildNotification(baseElapsedRealtime))
-            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
         return START_NOT_STICKY
     }
 
