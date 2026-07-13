@@ -169,7 +169,10 @@
         <string name="shortcut_import_acdata_long">Selecionar e importar arquivo de registros</string>
 
         <!-- Notificações -->
-        <string name="timer_notification_channel_name">Cronômetro em execução</string>
-        <string name="timer_notification_title">Cronômetro em execução</string>
-        <string name="timer_notification_message">Toque para voltar ao app</string>
+        <string name="timer_notification_channel_name">Cronômetro rodando</string>
+        <string name="notification_title_running">Cronometrando %1$s</string>
+        <string name="notification_title_running_generic">Cronometrando</string>
+        <string name="notification_title_paused">Cronômetro pausado</string>
+        <string name="notification_action_finish">Finalizar</string>
+        <string name="notification_paused_chip">Pausado</string>
 </resources>

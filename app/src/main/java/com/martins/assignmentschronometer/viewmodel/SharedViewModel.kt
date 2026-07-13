@@ -38,16 +38,10 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     private var startTime = 0L
     private var accumulatedTimeMillis = 0L
+    private var foregroundActive = false
 
     var onTimerStarted: (() -> Unit)? = null
 
-    /**
-     * uid of a [WeeklyPart] that was being timed before the process was
-     * killed while running. Screens that own the parts list should observe
-     * this, look the part up once loaded, call [reattachActivePart] and then
-     * [onRestoredPartHandled] — the same "pending event" pattern used
-     * elsewhere in this ViewModel layer.
-     */
     var pendingRestoredPartUid by mutableStateOf<String?>(null)
         private set
 
@@ -64,9 +58,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             val saved = timerStateRepository.timerStateFlow.first()
             val now = SystemClock.elapsedRealtime()
 
-            // startElapsedRealtimeMillis is only meaningful within the same
-            // boot session; if it doesn't fit before "now" the device was
-            // rebooted (or the value is corrupt), so just discard it.
             if (saved.isRunning && saved.startElapsedRealtimeMillis in 0..now) {
                 accumulatedTimeMillis = saved.accumulatedMillis
                 startTime = saved.startElapsedRealtimeMillis
@@ -102,6 +93,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             return "%02d:%02d:%02d".format(hours, minutes, seconds)
         }
 
+    /** Início "do zero" de um novo cronômetro (nova part/assignment selecionada). */
     fun start() {
         if (isRunning) return
         isRunning = true
@@ -111,6 +103,25 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
         startTime = SystemClock.elapsedRealtime()
 
+        foregroundActive = true
+        startForegroundTimerService()
+        persistRunningState()
+        launchTimerLoop()
+    }
+
+    /**
+     * Retoma um cronômetro pausado, preservando accumulatedTimeMillis.
+     * Diferente de [start], não reinicia onTimerStarted nem trata como
+     * um novo cronômetro — apenas volta a contar a partir de onde parou.
+     */
+    fun resume() {
+        if (isRunning || !isPaused) return
+        isRunning = true
+        isPaused = false
+
+        startTime = SystemClock.elapsedRealtime()
+
+        foregroundActive = true
         startForegroundTimerService()
         persistRunningState()
         launchTimerLoop()
@@ -119,6 +130,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     private fun resumeAfterRestore() {
         isRunning = true
         isPaused = false
+        foregroundActive = true
         startForegroundTimerService()
         launchTimerLoop()
     }
@@ -143,12 +155,14 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
         accumulatedTimeMillis += SystemClock.elapsedRealtime() - startTime
         timerJob?.cancel()
-        stopForegroundTimerService()
+        // Mantém a notificação (foreground) visível, só congela o cronômetro
+        // e troca a ação para "Retomar".
+        pauseForegroundTimerService()
         clearPersistedState()
     }
 
     fun reset() {
-        val wasRunning = isRunning
+        val wasForegroundActive = foregroundActive
 
         isRunning = false
         isPaused = false
@@ -162,8 +176,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         activePart = null
         selectedAssignment = null
 
-        if (wasRunning) {
-            stopForegroundTimerService()
+        if (wasForegroundActive) {
+            foregroundActive = false
+            stopForegroundTimerServiceCompletely()
         }
 
         clearPersistedState()
@@ -182,11 +197,36 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         activePart = null
         selectedAssignment = null
 
+        if (foregroundActive) {
+            foregroundActive = false
+            stopForegroundTimerServiceCompletely()
+        }
+
         clearPersistedState()
     }
 
+    /**
+     * Zera o tempo decorrido sem fechar a notificação/foreground service.
+     * Se estava rodando, continua rodando a partir de 0; se estava pausado,
+     * fica parado em 0. Usado pelo botão "Reiniciar" da notificação.
+     */
+    fun resetTimerKeepRunning() {
+        accumulatedTimeMillis = 0L
+        totalTimeOnSeconds = 0
+
+        if (isRunning) {
+            startTime = SystemClock.elapsedRealtime()
+            persistRunningState()
+            if (foregroundActive) startForegroundTimerService()
+        } else {
+            startTime = 0L
+            clearPersistedState()
+            if (foregroundActive) pauseForegroundTimerService()
+        }
+    }
+
     fun resetTimerOnly() {
-        val wasRunning = isRunning
+        val wasForegroundActive = foregroundActive
 
         isRunning = false
         isPaused = false
@@ -197,8 +237,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         timerJob?.cancel()
         timerJob = null
 
-        if (wasRunning) {
-            stopForegroundTimerService()
+        if (wasForegroundActive) {
+            foregroundActive = false
+            stopForegroundTimerServiceCompletely()
         }
 
         clearPersistedState()
@@ -240,19 +281,27 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     private fun startForegroundTimerService() {
         val virtualBaseElapsedRealtime = startTime - accumulatedTimeMillis
-        val intent = Intent(appContext, ChronometerTimerService::class.java).apply {
-            action = ChronometerTimerService.ACTION_START
-            putExtra(ChronometerTimerService.EXTRA_BASE_ELAPSED_REALTIME, virtualBaseElapsedRealtime)
-        }
-        ContextCompat.startForegroundService(appContext, intent)
+        sendServiceAction(ChronometerTimerService.ACTION_START, virtualBaseElapsedRealtime)
     }
 
-    private fun stopForegroundTimerService() {
+    private fun pauseForegroundTimerService() {
+        val virtualBaseElapsedRealtime = SystemClock.elapsedRealtime() - accumulatedTimeMillis
+        sendServiceAction(ChronometerTimerService.ACTION_PAUSE, virtualBaseElapsedRealtime)
+    }
+
+    private fun stopForegroundTimerServiceCompletely() {
         val intent = Intent(appContext, ChronometerTimerService::class.java).apply {
             action = ChronometerTimerService.ACTION_STOP
         }
-
         appContext.startService(intent)
+    }
+
+    private fun sendServiceAction(actionName: String, baseElapsedRealtime: Long) {
+        val intent = Intent(appContext, ChronometerTimerService::class.java).apply {
+            action = actionName
+            putExtra(ChronometerTimerService.EXTRA_BASE_ELAPSED_REALTIME, baseElapsedRealtime)
+        }
+        ContextCompat.startForegroundService(appContext, intent)
     }
 
     private fun persistRunningState() {

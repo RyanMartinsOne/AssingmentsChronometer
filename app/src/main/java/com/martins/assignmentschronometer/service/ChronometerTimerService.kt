@@ -10,23 +10,20 @@ import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
+import com.martins.assignmentschronometer.App
 import com.martins.assignmentschronometer.MainActivity
 import com.martins.assignmentschronometer.R
 
-/**
- * Keeps the app process alive (foreground priority) while a chronometer is
- * running, so the OS does not kill it when the screen is locked or the app
- * is backgrounded. Shows an ongoing notification using Android's native
- * chronometer view, so the displayed time is driven by the system itself
- * and does not depend on this service doing any ticking of its own.
- */
 class ChronometerTimerService : Service() {
 
     companion object {
         const val ACTION_START = "com.martins.assignmentschronometer.action.START_TIMER"
+        const val ACTION_PAUSE = "com.martins.assignmentschronometer.action.PAUSE_TIMER"
         const val ACTION_STOP = "com.martins.assignmentschronometer.action.STOP_TIMER"
+        const val ACTION_TOGGLE = "com.martins.assignmentschronometer.action.TOGGLE_TIMER"
+        const val ACTION_RESET = "com.martins.assignmentschronometer.action.RESET_TIMER"
+        const val ACTION_FINISH = "com.martins.assignmentschronometer.action.FINISH_TIMER"
 
-        /** SystemClock.elapsedRealtime() timestamp the chronometer should count up from. */
         const val EXTRA_BASE_ELAPSED_REALTIME = "extra_base_elapsed_realtime"
 
         private const val CHANNEL_ID = "chronometer_running_channel"
@@ -35,14 +32,8 @@ class ChronometerTimerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    override fun onStartCommand(
-        intent: Intent?,
-        flags: Int,
-        startId: Int
-    ): Int {
-
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         try {
-
             when (intent?.action) {
 
                 ACTION_STOP -> {
@@ -50,23 +41,49 @@ class ChronometerTimerService : Service() {
                     stopSelf()
                 }
 
-                else -> {
+                ACTION_TOGGLE -> {
+                    val sharedViewModel = (application as App).sharedViewModel
+                    if (sharedViewModel.isRunning) {
+                        sharedViewModel.pause()
+                    } else {
+                        sharedViewModel.resume()
+                    }
+                }
 
-                    val baseElapsedRealtime =
-                        intent?.getLongExtra(
-                            EXTRA_BASE_ELAPSED_REALTIME,
-                            SystemClock.elapsedRealtime()
-                        ) ?: SystemClock.elapsedRealtime()
+                ACTION_RESET -> {
+                    (application as App).sharedViewModel.resetTimerKeepRunning()
+                }
 
-                    val notification = buildNotification(baseElapsedRealtime)
+                ACTION_FINISH -> {
+                    val app = application as App
+                    val sharedViewModel = app.sharedViewModel
+                    val weeklyPartsViewModel = app.weeklyPartsViewModel
 
-                    startForeground(
-                        NOTIFICATION_ID,
-                        notification
+                    if (sharedViewModel.activePart != null) {
+                        sharedViewModel.savePartTimeAndResetForOverlay { updated ->
+                            weeklyPartsViewModel.updatePart(updated)
+                        }
+                    } else {
+                        sharedViewModel.reset()
+                    }
+                }
+
+                ACTION_PAUSE -> {
+                    val base = intent.getLongExtra(
+                        EXTRA_BASE_ELAPSED_REALTIME,
+                        SystemClock.elapsedRealtime()
                     )
+                    startForeground(NOTIFICATION_ID, buildNotification(base, isRunning = false))
+                }
+
+                else -> {
+                    val base = intent?.getLongExtra(
+                        EXTRA_BASE_ELAPSED_REALTIME,
+                        SystemClock.elapsedRealtime()
+                    ) ?: SystemClock.elapsedRealtime()
+                    startForeground(NOTIFICATION_ID, buildNotification(base, isRunning = true))
                 }
             }
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -74,7 +91,7 @@ class ChronometerTimerService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun buildNotification(baseElapsedRealtime: Long): Notification {
+    private fun buildNotification(baseElapsedRealtime: Long, isRunning: Boolean): Notification {
         createChannelIfNeeded()
 
         val contentIntent = PendingIntent.getActivity(
@@ -86,31 +103,98 @@ class ChronometerTimerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // setUsesChronometer relies on `when` as a wall-clock reference point;
-        // we translate the elapsedRealtime base into wall-clock time so the
-        // system-drawn chronometer keeps counting on its own, with no timer
-        // logic living inside this service.
-        val alreadyElapsedMillis = SystemClock.elapsedRealtime() - baseElapsedRealtime
-        val whenMillis = System.currentTimeMillis() - alreadyElapsedMillis
+        val toggleAction = buildAction(
+            icon = if (isRunning) R.drawable.pause else R.drawable.play,
+            title = getString(if (isRunning) R.string.pause else R.string.resume),
+            action = ACTION_TOGGLE
+        )
+        val resetAction = buildAction(
+            icon = R.drawable.restart,
+            title = getString(R.string.reset),
+            action = ACTION_RESET
+        )
+        val finishAction = buildAction(
+            icon = R.drawable.delete,
+            title = getString(R.string.notification_action_finish),
+            action = ACTION_FINISH
+        )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.record_filled)
-            .setContentTitle(getString(R.string.timer_notification_title))
-            .setContentText(getString(R.string.timer_notification_message))
+        val elapsedSinceBase = SystemClock.elapsedRealtime() - baseElapsedRealtime
+        val whenEpochMillis = System.currentTimeMillis() - elapsedSinceBase
+        val elapsedText = formatElapsed(elapsedSinceBase)
+        val sharedViewModel = (application as App).sharedViewModel
+
+        val activePartName = sharedViewModel.activePart?.title
+
+        val activeAssignmentName = sharedViewModel.selectedAssignment
+            ?.titleRes
+            ?.let(::getString)
+
+        val activeItemName = activePartName
+            ?.takeIf { it.isNotBlank() }
+            ?: activeAssignmentName?.takeIf { it.isNotBlank() }
+
+        val contentTitle = if (isRunning) {
+            if (activeItemName != null) {
+                getString(R.string.notification_title_running, activeItemName)
+            } else {
+                getString(R.string.notification_title_running_generic)
+            }
+        } else {
+            getString(R.string.notification_title_paused)
+        }
+
+        val contentText = getString(R.string.timer_notification_channel_name)
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.hourglass)
+            .setContentTitle(contentTitle)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setUsesChronometer(true)
-            .setChronometerCountDown(false)
-            .setWhen(whenMillis)
             .setContentIntent(contentIntent)
+            .addAction(toggleAction)
+            .addAction(resetAction)
+            .addAction(finishAction)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            // Asks the system to promote this notification as a Live Update
-            // (Android 16+). On devices where that's supported — e.g. Samsung
-            // One UI 8+ — this is what makes it eligible to also show up in
-            // the Now Bar, with no Samsung-specific code needed. This call is
-            // a safe no-op on older OS versions.
+            .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
             .setRequestPromotedOngoing(true)
-            .build()
+
+        if (isRunning) {
+            builder
+                .setUsesChronometer(true)
+                .setContentText(contentText)
+                .setChronometerCountDown(false)
+                .setWhen(whenEpochMillis)
+                .setShowWhen(true)
+        } else {
+            builder
+                .setUsesChronometer(false)
+                .setContentText(elapsedText)
+                .setShortCriticalText(getString(R.string.notification_paused_chip))
+        }
+
+        return builder.build()
+    }
+
+    private fun formatElapsed(millis: Long): String {
+        val totalSeconds = millis / 1000
+        val h = totalSeconds / 3600
+        val m = (totalSeconds % 3600) / 60
+        val s = totalSeconds % 60
+        return "%02d:%02d:%02d".format(h, m, s)
+    }
+
+    private fun buildAction(icon: Int, title: String, action: String): NotificationCompat.Action {
+        val intent = Intent(this, ChronometerTimerService::class.java).apply {
+            this.action = action
+        }
+        val pendingIntent = PendingIntent.getService(
+            this,
+            action.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        return NotificationCompat.Action(icon, title, pendingIntent)
     }
 
     private fun createChannelIfNeeded() {

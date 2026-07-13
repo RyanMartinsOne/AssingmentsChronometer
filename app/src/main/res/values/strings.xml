@@ -168,6 +168,9 @@
 
     <!-- Notification -->
     <string name="timer_notification_channel_name">Running chronometer</string>
-    <string name="timer_notification_title">Chronometer running</string>
-    <string name="timer_notification_message">Tap to return to the app</string>
+    <string name="notification_title_running">Timing %1$s</string>
+    <string name="notification_title_running_generic">Timing</string>
+    <string name="notification_title_paused">Timer paused</string>
+    <string name="notification_action_finish">Finish</string>
+    <string name="notification_paused_chip">Paused</string>
 </resources>
