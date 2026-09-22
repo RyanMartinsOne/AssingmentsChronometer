@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.WeeklyPart
+import com.martins.assignmentschronometer.ui.components.ActiveTimerConfirmDialog
 import com.martins.assignmentschronometer.ui.components.ManualWeeklyPartDialog
 import com.martins.assignmentschronometer.ui.components.MenuOption
 import com.martins.assignmentschronometer.ui.components.WeeklyPartCard
@@ -284,8 +285,12 @@ fun RecordScreen(
                             WeeklyPartCard(
                                 part = part,
                                 onClick = {
-                                    sharedViewModel.selectPartForTiming(part)
-                                    onNavigateToChronometer()
+                                    val startedImmediately =
+                                        sharedViewModel.requestStartPart(part)
+
+                                    if (startedImmediately) {
+                                        onNavigateToChronometer()
+                                    }
                                 },
                                 onShareClick = {
                                     viewModel.requestShare(part)
@@ -315,6 +320,16 @@ fun RecordScreen(
                     showingAddDialog = false
                     partToEdit = null
                 }
+            )
+        }
+        if (sharedViewModel.pendingStartRequest != null) {
+            ActiveTimerConfirmDialog(
+                onConfirm = {
+                    if (sharedViewModel.confirmPendingStart()) {
+                        onNavigateToChronometer()
+                    }
+                },
+                onDismiss = sharedViewModel::dismissPendingStart
             )
         }
     }

@@ -59,9 +59,8 @@ fun MainNavigation(
 
         composable(route = Screen.Assignments.route) {
             AssignmentsScreen(
-                onAssignmentClick = { assignment ->
-                    sharedViewModel.selectAssignment(assignment)
-                    sharedViewModel.start()
+                sharedViewModel = sharedViewModel,
+                onAssignmentStarted = {
                     navigateToTopLevel(Screen.Home.route)
                 }
             )

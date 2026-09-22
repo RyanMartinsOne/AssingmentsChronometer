@@ -154,6 +154,11 @@
     <string name="dialog_record_time_title">Record Time</string>
     <string name="dialog_record_time_message">Save %s for %s\'s assignment?</string>
 
+    <!-- Active timer confirm dialog -->
+    <string name="dialog_active_timer_title">Timer already running</string>
+    <string name="dialog_active_timer_message">A timer is already running. Do you want to stop it and start this one instead?</string>
+    <string name="dialog_active_timer_confirm">Start anyway</string>
+
     <!-- App Shortcuts -->
     <string name="shortcut_start_timer_short">Start Timer</string>
     <string name="shortcut_start_timer_long">Start the timer immediately</string>

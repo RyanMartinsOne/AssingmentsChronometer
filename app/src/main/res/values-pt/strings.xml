@@ -156,6 +156,11 @@
         <string name="dialog_record_time_title">Registrar Tempo</string>
         <string name="dialog_record_time_message">Deseja salvar o tempo de %s para a designação de %s?</string>
 
+        <!-- Dialog de confirmação de timer ativo -->
+        <string name="dialog_active_timer_title">Cronômetro em andamento</string>
+        <string name="dialog_active_timer_message">Já existe um cronômetro em andamento. Deseja encerrar o atual e iniciar este agora?</string>
+        <string name="dialog_active_timer_confirm">Iniciar mesmo assim</string>
+
         <!-- Atalhos do App -->
         <string name="shortcut_start_timer_short">Iniciar Cronômetro</string>
         <string name="shortcut_start_timer_long">Iniciar o cronômetro imediatamente</string>

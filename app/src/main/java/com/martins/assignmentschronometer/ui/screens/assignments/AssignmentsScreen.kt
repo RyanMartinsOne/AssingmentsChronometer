@@ -11,25 +11,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.martins.assignmentschronometer.R
 import com.martins.assignmentschronometer.data.model.Assignment
+import com.martins.assignmentschronometer.ui.components.ActiveTimerConfirmDialog
 import com.martins.assignmentschronometer.ui.components.AssignmentCard
+import com.martins.assignmentschronometer.viewmodel.SharedViewModel
 
 private val defaultAssignment = listOf(
-    Assignment (
+    Assignment(
         titleRes = R.string.assignment_public_talk,
         durationOnSeconds = 30 * 60,
         iconRes = R.drawable.public_talk
     ),
-    Assignment (
+    Assignment(
         titleRes = R.string.assignment_watchtower,
         durationOnSeconds = 60 * 60,
         iconRes = R.drawable.watchtower
     ),
-    Assignment (
+    Assignment(
         titleRes = R.string.assignment_treasures,
         durationOnSeconds = 10 * 60,
         iconRes = R.drawable.treasures
     ),
-    Assignment (
+    Assignment(
         titleRes = R.string.assignment_spiritual_gems,
         durationOnSeconds = 10 * 60,
         iconRes = R.drawable.spiritual_gems,
@@ -39,8 +41,9 @@ private val defaultAssignment = listOf(
 
 @Composable
 fun AssignmentsScreen(
+    sharedViewModel: SharedViewModel,
     assignments: List<Assignment> = defaultAssignment,
-    onAssignmentClick: (Assignment) -> Unit
+    onAssignmentStarted: () -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -51,9 +54,28 @@ fun AssignmentsScreen(
             items(assignments, key = { it.titleRes }) { assignment ->
                 AssignmentCard(
                     assignment = assignment,
-                    onClick = { onAssignmentClick(assignment) }
+                    onClick = {
+                        val startedImmediately =
+                            sharedViewModel.requestStartAssignment(assignment)
+
+                        if (startedImmediately) {
+                            onAssignmentStarted()
+                        }
+                    }
                 )
             }
         }
+    }
+    if (sharedViewModel.pendingStartRequest != null) {
+        ActiveTimerConfirmDialog(
+            onConfirm = {
+                val started = sharedViewModel.confirmPendingStart()
+
+                if (started) {
+                    onAssignmentStarted()
+                }
+            },
+            onDismiss = sharedViewModel::dismissPendingStart
+        )
     }
 }

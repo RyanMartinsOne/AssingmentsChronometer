@@ -20,6 +20,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+sealed interface PendingStartRequest {
+    data class ForAssignment(
+        val assignment: Assignment
+    ) : PendingStartRequest
+
+    data class ForPart(
+        val part: WeeklyPart
+    ) : PendingStartRequest
+}
+
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val appContext get() = getApplication<Application>()
@@ -248,6 +258,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     var activePart by mutableStateOf<WeeklyPart?>(null)
         private set
 
+    var pendingStartRequest by mutableStateOf<PendingStartRequest?>(null)
+        private set
+
     var selectedAssignment by mutableStateOf<Assignment?>(null)
         private set
 
@@ -275,6 +288,86 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             onSave(finished)
         }
         reset()
+    }
+
+    private fun hasActiveTimer(): Boolean {
+        return isRunning || isPaused
+    }
+
+    /**
+     * Pede o início de uma designação.
+     *
+     * @return true se ela foi iniciada imediatamente; false se a confirmação
+     *         para substituir o cronômetro ativo ficou pendente.
+     */
+    fun requestStartAssignment(assignment: Assignment): Boolean {
+        return requestStart(
+            PendingStartRequest.ForAssignment(assignment)
+        )
+    }
+
+    /**
+     * Pede o início de uma parte semanal.
+     *
+     * @return true se a parte foi selecionada imediatamente; false se a
+     *         confirmação para substituir o cronômetro ativo ficou pendente.
+     */
+    fun requestStartPart(part: WeeklyPart): Boolean {
+        return requestStart(
+            PendingStartRequest.ForPart(part)
+        )
+    }
+
+    /**
+     * Centraliza a regra: se existir um cronômetro ativo ou pausado, guarda
+     * a intenção; caso contrário, executa-a agora.
+     */
+    private fun requestStart(request: PendingStartRequest): Boolean {
+        if (hasActiveTimer()) {
+            pendingStartRequest = request
+            return false
+        }
+
+        executeStartRequest(request)
+        return true
+    }
+
+    /**
+     * Executa a intenção completa de início.
+     *
+     * Esta função é usada tanto para início imediato quanto após a confirmação.
+     * Assim, não existe risco de o fluxo imediato fazer algo diferente do
+     * fluxo confirmado.
+     */
+    private fun executeStartRequest(request: PendingStartRequest) {
+        when (request) {
+            is PendingStartRequest.ForAssignment -> {
+                selectAssignment(request.assignment)
+                start()
+            }
+
+            is PendingStartRequest.ForPart -> {
+                selectPartForTiming(request.part)
+            }
+        }
+    }
+
+    /**
+     * Confirma e executa o pedido que estava aguardando confirmação.
+     *
+     * @return true se havia um pedido pendente e ele foi executado.
+     */
+    fun confirmPendingStart(): Boolean {
+        val request = pendingStartRequest ?: return false
+
+        pendingStartRequest = null
+
+        executeStartRequest(request)
+        return true
+    }
+
+    fun dismissPendingStart() {
+        pendingStartRequest = null
     }
 
     // ─── Foreground service + persisted state ──────────────────────────────
