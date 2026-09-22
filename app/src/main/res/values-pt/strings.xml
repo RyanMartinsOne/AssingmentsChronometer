@@ -142,6 +142,7 @@
         <string name="dialog_add_part_title">Adicionar designação</string>
         <string name="dialog_edit_part_title">Editar designação</string>
         <string name="dialog_part_number">Nº da parte</string>
+        <string name="dialog_part_number_error">Digite um número entre 1 e 12</string>
         <string name="dialog_part_title_field">Título</string>
         <string name="dialog_part_assignees">Designado(s)</string>
         <string name="dialog_part_room">Sala</string>

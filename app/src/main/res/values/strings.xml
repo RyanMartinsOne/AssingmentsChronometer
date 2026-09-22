@@ -140,6 +140,7 @@
     <string name="dialog_add_part_title">Add assignment</string>
     <string name="dialog_edit_part_title">Edit assignment</string>
     <string name="dialog_part_number">Part number</string>
+    <string name="dialog_part_number_error">Enter a number between 1 and 12</string>
     <string name="dialog_part_title_field">Title</string>
     <string name="dialog_part_assignees">Assigned to</string>
     <string name="dialog_part_room">Room</string>

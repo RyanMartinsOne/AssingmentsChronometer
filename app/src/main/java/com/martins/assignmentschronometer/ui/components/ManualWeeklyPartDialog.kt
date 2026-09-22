@@ -39,6 +39,7 @@ fun ManualWeeklyPartDialog(
     val isEditing = partToEdit != null
 
     var partNumber by remember { mutableStateOf(partToEdit?.id ?: "") }
+    var partNumberError by remember { mutableStateOf(false) }
     var title by remember { mutableStateOf(partToEdit?.title ?: "") }
     var assignees by remember { mutableStateOf(partToEdit?.assignees ?: "") }
     var room by remember { mutableStateOf(partToEdit?.room ?: "") }
@@ -46,6 +47,7 @@ fun ManualWeeklyPartDialog(
     var roomExpanded by remember { mutableStateOf(false) }
 
     val isValid = partNumber.isNotBlank() &&
+            !partNumberError &&
             title.isNotBlank() &&
             assignees.isNotBlank() &&
             room.isNotBlank() &&
@@ -64,9 +66,25 @@ fun ManualWeeklyPartDialog(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = partNumber,
-                    onValueChange = { if (it.length <= 1 && it.all {
-                        c -> c.isDigit() }) partNumber = it },
+                    onValueChange = { input ->
+                        val digitsOnly = input.all { it.isDigit() }
+                        val number = input.toIntOrNull()
+
+                        if (input.isEmpty()) {
+                            partNumber = input
+                            partNumberError = false
+                        } else if (digitsOnly && input.length <= 2) {
+                            partNumber = input
+                            partNumberError = number == null || number !in 1..12
+                        }
+                    },
                     label = { Text(stringResource(R.string.dialog_part_number)) },
+                    isError = partNumberError,
+                    supportingText = if (partNumberError) {
+                        { Text(stringResource(R.string.dialog_part_number_error)) }
+                    } else {
+                        null
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
